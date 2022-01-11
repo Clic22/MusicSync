@@ -28,20 +28,22 @@ namespace App1
         {
             this.InitializeComponent();
             m_versioning = new Versioning();
+            m_visualElements = new VisualElements(this);
         }
 
         private void updateReposClick(object sender, RoutedEventArgs e)
         {
             m_versioning.updateRepos();
-            updateRepos.Content = "Done";
+            m_visualElements.displayPopUp("Update Repos Done");
         }
 
         private void commitAllChangeClick(object sender, RoutedEventArgs e)
         {
             m_versioning.commitAllChanges();
-            commitAllChange.Content = "Done";
+            m_visualElements.displayPopUp("Commit All Changes Done");
         }
 
         private Versioning m_versioning;
+        private VisualElements m_visualElements;
     }
 }
