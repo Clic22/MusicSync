@@ -27,23 +27,23 @@ namespace App1
         public MainWindow()
         {
             this.InitializeComponent();
-            m_versioning = new Versioning();
-            m_visualElements = new VisualElements(this);
+            versioning_ = new SongVersioning();
+            visualElements_ = new VisualElements(this);
         }
 
-        private void updateReposClick(object sender, RoutedEventArgs e)
+        private void updateLocalSongsClick(object sender, RoutedEventArgs e)
         {
-            m_versioning.updateRepos();
-            m_visualElements.displayPopUp("Update Repos Done");
+            versioning_.updateLocalSongs();
+            visualElements_.displayPopUp("Songs Updated");
         }
 
-        private void commitAllChangeClick(object sender, RoutedEventArgs e)
+        private void pushNewSongsVersionsClick(object sender, RoutedEventArgs e)
         {
-            m_versioning.commitAllChanges();
-            m_visualElements.displayPopUp("Commit All Changes Done");
+            versioning_.pushNewSongsVersions();
+            visualElements_.displayPopUp("New Songs Versions Pushed");
         }
 
-        private Versioning m_versioning;
-        private VisualElements m_visualElements;
+        private SongVersioning versioning_;
+        private VisualElements visualElements_;
     }
 }
