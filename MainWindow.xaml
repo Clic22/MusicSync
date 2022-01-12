@@ -6,9 +6,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="updateLocalSongs" Click="updateLocalSongsClick" Margin="10">Update Local Songs</Button>
-        <Button x:Name="pushNewSongsVersions" Click="pushNewSongsVersionsClick" Margin="10">Push New Songs Versions</Button>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button x:Name="updateLocalSongs" Click="updateLocalSongsClick" Margin="10">Update Local Songs</Button>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock x:Name="commitMessageTitleLabel" Text="Commit Message Title:" Height="20" Margin="10"/>
+            <TextBox x:Name="commitMessageTitle" AutomationProperties.Name="simple text editor" Margin="10"/>
+            <TextBlock x:Name="commitMessageDescriptionLabel" Text="Commit Message Description" Height="20" Margin="10"/>
+            <TextBox x:Name="commitMessageDescription" AutomationProperties.Name="simple text editor" TextWrapping="Wrap" AcceptsReturn="True" Width="200" Height="500" Margin="10"/>
+            <Button x:Name="pushNewSongsVersions" Click="pushNewSongsVersionsClick" Margin="10">Push New Songs Versions</Button>
+        </StackPanel>
     </StackPanel>
 </Window>

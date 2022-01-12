@@ -43,6 +43,7 @@ namespace App1
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             m_window = new MainWindow();
+            m_window.Title = "MusicSync";
             m_window.Activate();
         }
 

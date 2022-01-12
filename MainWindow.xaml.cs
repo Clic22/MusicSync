@@ -39,8 +39,15 @@ namespace App1
 
         private void pushNewSongsVersionsClick(object sender, RoutedEventArgs e)
         {
-            versioning_.pushNewSongsVersions();
+            versioning_.pushNewSongsVersions(commitMessageTitle.Text, commitMessageDescription.Text);
+            clearTitleAndDescritpion();
             visualElements_.displayPopUp("New Songs Versions Pushed");
+        }
+
+        private void clearTitleAndDescritpion()
+        {
+            commitMessageTitle.Text = string.Empty;
+            commitMessageDescription.Text = string.Empty;
         }
 
         private SongVersioning versioning_;

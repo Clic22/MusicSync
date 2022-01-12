@@ -19,10 +19,10 @@ namespace App1
             updateLocalSong(song);
         }
 
-        public void pushNewSongsVersions()
+        public void pushNewSongsVersions(string changeTitle, string changeDescription)
         {
             string song = @"'C:\Users\Aymeric Meindre\Documents\Studio One\Songs\Collaboration\End of the Road'"; // directory of the git repository
-            pushNewSongVersion(song);
+            pushNewSongVersion(song,changeTitle, changeDescription);
         }
 
         private void updateLocalSong(string song)
@@ -30,10 +30,10 @@ namespace App1
             versionTool_.pullChangesFromRepo(song);
         }
 
-        private void pushNewSongVersion(string song)
+        private void pushNewSongVersion(string song,string changeTitle,string changeDescription)
         {
             versionTool_.addAllChanges(song);
-            versionTool_.commitChanges(song);
+            versionTool_.commitChanges(song,changeTitle,changeDescription);
             versionTool_.pushChangesToRepo(song);
         }
 

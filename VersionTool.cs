@@ -12,29 +12,34 @@ namespace App1
         {
             goToSong(directory);
             powershell_.AddScript(@"git add -A ").Invoke();
+            powershell_.Commands.Clear();
         }
 
-        public void commitChanges(string directory)
+        public void commitChanges(string directory, string title, string description)
         {
             goToSong(directory);
-            powershell_.AddScript(@"git commit -m 'Automatic Commit from C# software'").Invoke();
+            powershell_.AddScript($"git commit -m '{title}\n\n{description}'").Invoke();
+            powershell_.Commands.Clear();
         }
 
         public void pushChangesToRepo(string directory)
         {
             goToSong(directory);
             powershell_.AddScript(@"git push").Invoke();
+            powershell_.Commands.Clear();
         }
 
         public void pullChangesFromRepo(string directory)
         {
             goToSong(directory);
             powershell_.AddScript(@"git pull").Invoke();
+            powershell_.Commands.Clear();
         }
 
         private void goToSong(string directory)
         {
             powershell_.AddScript($"cd {directory}").Invoke();
+            powershell_.Commands.Clear();
         }
 
         private PowerShell powershell_;
