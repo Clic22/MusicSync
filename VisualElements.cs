@@ -26,6 +26,7 @@ namespace App1
             ContentDialog popUp = new ContentDialog();
             popUp.Title = Title;
             popUp.CloseButtonText = "Close";
+            popUp.DefaultButton = ContentDialogButton.Close;
             popUp.XamlRoot = m_window.Content.XamlRoot;
             return popUp;
         }
