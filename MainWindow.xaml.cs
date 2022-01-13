@@ -48,11 +48,11 @@ namespace App1
             visualElements_.displayPopUp("All Songs Updated");
         }
 
-        private void pushNewSongsVersionsClick(object sender, RoutedEventArgs e)
+        private void pushNewSongVersionClick(object sender, RoutedEventArgs e)
         {
-            versioning_.pushNewSongsVersions(commitMessageTitle.Text, commitMessageDescription.Text);
+            versioning_.pushNewSongVersion(songSelected_, commitMessageTitle.Text, commitMessageDescription.Text);
             clearTitleAndDescritpion();
-            visualElements_.displayPopUp("New Songs Versions Pushed");
+            visualElements_.displayPopUp($"New Version for '{songSelected_.title}' Pushed");
         }
 
         private void clearTitleAndDescritpion()

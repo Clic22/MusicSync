@@ -25,12 +25,6 @@ namespace App1
                 updateLocalSong(song);
         }
 
-        public void pushNewSongsVersions(string changeTitle, string changeDescription)
-        {
-            foreach (Song song in songsStorage_.songs)
-                pushNewSongVersion(song,changeTitle, changeDescription);
-        }
-
         public void updateLocalSong(Song song)
         {
             versionTool_.pullChangesFromRepo(song.localPath);
