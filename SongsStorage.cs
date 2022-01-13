@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace App1
 {
-    internal class SongsStorage
+    public class SongsStorage : ObservableCollection<Song>
     {
         public SongsStorage()
         {
-            songs = new List<Song>();
+           
         }
-
-        public List<Song> songs { get; set; }
-
     }
 }

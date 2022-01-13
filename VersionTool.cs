@@ -38,7 +38,7 @@ namespace App1
 
         private void goToSong(string directory)
         {
-            powershell_.AddScript($"cd {directory}").Invoke();
+            powershell_.AddScript($"cd '{directory}'").Invoke();
             powershell_.Commands.Clear();
         }
 

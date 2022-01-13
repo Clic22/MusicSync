@@ -6,10 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    
+
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <ListBox ItemsSource="{x:Bind versioning_.songsStorage_.songs}" DisplayMemberPath="title" SelectionChanged="SongsListBox_SelectionChanged"/>
+            <Button x:Name="addSong" Click="addSongClick" Margin="10" HorizontalAlignment="Right">
+                <SymbolIcon Symbol="Add"></SymbolIcon>
+            </Button>
+            <ListBox ItemsSource="{x:Bind songsList_}" DisplayMemberPath="title" SelectionChanged="SongsListBoxSelectionChanged" Margin="10"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Button x:Name="updateLocalSong" Click="updateLocalSongClick" Margin="10">Update Song</Button>
                 <Button x:Name="updateLocalSongs" Click="updateLocalSongsClick" Margin="10">Update All Songs</Button>

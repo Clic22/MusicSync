@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,20 +9,16 @@ namespace App1
 {
     internal class SongVersioning
     {
-        public SongVersioning()
+        public SongVersioning(SongsStorage songsList)
         {
             versionTool_ = new VersionTool();
 
-            songsStorage_ = new SongsStorage();
-            Song endOfTheRoad = new Song("End of the Road", 
-                                         @"'C:\Users\Aymeric Meindre\Documents\Studio One\Songs\Collaboration\End of the Road'",
-                                         @"'https://gitlab.com/instant-t-band/end-of-the-road.git'");
-            songsStorage_.songs.Add(endOfTheRoad);
+            songsList_ = songsList;
         }
 
         public void updateLocalSongs()
         {
-            foreach (Song song in songsStorage_.songs)
+            foreach (Song song in songsList_)
                 updateLocalSong(song);
         }
 
@@ -38,6 +35,6 @@ namespace App1
         }
 
         private VersionTool versionTool_;
-        public SongsStorage songsStorage_ { get; set; }
+        private SongsStorage songsList_;
     }
 }

@@ -27,32 +27,41 @@ namespace App1
         public MainWindow()
         {
             this.InitializeComponent();
-            versioning_ = new SongVersioning();
-            visualElements_ = new VisualElements(this);
+            songsList_ = new SongsStorage();
+            versioning_ = new SongVersioning(songsList_);
         }
 
-        public void SongsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void addSongClick(object sender, RoutedEventArgs e)
+        {
+            AddNewSong dialog = new AddNewSong(this, songsList_);
+            await dialog.ShowAsync();
+        }
+
+        public void SongsListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             songSelected_ = (sender as ListBox).SelectedItem as Song;
         }
 
-        private void updateLocalSongClick(object sender, RoutedEventArgs e)
+        private async void updateLocalSongClick(object sender, RoutedEventArgs e)
         {
             versioning_.updateLocalSong(songSelected_);
-            visualElements_.displayPopUp($"Song '{songSelected_.title}' Updated");
+            PopUp popUp = new PopUp(this, $"Song '{songSelected_.title}' Updated");
+            await popUp.ShowAsync();
         }
 
-        private void updateLocalSongsClick(object sender, RoutedEventArgs e)
+        private async void updateLocalSongsClick(object sender, RoutedEventArgs e)
         {
             versioning_.updateLocalSongs();
-            visualElements_.displayPopUp("All Songs Updated");
+            PopUp popUp = new PopUp(this, "All Songs Updated");
+            await popUp.ShowAsync();
         }
 
-        private void pushNewSongVersionClick(object sender, RoutedEventArgs e)
+        private async void pushNewSongVersionClick(object sender, RoutedEventArgs e)
         {
             versioning_.pushNewSongVersion(songSelected_, commitMessageTitle.Text, commitMessageDescription.Text);
             clearTitleAndDescritpion();
-            visualElements_.displayPopUp($"New Version for '{songSelected_.title}' Pushed");
+            PopUp popUp = new PopUp(this, $"New Version for '{songSelected_.title}' Pushed");
+            await popUp.ShowAsync();
         }
 
         private void clearTitleAndDescritpion()
@@ -62,7 +71,7 @@ namespace App1
         }
 
         private SongVersioning versioning_;
-        private VisualElements visualElements_;
+        public SongsStorage songsList_ { get; set; }
         private Song songSelected_;
     }
 }
