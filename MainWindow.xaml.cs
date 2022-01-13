@@ -31,10 +31,21 @@ namespace App1
             visualElements_ = new VisualElements(this);
         }
 
+        public void SongsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            songSelected_ = (sender as ListBox).SelectedItem as Song;
+        }
+
+        private void updateLocalSongClick(object sender, RoutedEventArgs e)
+        {
+            versioning_.updateLocalSong(songSelected_);
+            visualElements_.displayPopUp($"Song '{songSelected_.title}' Updated");
+        }
+
         private void updateLocalSongsClick(object sender, RoutedEventArgs e)
         {
             versioning_.updateLocalSongs();
-            visualElements_.displayPopUp("Songs Updated");
+            visualElements_.displayPopUp("All Songs Updated");
         }
 
         private void pushNewSongsVersionsClick(object sender, RoutedEventArgs e)
@@ -52,5 +63,6 @@ namespace App1
 
         private SongVersioning versioning_;
         private VisualElements visualElements_;
+        private Song songSelected_;
     }
 }
