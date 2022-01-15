@@ -37,6 +37,11 @@ namespace App1
             await dialog.ShowAsync();
         }
 
+        private async void deleteSongClick(object sender, RoutedEventArgs e)
+        {
+            songsList_.deleteSong(songSelected_);
+        }
+
         public void SongsListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             songSelected_ = (sender as ListBox).SelectedItem as Song;

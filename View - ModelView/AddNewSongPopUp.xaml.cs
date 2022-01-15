@@ -22,7 +22,7 @@ namespace App1
             Song song = new Song();
             song.title = songTitle.Text;
             song.localPath = songlocalPath.Text;
-            songsList_.Add(song);
+            songsList_.addNewSong(song);
         }
 
         private SongsStorage songsList_;
