@@ -13,7 +13,6 @@
             <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
                 <AppBarButton Label="Update All Songs" Click="updateAllSongsClick"/>
                 <AppBarButton Icon="Add" Label="Add" Click="addSongClick"/>
-                
             </CommandBar>
         </StackPanel>
         <ListView ItemsSource="{x:Bind songsManager_.songsList_}" SelectionMode="None" Margin="12">
@@ -24,7 +23,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding title}" FontWeight="Bold" FontSize="18" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding title}" FontWeight="Bold" FontSize="20" Margin="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <CommandBar Grid.Column="1">
                             <AppBarButton Icon="Download" Label="Update" Click="updateSongClick"/>
                             <AppBarButton Icon="Upload" Label="Upload" Click="uploadNewVersionClick"/>
