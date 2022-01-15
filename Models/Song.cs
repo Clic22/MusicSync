@@ -12,18 +12,15 @@ namespace App1
         {
             title = string.Empty;
             localPath = string.Empty;
-            referencePath = string.Empty;
         }
 
-        public Song(string newTitle, string newLocalPath, string newReferencePath)
+        public Song(string newTitle, string newLocalPath)
         {
             title = newTitle;
             localPath = newLocalPath;
-            referencePath = newReferencePath;
         }
         
         public string title { get; set; }
         public string localPath { get; set; }
-        public string referencePath { get; set; }
     }
 }

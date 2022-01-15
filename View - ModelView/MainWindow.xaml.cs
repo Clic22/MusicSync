@@ -24,59 +24,46 @@ namespace App1
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(SongsManager songsManager)
         {
             this.InitializeComponent();
-            songsList_ = new SongsStorage();
-            versioning_ = new SongVersioning(songsList_);
+            songsManager_ = songsManager;
         }
 
         private async void addSongClick(object sender, RoutedEventArgs e)
         {
-            AddNewSong dialog = new AddNewSong(this, songsList_);
+            AddNewSongPopUp dialog = new AddNewSongPopUp(this, songsManager_);
             await dialog.ShowAsync();
         }
 
-        private async void deleteSongClick(object sender, RoutedEventArgs e)
+        private void deleteSongClick(object sender, RoutedEventArgs e)
         {
-            songsList_.deleteSong(songSelected_);
+            Song song = (sender as AppBarButton).DataContext as Song;
+            songsManager_.deleteSong(song);
         }
 
-        public void SongsListBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void updateSongClick(object sender, RoutedEventArgs e)
         {
-            songSelected_ = (sender as ListBox).SelectedItem as Song;
-        }
-
-        private async void updateLocalSongClick(object sender, RoutedEventArgs e)
-        {
-            versioning_.updateLocalSong(songSelected_);
-            PopUp popUp = new PopUp(this, $"Song '{songSelected_.title}' Updated");
+            Song song = (sender as AppBarButton).DataContext as Song;
+            songsManager_.updateSong(song);
+            PopUp popUp = new PopUp(this, $"Song '{song.title}' Updated");
             await popUp.ShowAsync();
         }
 
-        private async void updateLocalSongsClick(object sender, RoutedEventArgs e)
+        private async void updateAllSongsClick(object sender, RoutedEventArgs e)
         {
-            versioning_.updateLocalSongs();
+            songsManager_.updateAllSongs();
             PopUp popUp = new PopUp(this, "All Songs Updated");
             await popUp.ShowAsync();
         }
 
-        private async void pushNewSongVersionClick(object sender, RoutedEventArgs e)
+        private async void uploadNewVersionClick(object sender, RoutedEventArgs e)
         {
-            versioning_.pushNewSongVersion(songSelected_, commitMessageTitle.Text, commitMessageDescription.Text);
-            clearTitleAndDescritpion();
-            PopUp popUp = new PopUp(this, $"New Version for '{songSelected_.title}' Pushed");
-            await popUp.ShowAsync();
+            Song song = (sender as AppBarButton).DataContext as Song;
+            UploadNewVersionPopUp dialog = new UploadNewVersionPopUp(this, songsManager_, song);
+            await dialog.ShowAsync();
         }
 
-        private void clearTitleAndDescritpion()
-        {
-            commitMessageTitle.Text = string.Empty;
-            commitMessageDescription.Text = string.Empty;
-        }
-
-        private SongVersioning versioning_;
-        public SongsStorage songsList_ { get; set; }
-        private Song songSelected_;
+        private SongsManager songsManager_;
     }
 }

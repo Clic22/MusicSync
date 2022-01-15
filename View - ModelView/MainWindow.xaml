@@ -5,37 +5,50 @@
     xmlns:local="using:App1"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
-    <Grid>
-        <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
-            <AppBarButton Icon="Add" Label="Add" Click="addSongClick"/>
-            <CommandBar.SecondaryCommands>
-                <AppBarButton Icon="Setting" Label="Settings"></AppBarButton>
-            </CommandBar.SecondaryCommands>
-        </CommandBar>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button x:Name="deleteSong" Click="deleteSongClick" Margin="10">
-                        <SymbolIcon Symbol="Delete"></SymbolIcon>
-                    </Button>
-                </StackPanel>
-                <ListBox ItemsSource="{x:Bind songsList_}" DisplayMemberPath="title" SelectionChanged="SongsListBoxSelectionChanged" Margin="10"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Button x:Name="updateLocalSong" Click="updateLocalSongClick" Margin="10">Update Song</Button>
-                    <Button x:Name="updateLocalSongs" Click="updateLocalSongsClick" Margin="10">Update All Songs</Button>
-                </StackPanel>
-            </StackPanel>
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock x:Name="commitMessageTitleLabel" Text="Commit Message Title:" Height="20" Margin="10"/>
-                <TextBox x:Name="commitMessageTitle" AutomationProperties.Name="simple text editor" Margin="10"/>
-                <TextBlock x:Name="commitMessageDescriptionLabel" Text="Commit Message Description" Height="20" Margin="10"/>
-                <TextBox x:Name="commitMessageDescription" AutomationProperties.Name="simple text editor" TextWrapping="Wrap" AcceptsReturn="True" Width="200" Height="500" Margin="10"/>
-                <Button x:Name="pushNewSongVersion" Click="pushNewSongVersionClick" Margin="10">Push New Song Version</Button>
-            </StackPanel>
+    mc:Ignorable="d"
+    >
+    <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+        <TextBlock Text="Songs" FontSize="56" Margin="12" HorizontalAlignment="Left"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
+                <AppBarButton Label="Update All Songs" Click="updateAllSongsClick"/>
+                <AppBarButton Icon="Add" Label="Add" Click="addSongClick"/>
+                
+            </CommandBar>
         </StackPanel>
-    </Grid>
-    
-
-
+        <ListView ItemsSource="{x:Bind songsManager_.songsList_}" SelectionMode="None" Margin="12">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:SongsStorage">
+                    <Grid VerticalAlignment="Center" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding title}" FontWeight="Bold" FontSize="18" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <CommandBar Grid.Column="1">
+                            <AppBarButton Icon="Download" Label="Update" Click="updateSongClick"/>
+                            <AppBarButton Icon="Upload" Label="Upload" Click="uploadNewVersionClick"/>
+                            <CommandBar.SecondaryCommands>
+                                <AppBarButton Icon="Delete" Label="Delete" Click="deleteSongClick"/>
+                            </CommandBar.SecondaryCommands>
+                        </CommandBar>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <!--<ListView Margin="10" Name="lvDataBinding" ItemsSource="{x:Bind songsManager_.songsList_}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="Name: "></TextBlock>
+                        <TextBlock Text="{Binding title}" FontWeight="Bold" />
+                        <TextBlock Text=", " />
+                        <TextBlock Text="Age: " />
+                        <TextBlock Text="{Binding localPath}" FontWeight="Bold" />
+                        <TextBlock Text=" (" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>-->
+    </StackPanel>
 </Window>

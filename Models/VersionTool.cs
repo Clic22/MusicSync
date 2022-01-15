@@ -12,6 +12,8 @@ namespace App1
         {
             USERNAME = "aym.meindre@gmail.com";
             PASSWORD = "Deps1201";
+            MERGE_USER_NAME = "Aymeric Meindre";
+            MERGE_USER_EMAIL = "aym.meindre@gmail.com";
         }
         public void addAllChanges(string directory)
         {
@@ -28,7 +30,7 @@ namespace App1
 
                 // Create the committer's signature and commit
                 var signature = new LibGit2Sharp.Signature(
-                    new Identity("MERGE_USER_NAME", "MERGE_USER_EMAIL"), DateTimeOffset.Now);
+                    new Identity(MERGE_USER_NAME, MERGE_USER_EMAIL), DateTimeOffset.Now);
                 LibGit2Sharp.Signature committer = signature;
 
                 // Commit to the repository
@@ -65,7 +67,7 @@ namespace App1
 
                 // User information to create a merge commit
                 var signature = new LibGit2Sharp.Signature(
-                    new Identity("MERGE_USER_NAME", "MERGE_USER_EMAIL"), DateTimeOffset.Now);
+                    new Identity(MERGE_USER_NAME, MERGE_USER_EMAIL), DateTimeOffset.Now);
 
                 // Pull
                 Commands.Pull(repo, signature, options);
@@ -74,5 +76,7 @@ namespace App1
 
         public string USERNAME { get; private set; }
         public string PASSWORD { get; private set; }
+        public string MERGE_USER_NAME { get; private set; }
+        public string MERGE_USER_EMAIL { get; private set; }
     }
 }

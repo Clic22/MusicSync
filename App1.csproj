@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="AddNewSong.xaml" />
+    <None Remove="View - ModelView\UploadNewVersionPopUp.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +42,9 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
+    <Page Update="View - ModelView\UploadNewVersionPopUp.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Views\AddNewSong.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -8,23 +8,20 @@ using System.IO;
 
 namespace App1
 {
-    public sealed partial class AddNewSong : ContentDialog
+    public sealed partial class AddNewSongPopUp : ContentDialog
     {
-        public AddNewSong(Window window, SongsStorage songsList)
+        public AddNewSongPopUp(Window window, SongsManager songsManager)
         {
             this.InitializeComponent();
             this.XamlRoot = window.Content.XamlRoot;
-            songsList_ = songsList;
+            songsManager_ = songsManager;
         }
 
         public void AddNewSongAddButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            Song song = new Song();
-            song.title = songTitle.Text;
-            song.localPath = songlocalPath.Text;
-            songsList_.addNewSong(song);
+            songsManager_.addSong(songTitle.Text, songlocalPath.Text);
         }
 
-        private SongsStorage songsList_;
+        private SongsManager songsManager_;
     }
 }
