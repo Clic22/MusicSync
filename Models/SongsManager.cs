@@ -29,7 +29,7 @@
         public void addSong(string songTitle, string songLocalPath)
         {
             Song song = new Song(songTitle,songLocalPath);
-            songsList_.Add(song);
+            songsList_.addNewSong(song);
         }
 
         public void deleteSong(Song song)

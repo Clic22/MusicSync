@@ -38,13 +38,13 @@ namespace App1
 
         private void deleteSongClick(object sender, RoutedEventArgs e)
         {
-            Song song = (sender as AppBarButton).DataContext as Song;
+            Song song = (sender as Button).DataContext as Song;
             songsManager_.deleteSong(song);
         }
 
         private async void updateSongClick(object sender, RoutedEventArgs e)
         {
-            Song song = (sender as AppBarButton).DataContext as Song;
+            Song song = (sender as Button).DataContext as Song;
             songsManager_.updateSong(song);
             PopUp popUp = new PopUp(this, $"Song '{song.title}' Updated");
             await popUp.ShowAsync();
@@ -59,7 +59,7 @@ namespace App1
 
         private async void uploadNewVersionClick(object sender, RoutedEventArgs e)
         {
-            Song song = (sender as AppBarButton).DataContext as Song;
+            Song song = (sender as Button).DataContext as Song;
             UploadNewVersionPopUp dialog = new UploadNewVersionPopUp(this, songsManager_, song);
             await dialog.ShowAsync();
         }
