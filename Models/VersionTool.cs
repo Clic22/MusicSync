@@ -15,6 +15,7 @@ namespace App1
             MERGE_USER_NAME = "Aymeric Meindre";
             MERGE_USER_EMAIL = "aym.meindre@gmail.com";
         }
+
         public void addAllChanges(string directory)
         {
             using (var repo = new Repository(directory))

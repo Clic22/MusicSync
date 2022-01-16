@@ -14,18 +14,16 @@ namespace App1
         {
             this.InitializeComponent();
             this.XamlRoot = window.Content.XamlRoot;
-            window_ = window;
             songsManager_ = songsManager;
             song_ = song;
         }
 
         public void uploadNewVersionClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            songsManager_.uploadNewSongVersion(song_, commitMessageTitle.Text, commitMessageDescription.Text );
+            songsManager_.uploadNewSongVersion(song_, title.Text, description.Text );
         }
 
         private SongsManager songsManager_;
         private Song song_;
-        private Window window_;
     }
 }

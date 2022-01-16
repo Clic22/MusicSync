@@ -13,9 +13,9 @@
     PrimaryButtonClick="uploadNewVersionClick">
 
     <StackPanel>
-        <TextBlock x:Name="commitMessageTitleLabel" Text="Commit Message Title:" Height="20" Margin="12"/>
-        <TextBox x:Name="commitMessageTitle" AutomationProperties.Name="simple text editor" Margin="12"/>
-        <TextBlock x:Name="commitMessageDescriptionLabel" Text="Commit Message Description" Height="20" Margin="12"/>
-        <TextBox x:Name="commitMessageDescription" AutomationProperties.Name="simple text editor" TextWrapping="Wrap" AcceptsReturn="True" Height="200" Margin="12"/>
+        <TextBlock x:Name="titleLabel" Text="Title" Height="20" Margin="12"/>
+        <TextBox x:Name="title" AutomationProperties.Name="simple text editor" Margin="12"/>
+        <TextBlock x:Name="descriptionLabel" Text="Description" Height="20" Margin="12"/>
+        <TextBox x:Name="description" AutomationProperties.Name="simple text editor" TextWrapping="Wrap" AcceptsReturn="True" Height="200" Margin="12"/>
     </StackPanel>
 </ContentDialog>
