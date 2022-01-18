@@ -4,58 +4,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:App1"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:muxc="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     mc:Ignorable="d"
     >
-    <StackPanel Orientation="Vertical" VerticalAlignment="Top">
-        <TextBlock Text="Songs" FontSize="56" Margin="12" HorizontalAlignment="Left"/>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-            <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
-                <AppBarButton Label="Update All Songs" Click="updateAllSongsClick"/>
-                <AppBarButton Icon="Add" Label="Add" Click="addSongClick"/>
-            </CommandBar>
-        </StackPanel>
-        <ListView ItemsSource="{x:Bind songsManager_.songsList_}" SelectionMode="None" Margin="12">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:SongsStorage">
-                    <Grid VerticalAlignment="Center" >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding title}" FontWeight="Bold" FontSize="20" Margin="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1">
-                            <Button FontFamily="Segoe MDL2 Assets" Content="&#xE896;" Name="Update"  Click="updateSongClick" Margin="4"></Button>
-                            <Button FontFamily="Segoe MDL2 Assets" Content="&#xE898;" Name="Upload" Click="uploadNewVersionClick" Margin="4"></Button>
-                            <Button FontFamily="Segoe MDL2 Assets" Content="&#59213;" Name="Delete" Margin="4">
-                                <Button.Flyout>
-                                    <Flyout>
-                                        <StackPanel>
-                                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="Delete?" HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="8" />
-                                            <Button Click="deleteSongClick" Content="Confirm" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8"/>
-                                        </StackPanel>
-                                    </Flyout>
-                                </Button.Flyout>
-                            </Button>
-                        </StackPanel>
-                        
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <!--<ListView Margin="10" Name="lvDataBinding" ItemsSource="{x:Bind songsManager_.songsList_}">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Text="Name: "></TextBlock>
-                        <TextBlock Text="{Binding title}" FontWeight="Bold" />
-                        <TextBlock Text=", " />
-                        <TextBlock Text="Age: " />
-                        <TextBlock Text="{Binding localPath}" FontWeight="Bold" />
-                        <TextBlock Text=" (" />
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>-->
-    </StackPanel>
+    <muxc:NavigationView x:Name="NavView"
+                         Loaded="NavView_Loaded"
+                         ItemInvoked="NavView_ItemInvoked">
+        <muxc:NavigationView.MenuItems>
+            <muxc:NavigationViewItem Tag="songs" Icon="Home" Content="Songs"/>
+        </muxc:NavigationView.MenuItems>
+        <Frame x:Name="ContentFrame"/>
+    </muxc:NavigationView>
 </Window>

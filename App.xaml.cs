@@ -42,15 +42,11 @@ namespace App1
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            songStorage_ = new SongsStorage();
-            songManager_ = new SongsManager(songStorage_);
-            window_ = new MainWindow(songManager_);
+            window_ = new MainWindow();
             window_.Title = "MusicSync";
             window_.Activate();
         }
 
         private Window window_;
-        private SongsStorage songStorage_;
-        private SongsManager songManager_;
     }
 }

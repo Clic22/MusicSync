@@ -1,0 +1,27 @@
+﻿<Page
+    x:Class="App1.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App1.View___ModelView"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    >
+
+    <Grid>
+        <StackPanel Orientation="Vertical" Margin="12">
+            <TextBlock Text="Gitlab Settings" FontWeight="Bold" Margin="12"/>
+            <TextBlock Text="Gitlab Username" Margin="12"/>
+            <TextBox x:Name="gitLabUsername" Margin="12"/>
+            <TextBlock Text="Gitlab Password" Margin="12"/>
+            <TextBox  x:Name="gitLabPassword" Margin="12"/>
+            <TextBlock  Margin="12"/>
+            <TextBlock Text="Git Settings" FontWeight="Bold" Margin="12"/>
+            <TextBlock Text="Git Username" Margin="12"/>
+            <TextBox  x:Name="gitUsername" Margin="12"/>
+            <TextBlock Text="Git Email" Margin="12"/>
+            <TextBox  x:Name="gitEmail" Margin="12"/>
+            <Button x:Name="saveSettings" Content="Save Settings" HorizontalAlignment="Right" Margin="12"/>
+        </StackPanel>
+    </Grid>
+</Page>

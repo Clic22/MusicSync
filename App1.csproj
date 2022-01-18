@@ -10,10 +10,21 @@
     <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxPackageDir>C:\Users\Aymeric Meindre\Documents\Test Publish\</AppxPackageDir>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppxBundle>Never</AppxBundle>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <PackageCertificateThumbprint>B7A7422AC33E1E4B2B04B3695056B879087E02A7</PackageCertificateThumbprint>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="AddNewSong.xaml" />
-    <None Remove="View - ModelView\UploadNewVersionPopUp.xaml" />
+    <None Remove="View - ModelView\SettingsPage.xaml" />
+    <None Remove="View - ModelView\SongsPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,8 +38,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.Primitives" Version="7.1.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.1" />
+    <PackageReference Include="Microsoft.Toolkit" Version="7.1.2" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.196" />
     <PackageReference Include="System.Management.Automation" Version="7.2.1" />
@@ -42,9 +55,16 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <Page Update="View - ModelView\UploadNewVersionPopUp.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    <Page Update="View - ModelView\SongsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="View - ModelView\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Views\AddNewSong.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

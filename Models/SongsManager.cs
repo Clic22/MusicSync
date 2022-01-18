@@ -2,10 +2,10 @@
 {
     public class SongsManager
     {
-        public SongsManager(SongsStorage songsList)
+        public SongsManager()
         {
             versionTool_ = new VersionTool();
-            songsList_ = songsList;
+            songsList_ = new SongsStorage();
         }
 
         public void updateAllSongs()
