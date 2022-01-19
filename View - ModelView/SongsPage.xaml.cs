@@ -12,6 +12,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Pickers;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -83,7 +84,7 @@ namespace App1
                 songsManager_.uploadNewSongVersion(song, title.Text, description.Text);
                 ContentDialog dialog = new ContentDialog();
                 dialog.XamlRoot = this.XamlRoot;
-                dialog.Title = "All Songs Updated";
+                dialog.Title = $"New Version of '{song.title}' Uploaded";
                 dialog.CloseButtonText = "Close";
                 dialog.DefaultButton = ContentDialogButton.Close;
                 await dialog.ShowAsync();
@@ -95,6 +96,18 @@ namespace App1
             title.Text = String.Empty;
             description.Text = String.Empty;      
 
+        }
+
+        private async void folders_Click(object sender, RoutedEventArgs e)
+        {
+            var folderPicker = new FolderPicker();
+            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, App.WindowHandle);
+            var folderPicked = await folderPicker.PickSingleFolderAsync();
+            if (folderPicked != null)
+            {
+                songTitle.Text = folderPicked.Name;
+                songlocalPath.Text = folderPicked.Path;
+            }
         }
 
         private SongsManager songsManager_;

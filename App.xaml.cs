@@ -33,6 +33,8 @@ namespace App1
         public App()
         {
             this.InitializeComponent();
+            
+
         }
 
         /// <summary>
@@ -43,10 +45,12 @@ namespace App1
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             window_ = new MainWindow();
+            WindowHandle = WinRT.Interop.WindowNative.GetWindowHandle(window_);
             window_.Title = "MusicSync";
             window_.Activate();
         }
 
-        private Window window_;
+        public Window window_;
+        public static IntPtr WindowHandle { get; private set; }
     }
 }

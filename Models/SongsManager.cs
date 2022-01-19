@@ -4,7 +4,7 @@
     {
         public SongsManager()
         {
-            versionTool_ = new VersionTool();
+            versionTool_ = new VersionTool(User.Instance);
             songsList_ = new SongsStorage();
         }
 
@@ -38,6 +38,6 @@
         }
 
         private VersionTool versionTool_;
-        public SongsStorage songsList_ { get;}
+        public SongsStorage songsList_ { get; private set; }
     }
 }

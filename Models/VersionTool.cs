@@ -8,12 +8,12 @@ namespace App1
 {
     internal class VersionTool
     {
-        public VersionTool()
+        public VersionTool(User user)
         {
-            USERNAME = "aym.meindre@gmail.com";
-            PASSWORD = "Deps1201";
-            MERGE_USER_NAME = "Aymeric Meindre";
-            MERGE_USER_EMAIL = "aym.meindre@gmail.com";
+            USERNAME = user.gitLabUsername;
+            PASSWORD = user.gitLabPassword;
+            MERGE_USER_NAME = user.gitUsername;
+            MERGE_USER_EMAIL = user.gitEmail;
         }
 
         public void addAllChanges(string directory)

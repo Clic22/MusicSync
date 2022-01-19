@@ -12,7 +12,8 @@ namespace App1
         public SongsStorage()
         {
             localSettings_ = Windows.Storage.ApplicationData.Current.LocalSettings;
-            foreach (var item in localSettings_.Values)
+            container_ = localSettings_.CreateContainer("songs", Windows.Storage.ApplicationDataCreateDisposition.Always);
+            foreach (var item in container_.Values)
             {   
                 Song song = new Song();
                 song.title = item.Key;
@@ -24,15 +25,16 @@ namespace App1
         public void addNewSong(Song newSong)
         {
             this.Add(newSong);
-            localSettings_.Values[newSong.title] = newSong.localPath;
+            container_.Values[newSong.title] = newSong.localPath;
         }
 
         public void deleteSong(Song song)
         {
             this.Remove(song);
-            localSettings_.Values.Remove(song.title);
+            container_.Values.Remove(song.title);
         }
 
         private Windows.Storage.ApplicationDataContainer localSettings_;
+        Windows.Storage.ApplicationDataContainer container_;
     }   
 }
