@@ -110,6 +110,14 @@ namespace App1
             }
         }
 
+        private void openSongClick(object sender, RoutedEventArgs e)
+        {
+            Song song = (sender as Button).DataContext as Song;
+            songsManager_.openSong(song);
+        }
+
         private SongsManager songsManager_;
+
+
     }
 }

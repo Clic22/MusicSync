@@ -1,4 +1,6 @@
-﻿namespace App1
+﻿using System.Diagnostics;
+
+namespace App1
 {
     public class SongsManager
     {
@@ -35,6 +37,16 @@
         public void deleteSong(Song song)
         {
             songsList_.deleteSong(song);
+        }
+
+        public void openSong(Song song)
+        {
+            var p = new Process();
+            p.StartInfo = new ProcessStartInfo(song.localPath + @"\" + song.title + ".song")
+            {
+                UseShellExecute = true
+            };
+            p.Start();
         }
 
         private VersionTool versionTool_;
