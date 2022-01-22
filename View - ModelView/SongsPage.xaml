@@ -61,8 +61,10 @@
                 </CommandBar>
                 <TextBlock x:Name="songTitleLabel" Text="Song Title" Height="20" Margin="12,12,12,0"/>
                 <TextBox x:Name="songTitle" AutomationProperties.Name="simple text editor" Margin="12"/>
-                <TextBlock x:Name="songlocalPathLabel" Text="Path to Your Song" Height="20" Margin="12,12,12,0"/>
-                <TextBox x:Name="songlocalPath" AutomationProperties.Name="simple text editor" Margin="12"/>
+                <TextBlock x:Name="songFileLabel" Text="Song File" Height="20" Margin="12,12,12,0"/>
+                <TextBox x:Name="songFile" AutomationProperties.Name="simple text editor" Margin="12"/>
+                <TextBlock x:Name="songLocalPathLabel" Text="Path to Your Song" Height="20" Margin="12,12,12,0"/>
+                <TextBox x:Name="songLocalPath" AutomationProperties.Name="simple text editor" Margin="12"/>
             </StackPanel>
         </ContentDialog>
 

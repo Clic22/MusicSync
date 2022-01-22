@@ -11,16 +11,19 @@ namespace App1
         public Song()
         {
             title = string.Empty;
+            file = string.Empty;
             localPath = string.Empty;
         }
 
-        public Song(string newTitle, string newLocalPath)
+        public Song(string newTitle, string newFile, string newLocalPath)
         {
             title = newTitle;
+            file = newFile;
             localPath = newLocalPath;
         }
         
         public string title { get; set; }
+        public string file { get; set; }
         public string localPath { get; set; }
     }
 }

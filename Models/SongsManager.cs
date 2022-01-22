@@ -28,9 +28,9 @@ namespace App1
             versionTool_.pushChangesToRepo(song.localPath);
         }
 
-        public void addSong(string songTitle, string songLocalPath)
+        public void addSong(string songTitle, string songFile, string songLocalPath)
         {
-            Song song = new Song(songTitle,songLocalPath);
+            Song song = new Song(songTitle, songFile, songLocalPath);
             songsList_.addNewSong(song);
         }
 
@@ -42,7 +42,7 @@ namespace App1
         public void openSong(Song song)
         {
             var p = new Process();
-            p.StartInfo = new ProcessStartInfo(song.localPath + @"\" + song.title + ".song")
+            p.StartInfo = new ProcessStartInfo(song.localPath + @"\" + song.file )
             {
                 UseShellExecute = true
             };

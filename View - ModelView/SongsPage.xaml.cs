@@ -30,12 +30,23 @@ namespace App1
             songsManager_ = new SongsManager();
         }
 
+        private async void updateAllSongsClick(object sender, RoutedEventArgs e)
+        {
+            songsManager_.updateAllSongs();
+            ContentDialog dialog = new ContentDialog();
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Title = "All Songs Updated";
+            dialog.CloseButtonText = "Close";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            await dialog.ShowAsync();
+        }
+
         private async void addSongClick(object sender, RoutedEventArgs e)
         {
             ContentDialogResult result = await addNewSongContentDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                songsManager_.addSong(songTitle.Text, songlocalPath.Text);
+                songsManager_.addSong(songTitle.Text, songFile.Text ,songLocalPath.Text);
             }
             else
             {
@@ -43,7 +54,28 @@ namespace App1
                 // Do nothing
             }
             songTitle.Text = String.Empty;  
-            songlocalPath.Text = String.Empty;
+            songFile.Text = String.Empty;   
+            songLocalPath.Text = String.Empty;
+        }
+
+        private async void folders_Click(object sender, RoutedEventArgs e)
+        {
+            var folderPicker = new FolderPicker();
+            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, App.WindowHandle);
+            var folderPicked = await folderPicker.PickSingleFolderAsync();
+            if (folderPicked != null)
+            {
+                var files = await folderPicked.GetFilesAsync();
+                foreach (var file in files)
+                {
+                    if (file.Name.Contains(".song"))
+                    {
+                        songTitle.Text = folderPicked.Name ;
+                        songFile.Text = file.Name;
+                        songLocalPath.Text = folderPicked.Path;
+                    }
+                }
+            }
         }
 
         private void deleteSongClick(object sender, RoutedEventArgs e)
@@ -64,16 +96,6 @@ namespace App1
             await dialog.ShowAsync();
         }
 
-        private async void updateAllSongsClick(object sender, RoutedEventArgs e)
-        {
-            songsManager_.updateAllSongs();
-            ContentDialog dialog = new ContentDialog();
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Title = "All Songs Updated";
-            dialog.CloseButtonText = "Close";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            await dialog.ShowAsync();
-        }
 
         private async void uploadNewVersionClick(object sender, RoutedEventArgs e)
         {
@@ -98,17 +120,7 @@ namespace App1
 
         }
 
-        private async void folders_Click(object sender, RoutedEventArgs e)
-        {
-            var folderPicker = new FolderPicker();
-            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, App.WindowHandle);
-            var folderPicked = await folderPicker.PickSingleFolderAsync();
-            if (folderPicked != null)
-            {
-                songTitle.Text = folderPicked.Name;
-                songlocalPath.Text = folderPicked.Path;
-            }
-        }
+        
 
         private void openSongClick(object sender, RoutedEventArgs e)
         {
