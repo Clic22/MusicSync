@@ -25,21 +25,75 @@ namespace App1
             pushChangesToRepo(song);
         }
 
-        internal Song.SongStatus getSongStatus(Song song)
+        public void updateSongStatus(Song song)
         {
-            Song.SongStatus status;
-            if (isLocked(song))
+            if (lockFileExist(song))
             {
-                status = Song.SongStatus.locked;
+                song.status = Song.SongStatus.locked;
             }
             else
             {
-                status = Song.SongStatus.upToDate;
+                song.status = Song.SongStatus.upToDate;
             }
-            return status;
         }
 
-        private bool isLocked(Song song)
+        internal bool isLockedByUser(Song song)
+        {
+            if (lockFileExist(song))
+            {
+                if (lockFileCreatedByUser(song))
+                    return true;
+            }
+            return false;
+            
+        }
+
+        private bool lockFileCreatedByUser(Song song)
+        {
+            string username = File.ReadAllText(song.localPath + @"\.lock");
+            if (username == MERGE_USER_NAME)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void lockSong(Song song)
+        {
+            createLockFile(song);
+            uploadLock(song);
+            song.status = Song.SongStatus.locked;
+        }
+
+        public void unlockSong(Song song)
+        {
+            removeLockFile(song);
+            uploadUnlock(song);
+            song.status = Song.SongStatus.upToDate;
+        }
+
+        private void createLockFile(Song song)
+        {
+            File.WriteAllText(song.localPath + @"\.lock", MERGE_USER_NAME);
+        }
+
+        private void removeLockFile(Song song)
+        {
+            File.Delete(song.localPath + @"\.lock");
+        }
+
+        private void uploadLock(Song song)
+        {
+            addLockCommitAndPush(song, "lock");
+        }
+
+        private void uploadUnlock(Song song)
+        {
+            addLockCommitAndPush(song, "unlock");
+        }
+
+
+        private bool lockFileExist(Song song)
         {
             if (File.Exists(song.localPath + @"\.lock"))
             {

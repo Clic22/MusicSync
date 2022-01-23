@@ -7,12 +7,16 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage.Pickers;
+using Windows.System.Threading;
+using Windows.UI.Core;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -28,6 +32,7 @@ namespace App1
         {
             this.InitializeComponent();
             songsManager_ = new SongsManager();
+            songsManager_.updateAllSongs();
         }
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)
@@ -131,9 +136,7 @@ namespace App1
             Song song = (sender as Button).DataContext as Song;
             songsManager_.revertSong(song);
         }
-        
+
         private SongsManager songsManager_;
-
-
     }
 }

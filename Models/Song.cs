@@ -38,6 +38,14 @@ namespace App1
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public bool isLocked()
+        {
+            if (status == SongStatus.locked)
+                return true;
+            else
+                return false;
+        }
+
         public string title { get; set; }
         public string file { get; set; }
         public string localPath { get; set; }

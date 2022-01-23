@@ -50,7 +50,7 @@ namespace App1
             window_.Activate();
         }
 
-        public Window window_;
+        public static Window window_ { get; set; }
         public static IntPtr WindowHandle { get; private set; }
     }
 }
