@@ -6,7 +6,7 @@ using LibGit2Sharp.Handlers;
 
 namespace App1
 {
-    internal class VersionTool
+    public class VersionTool
     {
         public VersionTool(User user)
         {
@@ -16,44 +16,32 @@ namespace App1
             MERGE_USER_EMAIL = user.gitEmail;
         }
 
-        public void addAllChanges(string directory)
+        public void addCommitAndPush(Song song, string title, string description)
         {
-            using (var repo = new Repository(directory))
+            addAllChanges(song);
+            commitChanges(song, title, description);
+            pushChangesToRepo(song);
+        }
+
+        public void addLockCommitAndPush(Song song, string title)
+        {
+            addLockChanges(song);
+            commitChanges(song, title, string.Empty);
+            pushChangesToRepo(song);
+        }
+
+        public void revertChanges(Song song)
+        {
+            using (var repo = new Repository(song.localPath))
             {
-                Commands.Stage(repo, "*");
+                Branch originMaster = repo.Branches["origin/test_version_tool"];
+                repo.Reset(ResetMode.Hard, originMaster.Tip);
             }
         }
 
-        public void commitChanges(string directory, string title, string description)
+        public void pullChangesFromRepo(Song song)
         {
-            using (var repo = new Repository(directory))
-            {
-
-                // Create the committer's signature and commit
-                var signature = new LibGit2Sharp.Signature(
-                    new Identity(MERGE_USER_NAME, MERGE_USER_EMAIL), DateTimeOffset.Now);
-                LibGit2Sharp.Signature committer = signature;
-
-                // Commit to the repository
-                Commit commit = repo.Commit($"{title}\n\n{description.ReplaceLineEndings()}", signature, committer);
-            }
-        }
-
-        public void pushChangesToRepo(string directory)
-        {
-            using (var repo = new Repository(directory))
-            {
-                Remote remote = repo.Network.Remotes["origin"];
-                var options = new PushOptions();
-                options.CredentialsProvider = (_url, _user, _cred) =>
-                    new UsernamePasswordCredentials { Username = USERNAME, Password = PASSWORD };
-                repo.Network.Push(remote, @"refs/heads/test_version_tool", options);
-            }
-        }
-
-        public void pullChangesFromRepo(string directory)
-        {
-            using (var repo = new Repository(directory))
+            using (var repo = new Repository(song.localPath))
             {
                 // Credential information to fetch
                 LibGit2Sharp.PullOptions options = new LibGit2Sharp.PullOptions();
@@ -72,6 +60,49 @@ namespace App1
 
                 // Pull
                 Commands.Pull(repo, signature, options);
+            }
+        }
+
+        private void addAllChanges(Song song)
+        {
+            using (var repo = new Repository(song.localPath))
+            {
+                Commands.Stage(repo, "*");
+            }
+        }
+
+        private void addLockChanges(Song song)
+        {
+            using (var repo = new Repository(song.localPath))
+            {
+                Commands.Stage(repo, ".lock");
+            }
+        }
+
+        private void commitChanges(Song song, string title, string description)
+        {
+            using (var repo = new Repository(song.localPath))
+            {
+
+                // Create the committer's signature and commit
+                var signature = new LibGit2Sharp.Signature(
+                    new Identity(MERGE_USER_NAME, MERGE_USER_EMAIL), DateTimeOffset.Now);
+                LibGit2Sharp.Signature committer = signature;
+
+                // Commit to the repository
+                Commit commit = repo.Commit($"{title}\n\n{description.ReplaceLineEndings()}", signature, committer);
+            }
+        }
+
+        private void pushChangesToRepo(Song song)
+        {
+            using (var repo = new Repository(song.localPath))
+            {
+                Remote remote = repo.Network.Remotes["origin"];
+                var options = new PushOptions();
+                options.CredentialsProvider = (_url, _user, _cred) =>
+                    new UsernamePasswordCredentials { Username = USERNAME, Password = PASSWORD };
+                repo.Network.Push(remote, @"refs/heads/test_version_tool", options);
             }
         }
 
