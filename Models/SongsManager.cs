@@ -20,7 +20,7 @@ namespace App1
         {
             // Create a timer with a two second interval.
             timer_ = new DispatcherTimer();
-            timer_.Interval = new TimeSpan(0, 0, 2);
+            timer_.Interval = new TimeSpan(0, 1, 0);
             timer_.Tick += OnTimedEvent;
             timer_.Start();
         }
