@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml;
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
+using System.Timers;
 
 namespace App1
 {
@@ -10,6 +13,33 @@ namespace App1
         {
             versionTool_ = new VersionTool(User.Instance);
             songsList_ = new SongsStorage();
+            SetTimer();
+        }
+
+        private void SetTimer()
+        {
+            // Create a timer with a two second interval.
+            timer_ = new DispatcherTimer();
+            timer_.Interval = new TimeSpan(0, 0, 2);
+            timer_.Tick += OnTimedEvent;
+            timer_.Start();
+        }
+
+        private void OnTimedEvent(object sender, object e)
+        {
+            updateAllSongsStatus();
+        }
+
+        public void updateAllSongsStatus()
+        {
+            updateAllSongs();
+            foreach (Song song in songsList_)
+                updateSongStatus(song);
+        }
+
+        private void updateSongStatus(Song song)
+        {
+           song.status = versionTool_.getSongStatus(song);
         }
 
         public void updateAllSongs()
@@ -21,7 +51,6 @@ namespace App1
         public void updateSong(Song song)
         {
             versionTool_.pullChangesFromRepo(song);
-            song.status = Song.SongStatus.upToDate;
         }
 
         public void uploadNewSongVersion(Song song, string changeTitle, string changeDescription)
@@ -103,6 +132,8 @@ namespace App1
         }
 
         private VersionTool versionTool_;
+        private static DispatcherTimer timer_;
+
         public SongsStorage songsList_ { get; private set; }
     }
 }

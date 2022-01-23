@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Management.Automation;
 using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
@@ -21,6 +23,29 @@ namespace App1
             addAllChanges(song);
             commitChanges(song, title, description);
             pushChangesToRepo(song);
+        }
+
+        internal Song.SongStatus getSongStatus(Song song)
+        {
+            Song.SongStatus status;
+            if (isLocked(song))
+            {
+                status = Song.SongStatus.locked;
+            }
+            else
+            {
+                status = Song.SongStatus.upToDate;
+            }
+            return status;
+        }
+
+        private bool isLocked(Song song)
+        {
+            if (File.Exists(song.localPath + @"\.lock"))
+            {
+                return true;
+            }
+            return false;
         }
 
         public void addLockCommitAndPush(Song song, string title)
@@ -103,6 +128,27 @@ namespace App1
                 options.CredentialsProvider = (_url, _user, _cred) =>
                     new UsernamePasswordCredentials { Username = USERNAME, Password = PASSWORD };
                 repo.Network.Push(remote, @"refs/heads/test_version_tool", options);
+            }
+        }
+
+        private void fetchFromRepo(Song song)
+        {
+            string logMessage = "";
+            using (var repo = new Repository(song.localPath))
+            {
+                FetchOptions options = new FetchOptions();
+                options.CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) =>
+                    new UsernamePasswordCredentials()
+                    {
+                        Username = USERNAME,
+                        Password = PASSWORD
+                    });
+
+                foreach (Remote remote in repo.Network.Remotes)
+                {
+                    IEnumerable<string> refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
+                    Commands.Fetch(repo, remote.Name, refSpecs, options, logMessage);
+                }
             }
         }
 
