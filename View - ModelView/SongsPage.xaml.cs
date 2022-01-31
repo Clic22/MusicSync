@@ -1,22 +1,8 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage.Pickers;
-using Windows.System.Threading;
-using Windows.UI.Core;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -38,12 +24,7 @@ namespace App1
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)
         {
             songsManager_.updateAllSongs();
-            ContentDialog dialog = new ContentDialog();
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Title = "All Songs Updated";
-            dialog.CloseButtonText = "Close";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            await dialog.ShowAsync();
+            await displayContentDialog("All Songs Updated");
         }
 
         private async void addSongClick(object sender, RoutedEventArgs e)
@@ -51,15 +32,10 @@ namespace App1
             ContentDialogResult result = await addNewSongContentDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                songsManager_.addSong(songTitle.Text, songFile.Text ,songLocalPath.Text);
+                songsManager_.addSong(songTitle.Text, songFile.Text, songLocalPath.Text);
             }
-            else
-            {
-                // User pressed Cancel, ESC, or the back arrow.
-                // Do nothing
-            }
-            songTitle.Text = String.Empty;  
-            songFile.Text = String.Empty;   
+            songTitle.Text = String.Empty;
+            songFile.Text = String.Empty;
             songLocalPath.Text = String.Empty;
         }
 
@@ -75,7 +51,7 @@ namespace App1
                 {
                     if (file.Name.Contains(".song"))
                     {
-                        songTitle.Text = folderPicked.Name ;
+                        songTitle.Text = folderPicked.Name;
                         songFile.Text = file.Name;
                         songLocalPath.Text = folderPicked.Path;
                     }
@@ -93,14 +69,8 @@ namespace App1
         {
             Song song = (sender as Button).DataContext as Song;
             songsManager_.updateSong(song);
-            ContentDialog dialog = new ContentDialog();
-            dialog.XamlRoot = this.XamlRoot;
-            dialog.Title = $"Song '{song.title}' Updated";
-            dialog.CloseButtonText = "Close";
-            dialog.DefaultButton = ContentDialogButton.Close;
-            await dialog.ShowAsync();
+            await displayContentDialog($"Song '{song.title}' Updated");
         }
-
 
         private async void uploadNewVersionClick(object sender, RoutedEventArgs e)
         {
@@ -109,32 +79,37 @@ namespace App1
             {
                 Song song = (sender as Button).DataContext as Song;
                 songsManager_.uploadNewSongVersion(song, title.Text, description.Text);
-                ContentDialog dialog = new ContentDialog();
-                dialog.XamlRoot = this.XamlRoot;
-                dialog.Title = $"New Version of '{song.title}' Uploaded";
-                dialog.CloseButtonText = "Close";
-                dialog.DefaultButton = ContentDialogButton.Close;
-                await dialog.ShowAsync();
-            }
-            else
-            {
-
+                await displayContentDialog($"New Version of '{song.title}' Uploaded");
             }
             title.Text = String.Empty;
-            description.Text = String.Empty;      
+            description.Text = String.Empty;
 
         }
 
-        private void openSongClick(object sender, RoutedEventArgs e)
+        private async void openSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            songsManager_.openSong(song);
+            bool opened = songsManager_.openSong(song);
+            if (!opened)
+            {
+                await displayContentDialog($"Song Locked");
+            }
         }
 
         private void revertSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
             songsManager_.revertSong(song);
+        }
+
+        private async Task displayContentDialog(string text)
+        {
+            ContentDialog dialog = new ContentDialog();
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Title = text;
+            dialog.CloseButtonText = "Close";
+            dialog.DefaultButton = ContentDialogButton.Close;
+            await dialog.ShowAsync();
         }
 
         private SongsManager songsManager_;

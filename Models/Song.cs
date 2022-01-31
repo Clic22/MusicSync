@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace App1
 {
@@ -13,15 +9,11 @@ namespace App1
         public enum SongStatus
         {
             upToDate,
-            locked,
-            modifiedRef
+            locked
         }
 
         public Song()
         {
-            title = string.Empty;
-            file = string.Empty;
-            localPath = string.Empty;
             status = SongStatus.upToDate;
         }
 
@@ -32,7 +24,7 @@ namespace App1
             localPath = newLocalPath;
             status = SongStatus.upToDate;
         }
- 
+
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -62,6 +54,7 @@ namespace App1
                 NotifyPropertyChanged();
             }
         }
+        public string lockedBy;
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Management.Automation;
-using LibGit2Sharp;
+﻿using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
+using System;
+using System.IO;
 
 namespace App1
 {
@@ -45,7 +42,7 @@ namespace App1
                     return true;
             }
             return false;
-            
+
         }
 
         private bool lockFileCreatedByUser(Song song)
@@ -113,7 +110,7 @@ namespace App1
         {
             using (var repo = new Repository(song.localPath))
             {
-                Branch originMaster = repo.Branches["origin/test_version_tool"];
+                Branch originMaster = repo.Branches["origin/master"];
                 repo.Reset(ResetMode.Hard, originMaster.Tip);
             }
         }
@@ -181,28 +178,7 @@ namespace App1
                 var options = new PushOptions();
                 options.CredentialsProvider = (_url, _user, _cred) =>
                     new UsernamePasswordCredentials { Username = USERNAME, Password = PASSWORD };
-                repo.Network.Push(remote, @"refs/heads/test_version_tool", options);
-            }
-        }
-
-        private void fetchFromRepo(Song song)
-        {
-            string logMessage = "";
-            using (var repo = new Repository(song.localPath))
-            {
-                FetchOptions options = new FetchOptions();
-                options.CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) =>
-                    new UsernamePasswordCredentials()
-                    {
-                        Username = USERNAME,
-                        Password = PASSWORD
-                    });
-
-                foreach (Remote remote in repo.Network.Remotes)
-                {
-                    IEnumerable<string> refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
-                    Commands.Fetch(repo, remote.Name, refSpecs, options, logMessage);
-                }
+                repo.Network.Push(remote, @"refs/heads/master", options);
             }
         }
 

@@ -1,11 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Timers;
+﻿using System.Diagnostics;
 
 namespace App1
 {
@@ -37,7 +30,7 @@ namespace App1
             {
                 versionTool_.unlockSong(song);
                 versionTool_.addCommitAndPush(song, changeTitle, changeDescription);
-            }    
+            }
         }
 
         public void addSong(string songTitle, string songFile, string songLocalPath)
@@ -55,7 +48,7 @@ namespace App1
             songsList_.deleteSong(song);
         }
 
-        public void openSong(Song song)
+        public bool openSong(Song song)
         {
             updateSong(song);
             if (song.status == Song.SongStatus.upToDate)
@@ -65,7 +58,9 @@ namespace App1
             if (versionTool_.isLockedByUser(song))
             {
                 openSongWithDAW(song);
-            }    
+                return true;
+            }
+            return false;
         }
 
         public void revertSong(Song song)

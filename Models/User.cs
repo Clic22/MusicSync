@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace App1
 {
@@ -84,7 +80,7 @@ namespace App1
             {
                 gitEmail_ = value;
                 localSettings_.Values.Remove("gitEmail");
-                localSettings_.Values.Add("gitEmail",value);
+                localSettings_.Values.Add("gitEmail", value);
             }
         }
 
