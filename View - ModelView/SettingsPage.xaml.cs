@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using App1;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 
@@ -15,22 +16,35 @@ namespace App1
         public SettingsPage()
         {
             this.InitializeComponent();
-            user_ = User.Instance;
-            gitLabUsername.Text = Windows.Storage.ApplicationData.Current.LocalSettings.Values["gitLabUsername"] as string;
-            gitLabPassword.Password = Windows.Storage.ApplicationData.Current.LocalSettings.Values["gitLabPassword"] as string;
-            gitUsername.Text = Windows.Storage.ApplicationData.Current.LocalSettings.Values["gitUsername"] as string;
-            gitEmail.Text = Windows.Storage.ApplicationData.Current.LocalSettings.Values["gitEmail"] as string;
+            importSavedUser();
         }
 
         public async void saveSettingsClick(object sender, RoutedEventArgs e)
         {
-            user_.saveSettings(gitLabUsername.Text, gitLabPassword.Password, gitUsername.Text, gitEmail.Text);
+            Saver saver = new Saver();
+            User user = new User(gitLabUsername.Text, gitLabPassword.Password, gitUsername.Text, gitEmail.Text);
+            saver.saveUser(user);
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = this.XamlRoot;
             dialog.Title = "Settings Saved";
             dialog.CloseButtonText = "Close";
             dialog.DefaultButton = ContentDialogButton.Close;
             await dialog.ShowAsync();
+        }
+
+        private void importSavedUser()
+        {
+            Saver saver = new Saver();
+            User user = saver.savedUser();
+            loadUserSettingsInUI(user);
+        }
+
+        private void loadUserSettingsInUI(User user)
+        {
+            gitLabUsername.Text = user.gitLabUsername;
+            gitLabPassword.Password = user.gitLabPassword;
+            gitUsername.Text = user.gitUsername;
+            gitEmail.Text = user.gitEmail;
         }
 
         private void RevealModeCheckbox_Changed(object sender, RoutedEventArgs e)
@@ -44,7 +58,5 @@ namespace App1
                 gitLabPassword.PasswordRevealMode = PasswordRevealMode.Hidden;
             }
         }
-
-        private User user_;
     }
 }

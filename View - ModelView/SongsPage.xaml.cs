@@ -18,7 +18,6 @@ namespace App1
         {
             this.InitializeComponent();
             songsManager_ = new SongsManager();
-            songsManager_.updateAllSongs();
         }
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)

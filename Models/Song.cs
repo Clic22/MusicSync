@@ -25,7 +25,7 @@ namespace App1
             status = SongStatus.upToDate;
         }
 
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -54,7 +54,6 @@ namespace App1
                 NotifyPropertyChanged();
             }
         }
-        public string lockedBy;
 
         public event PropertyChangedEventHandler PropertyChanged;
     }

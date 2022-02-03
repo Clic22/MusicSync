@@ -6,8 +6,9 @@ namespace App1
     {
         public SongsManager()
         {
-            versionTool_ = new VersionTool(User.Instance);
+            versionTool_ = new VersionTool();
             songsList_ = new SongsStorage();
+            updateAllSongs();
         }
 
         public void updateAllSongs()

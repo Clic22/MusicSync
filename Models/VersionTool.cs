@@ -7,12 +7,8 @@ namespace App1
 {
     public class VersionTool
     {
-        public VersionTool(User user)
+        public VersionTool()
         {
-            USERNAME = user.gitLabUsername;
-            PASSWORD = user.gitLabPassword;
-            MERGE_USER_NAME = user.gitUsername;
-            MERGE_USER_EMAIL = user.gitEmail;
         }
 
         public void addCommitAndPush(Song song, string title, string description)
@@ -47,8 +43,9 @@ namespace App1
 
         private bool lockFileCreatedByUser(Song song)
         {
+            User user = savedUser();
             string username = File.ReadAllText(song.localPath + @"\.lock");
-            if (username == MERGE_USER_NAME)
+            if (username == user.gitUsername)
             {
                 return true;
             }
@@ -71,7 +68,8 @@ namespace App1
 
         private void createLockFile(Song song)
         {
-            File.WriteAllText(song.localPath + @"\.lock", MERGE_USER_NAME);
+            User user = savedUser();
+            File.WriteAllText(song.localPath + @"\.lock", user.gitUsername);
         }
 
         private void removeLockFile(Song song)
@@ -117,22 +115,23 @@ namespace App1
 
         public void pullChangesFromRepo(Song song)
         {
+            User user = savedUser();
             using (var repo = new Repository(song.localPath))
             {
                 // Credential information to fetch
-                LibGit2Sharp.PullOptions options = new LibGit2Sharp.PullOptions();
+                PullOptions options = new PullOptions();
                 options.FetchOptions = new FetchOptions();
                 options.FetchOptions.CredentialsProvider = new CredentialsHandler(
                     (url, usernameFromUrl, types) =>
                         new UsernamePasswordCredentials()
                         {
-                            Username = USERNAME,
-                            Password = PASSWORD
+                            Username = user.gitLabUsername,
+                            Password = user.gitLabPassword
                         });
 
                 // User information to create a merge commit
-                var signature = new LibGit2Sharp.Signature(
-                    new Identity(MERGE_USER_NAME, MERGE_USER_EMAIL), DateTimeOffset.Now);
+                var signature = new Signature(
+                    new Identity(user.gitUsername, user.gitEmail), DateTimeOffset.Now);
 
                 // Pull
                 Commands.Pull(repo, signature, options);
@@ -157,13 +156,13 @@ namespace App1
 
         private void commitChanges(Song song, string title, string description)
         {
+            User user = savedUser();
             using (var repo = new Repository(song.localPath))
             {
-
                 // Create the committer's signature and commit
-                var signature = new LibGit2Sharp.Signature(
-                    new Identity(MERGE_USER_NAME, MERGE_USER_EMAIL), DateTimeOffset.Now);
-                LibGit2Sharp.Signature committer = signature;
+                var signature = new Signature(
+                    new Identity(user.gitUsername, user.gitEmail), DateTimeOffset.Now);
+                Signature committer = signature;
 
                 // Commit to the repository
                 Commit commit = repo.Commit($"{title}\n\n{description.ReplaceLineEndings()}", signature, committer);
@@ -172,19 +171,22 @@ namespace App1
 
         private void pushChangesToRepo(Song song)
         {
+            User user = savedUser();
             using (var repo = new Repository(song.localPath))
             {
                 Remote remote = repo.Network.Remotes["origin"];
                 var options = new PushOptions();
                 options.CredentialsProvider = (_url, _user, _cred) =>
-                    new UsernamePasswordCredentials { Username = USERNAME, Password = PASSWORD };
+                    new UsernamePasswordCredentials { Username = user.gitLabUsername, Password = user.gitLabPassword, };
                 repo.Network.Push(remote, @"refs/heads/master", options);
             }
         }
 
-        public string USERNAME { get; private set; }
-        public string PASSWORD { get; private set; }
-        public string MERGE_USER_NAME { get; private set; }
-        public string MERGE_USER_EMAIL { get; private set; }
+        private static User savedUser()
+        {
+            Saver saver = new Saver();
+            User user = saver.savedUser();
+            return user;
+        }
     }
 }

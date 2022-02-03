@@ -6,13 +6,9 @@ namespace App1
     {
         public SongsStorage()
         {
-            localSettings_ = Windows.Storage.ApplicationData.Current.LocalSettings;
-            container_ = localSettings_.CreateContainer("songs", Windows.Storage.ApplicationDataCreateDisposition.Always);
-            foreach (var item in container_.Values)
+            saver = new Saver();
+            foreach (Song song in saver.savedSongs())
             {
-
-                Windows.Storage.ApplicationDataCompositeValue composite = (Windows.Storage.ApplicationDataCompositeValue)item.Value;
-                Song song = new Song(item.Key, composite["file"] as string, composite["localPath"] as string);
                 this.Add(song);
             }
         }
@@ -20,20 +16,16 @@ namespace App1
         public void addNewSong(Song newSong)
         {
             this.Add(newSong);
-            Windows.Storage.ApplicationDataCompositeValue composite = new Windows.Storage.ApplicationDataCompositeValue();
-            composite["file"] = newSong.file;
-            composite["localPath"] = newSong.localPath;
-            container_.Values[newSong.title] = composite;
+            saver.saveSong(newSong);
 
         }
 
         public void deleteSong(Song song)
         {
             this.Remove(song);
-            container_.Values.Remove(song.title);
+            saver.unsaveSong(song);
         }
 
-        private Windows.Storage.ApplicationDataContainer localSettings_;
-        Windows.Storage.ApplicationDataContainer container_;
+        private Saver saver;
     }
 }
