@@ -1,4 +1,5 @@
-﻿using App1.Models;
+﻿using App1.Adapters;
+using App1.Models;
 using App1.Models.Ports;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -14,10 +15,10 @@ namespace App1
     /// </summary>
     public sealed partial class SettingsPage : Page
     {
-        public SettingsPage(ISaver NewSaver)
+        public SettingsPage()
         {
             this.InitializeComponent();
-            Saver = NewSaver;
+            Saver = new LocalSettingsSaver();
             importSavedUser();
         }
 
