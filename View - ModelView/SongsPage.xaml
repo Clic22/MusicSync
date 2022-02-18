@@ -5,7 +5,6 @@
     xmlns:local="using:App1.Models"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     >
 
@@ -31,10 +30,10 @@
                             <TextBlock Text="v1.0.0" FontSize="12" Padding="0,10,0,5" Foreground="SlateGray" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1"/>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="2">
                                 <TextBlock Text="{x:Bind Status}" Margin="8" />
-                                <Button FontFamily="Segoe MDL2 Assets" Content="&#xE8D6;" Name="Open" Click="openSongClick" Margin="4"></Button>
-                                <Button FontFamily="Segoe MDL2 Assets" Content="&#xE895;" Name="Update" Click="updateSongClick" Margin="4"></Button>
-                                <Button FontFamily="Segoe MDL2 Assets" Content="&#xE898;" Name="Upload" Click="uploadNewVersionClick" Margin="4"></Button>
-                                <Button FontFamily="Segoe MDL2 Assets" Content="&#xE892;" Name="Revert" Margin="4">
+                                <Button FontFamily="Segoe MDL2 Assets" Content="&#xE8D6;" Name="Open" ToolTipService.ToolTip="Open Song" Click="openSongClick" Margin="4"></Button>
+                                <Button FontFamily="Segoe MDL2 Assets" Content="&#xE895;" Name="Update" ToolTipService.ToolTip="Update Song" Click="updateSongClick" Margin="4"></Button>
+                                <Button FontFamily="Segoe MDL2 Assets" Content="&#xE898;" Name="Upload" ToolTipService.ToolTip="Upload Song" Click="uploadNewVersionClick" Margin="4"></Button>
+                                <Button FontFamily="Segoe MDL2 Assets" Content="&#xE892;" Name="Revert" ToolTipService.ToolTip="Revert Song" Margin="4">
                                     <Button.Flyout>
                                         <Flyout>
                                             <StackPanel>
@@ -44,7 +43,7 @@
                                         </Flyout>
                                     </Button.Flyout>
                                 </Button>
-                                <Button FontFamily="Segoe MDL2 Assets" Content="&#59213;" Name="Delete" Margin="4">
+                                <Button FontFamily="Segoe MDL2 Assets" Content="&#59213;" Name="Delete" ToolTipService.ToolTip="Delete Song" Margin="4">
                                     <Button.Flyout>
                                         <Flyout>
                                             <StackPanel>
