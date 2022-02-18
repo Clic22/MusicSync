@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using App1.Adapters;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace App1
 {
@@ -6,57 +8,57 @@ namespace App1
     {
         public SongsManager()
         {
-            versionTool_ = new VersionTool();
-            songsList_ = new SongsStorage();
-            updateAllSongs();
+            VersionTool = new GitSongVersioning();
+            SongList = new SongsStorage();
+            Locker = new Locker();
         }
 
-        public void updateAllSongs()
+        public async Task updateAllSongsAsync()
         {
-            foreach (Song song in songsList_)
+            foreach (Song song in SongList)
             {
-                updateSong(song);
+                await updateSongAsync(song);
             }
         }
 
-        public void updateSong(Song song)
+        public async Task updateSongAsync(Song song)
         {
-            versionTool_.pullChangesFromRepo(song);
-            versionTool_.updateSongStatus(song);
+            await VersionTool.updateSongAsync(song);
+            Locker.updateSongStatus(song);
         }
 
-        public void uploadNewSongVersion(Song song, string changeTitle, string changeDescription)
+        public async void uploadNewSongVersion(Song song, string changeTitle, string changeDescription)
         {
-            if (versionTool_.isLockedByUser(song))
+            if (Locker.isLockedByUser(song))
             {
-                versionTool_.unlockSong(song);
-                versionTool_.addCommitAndPush(song, changeTitle, changeDescription);
+                Locker.unlockSong(song);
+                await VersionTool.uploadSongAsync(song, changeTitle, changeDescription);
             }
         }
 
         public void addSong(string songTitle, string songFile, string songLocalPath)
         {
             Song song = new Song(songTitle, songFile, songLocalPath);
-            songsList_.addNewSong(song);
+            SongList.addNewSong(song);
         }
 
         public void deleteSong(Song song)
         {
-            if (versionTool_.isLockedByUser(song))
+            if (Locker.isLockedByUser(song))
             {
-                versionTool_.unlockSong(song);
+                Locker.unlockSong(song);
             }
-            songsList_.deleteSong(song);
+            SongList.deleteSong(song);
         }
 
-        public bool openSong(Song song)
+        public async Task<bool> openSong(Song song)
         {
-            updateSong(song);
+            await updateSongAsync(song);
             if (song.status == Song.SongStatus.upToDate)
             {
-                versionTool_.lockSong(song);
+                Locker.lockSong(song);
             }
-            if (versionTool_.isLockedByUser(song))
+            if (Locker.isLockedByUser(song))
             {
                 openSongWithDAW(song);
                 return true;
@@ -64,13 +66,13 @@ namespace App1
             return false;
         }
 
-        public void revertSong(Song song)
+        public async void revertSong(Song song)
         {
-            updateSong(song);
-            if (versionTool_.isLockedByUser(song))
+            await updateSongAsync(song);
+            if (Locker.isLockedByUser(song))
             {
-                versionTool_.revertChanges(song);
-                versionTool_.unlockSong(song);
+                await VersionTool.revertSongAsync(song);
+                Locker.unlockSong(song);
             }
         }
 
@@ -84,7 +86,8 @@ namespace App1
             p.Start();
         }
 
-        private VersionTool versionTool_;
-        public SongsStorage songsList_ { get; private set; }
+        private IVersionTool VersionTool;
+        public SongsStorage SongList { get; private set; }
+        private Locker Locker;
     }
 }

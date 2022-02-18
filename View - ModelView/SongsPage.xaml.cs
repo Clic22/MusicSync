@@ -22,7 +22,7 @@ namespace App1
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)
         {
-            songsManager_.updateAllSongs();
+            await songsManager_.updateAllSongsAsync();
             await displayContentDialog("All Songs Updated");
         }
 
@@ -67,7 +67,7 @@ namespace App1
         private async void updateSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            songsManager_.updateSong(song);
+            await songsManager_.updateSongAsync(song);
             await displayContentDialog($"Song '{song.title}' Updated");
         }
 
@@ -88,7 +88,7 @@ namespace App1
         private async void openSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            bool opened = songsManager_.openSong(song);
+            bool opened = await songsManager_.openSong(song);
             if (!opened)
             {
                 await displayContentDialog($"Song Locked");
