@@ -1,12 +1,13 @@
-﻿using System.Collections.ObjectModel;
+﻿using App1.Models.Ports;
+using System.Collections.ObjectModel;
 
-namespace App1
+namespace App1.Models
 {
     public class SongsStorage : ObservableCollection<Song>
     {
-        public SongsStorage()
+        public SongsStorage(ISaver NewSaver)
         {
-            saver = new Saver();
+            saver = NewSaver;
             foreach (Song song in saver.savedSongs())
             {
                 this.Add(song);
@@ -26,6 +27,6 @@ namespace App1
             saver.unsaveSong(song);
         }
 
-        private Saver saver;
+        private ISaver saver;
     }
 }

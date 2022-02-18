@@ -1,31 +1,27 @@
-﻿using App1.Adapters;
-using System;
-using System.Collections.Generic;
+﻿using App1.Models.Ports;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace App1
+namespace App1.Models
 {
     public class Locker
     {
-        public Locker() 
+        public Locker(IVersionTool NewVersionTool, User NewUser)
         {
-            versionTool = new GitSongVersioning();
+            VersionTool = NewVersionTool;
+            User = NewUser;
         }
 
         public async void lockSong(Song song)
         {
             createLockFile(song);
-            await versionTool.uploadSongAsync(song, "lock", string.Empty);
+            await VersionTool.uploadSongAsync(song, "lock", string.Empty);
             updateSongStatus(song);
         }
 
         public async void unlockSong(Song song)
         {
             removeLockFile(song);
-            await versionTool.uploadSongAsync(song, "unlock", string.Empty);
+            await VersionTool.uploadSongAsync(song, "unlock", string.Empty);
             updateSongStatus(song);
         }
 
@@ -54,10 +50,8 @@ namespace App1
 
         private bool lockFileCreatedByUser(Song song)
         {
-            Saver saver = new Saver();
-            User user = saver.savedUser();
             string username = File.ReadAllText(song.localPath + @"\.lock");
-            if (username == user.gitUsername)
+            if (username == User.gitUsername)
             {
                 return true;
             }
@@ -66,9 +60,7 @@ namespace App1
 
         private void createLockFile(Song song)
         {
-            Saver saver = new Saver();
-            User user = saver.savedUser();
-            File.WriteAllText(song.localPath + @"\.lock", user.gitUsername);
+            File.WriteAllText(song.localPath + @"\.lock", User.gitUsername);
         }
 
         private void removeLockFile(Song song)
@@ -85,7 +77,8 @@ namespace App1
             return false;
         }
 
-        private IVersionTool versionTool;
+        private IVersionTool VersionTool;
+        private User User;
 
     }
 }

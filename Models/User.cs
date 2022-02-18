@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace App1
+﻿namespace App1.Models
 {
     public sealed class User
     {
-        public User(){ }
+        public User() { }
 
         public User(string gitLabUsername, string gitLabPassword, string gitUsername, string gitEmail)
         {

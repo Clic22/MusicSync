@@ -1,18 +1,16 @@
-﻿using System;
+﻿using App1.Models;
+using App1.Models.Ports;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace App1
+namespace App1.Adapters
 {
-    public sealed class Saver
+    public class LocalSettingsSaver : ISaver
     {
-        public Saver()
+        public LocalSettingsSaver()
         {
-           localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-           songContainer = localSettings.CreateContainer("songs", Windows.Storage.ApplicationDataCreateDisposition.Always);
-           userContainer = localSettings.CreateContainer("user", Windows.Storage.ApplicationDataCreateDisposition.Always);
+            localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            songContainer = localSettings.CreateContainer("songs", Windows.Storage.ApplicationDataCreateDisposition.Always);
+            userContainer = localSettings.CreateContainer("user", Windows.Storage.ApplicationDataCreateDisposition.Always);
         }
 
         public void saveUser(User user)
@@ -66,5 +64,5 @@ namespace App1
         private Windows.Storage.ApplicationDataContainer songContainer;
         private Windows.Storage.ApplicationDataContainer userContainer;
 
-    } 
+    }
 }

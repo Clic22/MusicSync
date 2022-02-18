@@ -1,16 +1,17 @@
-﻿using App1.Adapters;
+﻿using App1.Models.Ports;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace App1
+namespace App1.Models
 {
     public class SongsManager
     {
-        public SongsManager()
+        public SongsManager(IVersionTool NewVersionTool, ISaver NewSaver)
         {
-            VersionTool = new GitSongVersioning();
-            SongList = new SongsStorage();
-            Locker = new Locker();
+            VersionTool = NewVersionTool;
+            Saver = NewSaver;
+            SongList = new SongsStorage(Saver);
+            Locker = new Locker(VersionTool, Saver.savedUser());
         }
 
         public async Task updateAllSongsAsync()
@@ -86,8 +87,9 @@ namespace App1
             p.Start();
         }
 
-        private IVersionTool VersionTool;
         public SongsStorage SongList { get; private set; }
+        private IVersionTool VersionTool;
         private Locker Locker;
+        private ISaver Saver;
     }
 }

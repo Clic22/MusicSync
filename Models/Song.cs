@@ -1,8 +1,7 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace App1
+namespace App1.Models
 {
     public class Song : INotifyPropertyChanged
     {

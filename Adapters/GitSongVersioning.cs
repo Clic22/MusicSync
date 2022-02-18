@@ -1,9 +1,8 @@
-﻿using LibGit2Sharp;
+﻿using App1.Models;
+using App1.Models.Ports;
+using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace App1.Adapters
@@ -26,7 +25,7 @@ namespace App1.Adapters
         {
             await Task.Run(() =>
             {
-                Saver saver = new Saver();
+                LocalSettingsSaver saver = new LocalSettingsSaver();
                 User user = saver.savedUser();
                 using (var repo = new Repository(song.localPath))
                 {
@@ -73,7 +72,7 @@ namespace App1.Adapters
 
         private void commitChanges(Song song, string title, string description)
         {
-            Saver saver = new Saver();
+            LocalSettingsSaver saver = new LocalSettingsSaver();
             User user = saver.savedUser();
             using (var repo = new Repository(song.localPath))
             {
@@ -89,7 +88,7 @@ namespace App1.Adapters
 
         private void pushChangesToRepo(Song song)
         {
-            Saver saver = new Saver();
+            LocalSettingsSaver saver = new LocalSettingsSaver();
             User user = saver.savedUser();
             using (var repo = new Repository(song.localPath))
             {

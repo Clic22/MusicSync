@@ -1,4 +1,7 @@
-﻿using Microsoft.UI.Xaml;
+﻿using App1.Adapters;
+using App1.Models;
+using App1.Models.Ports;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Threading.Tasks;
@@ -17,7 +20,9 @@ namespace App1
         public SongsPage()
         {
             this.InitializeComponent();
-            songsManager_ = new SongsManager();
+            Saver = new LocalSettingsSaver();
+            VersionTool = new GitSongVersioning();
+            songsManager_ = new SongsManager(VersionTool, Saver);
         }
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)
@@ -112,5 +117,7 @@ namespace App1
         }
 
         private SongsManager songsManager_;
+        private static ISaver Saver;
+        private static IVersionTool VersionTool;
     }
 }

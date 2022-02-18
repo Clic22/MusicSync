@@ -1,4 +1,5 @@
-﻿using App1;
+﻿using App1.Models;
+using App1.Models.Ports;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
@@ -13,15 +14,15 @@ namespace App1
     /// </summary>
     public sealed partial class SettingsPage : Page
     {
-        public SettingsPage()
+        public SettingsPage(ISaver NewSaver)
         {
             this.InitializeComponent();
+            saver = NewSaver;
             importSavedUser();
         }
 
         public async void saveSettingsClick(object sender, RoutedEventArgs e)
         {
-            Saver saver = new Saver();
             User user = new User(gitLabUsername.Text, gitLabPassword.Password, gitUsername.Text, gitEmail.Text);
             saver.saveUser(user);
             ContentDialog dialog = new ContentDialog();
@@ -34,7 +35,6 @@ namespace App1
 
         private void importSavedUser()
         {
-            Saver saver = new Saver();
             User user = saver.savedUser();
             loadUserSettingsInUI(user);
         }
@@ -58,5 +58,7 @@ namespace App1
                 gitLabPassword.PasswordRevealMode = PasswordRevealMode.Hidden;
             }
         }
+
+        ISaver saver;
     }
 }
