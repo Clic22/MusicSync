@@ -22,12 +22,12 @@ namespace App1
             this.InitializeComponent();
             Saver = new LocalSettingsSaver();
             VersionTool = new GitSongVersioning();
-            songsManager_ = new SongsManager(VersionTool, Saver);
+            SongsManager = new SongsManager(VersionTool, Saver);
         }
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)
         {
-            await songsManager_.updateAllSongsAsync();
+            await SongsManager.updateAllSongsAsync();
             await displayContentDialog("All Songs Updated");
         }
 
@@ -36,7 +36,7 @@ namespace App1
             ContentDialogResult result = await addNewSongContentDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                songsManager_.addSong(songTitle.Text, songFile.Text, songLocalPath.Text);
+                SongsManager.addSong(songTitle.Text, songFile.Text, songLocalPath.Text);
             }
             songTitle.Text = String.Empty;
             songFile.Text = String.Empty;
@@ -66,14 +66,14 @@ namespace App1
         private void deleteSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            songsManager_.deleteSong(song);
+            SongsManager.deleteSong(song);
         }
 
         private async void updateSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            await songsManager_.updateSongAsync(song);
-            await displayContentDialog($"Song '{song.title}' Updated");
+            await SongsManager.updateSongAsync(song);
+            await displayContentDialog($"Song '{song.Title}' Updated");
         }
 
         private async void uploadNewVersionClick(object sender, RoutedEventArgs e)
@@ -82,8 +82,8 @@ namespace App1
             if (result == ContentDialogResult.Primary)
             {
                 Song song = (sender as Button).DataContext as Song;
-                songsManager_.uploadNewSongVersion(song, title.Text, description.Text);
-                await displayContentDialog($"New Version of '{song.title}' Uploaded");
+                SongsManager.uploadNewSongVersion(song, title.Text, description.Text);
+                await displayContentDialog($"New Version of '{song.Title}' Uploaded");
             }
             title.Text = String.Empty;
             description.Text = String.Empty;
@@ -93,7 +93,7 @@ namespace App1
         private async void openSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            bool opened = await songsManager_.openSong(song);
+            bool opened = await SongsManager.openSong(song);
             if (!opened)
             {
                 await displayContentDialog($"Song Locked");
@@ -103,7 +103,7 @@ namespace App1
         private void revertSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            songsManager_.revertSong(song);
+            SongsManager.revertSong(song);
         }
 
         private async Task displayContentDialog(string text)
@@ -116,7 +116,7 @@ namespace App1
             await dialog.ShowAsync();
         }
 
-        private SongsManager songsManager_;
+        private SongsManager SongsManager;
         private static ISaver Saver;
         private static IVersionTool VersionTool;
     }

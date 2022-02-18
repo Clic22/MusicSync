@@ -6,16 +6,16 @@
 
         public User(string gitLabUsername, string gitLabPassword, string gitUsername, string gitEmail)
         {
-            this.gitLabUsername = gitLabUsername;
-            this.gitLabPassword = gitLabPassword;
-            this.gitUsername = gitUsername;
-            this.gitEmail = gitEmail;
+            this.GitLabUsername = gitLabUsername;
+            this.GitLabPassword = gitLabPassword;
+            this.GitUsername = gitUsername;
+            this.GitEmail = gitEmail;
         }
 
-        public string gitLabUsername { get; set; }
-        public string gitLabPassword { get; set; }
-        public string gitUsername { get; set; }
-        public string gitEmail { get; set; }
+        public string GitLabUsername { get; set; }
+        public string GitLabPassword { get; set; }
+        public string GitUsername { get; set; }
+        public string GitEmail { get; set; }
     }
 }
 

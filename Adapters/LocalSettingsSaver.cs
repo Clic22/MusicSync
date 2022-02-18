@@ -8,50 +8,50 @@ namespace App1.Adapters
     {
         public LocalSettingsSaver()
         {
-            localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-            songContainer = localSettings.CreateContainer("songs", Windows.Storage.ApplicationDataCreateDisposition.Always);
-            userContainer = localSettings.CreateContainer("user", Windows.Storage.ApplicationDataCreateDisposition.Always);
+            LocalSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            SongContainer = LocalSettings.CreateContainer("songs", Windows.Storage.ApplicationDataCreateDisposition.Always);
+            UserContainer = LocalSettings.CreateContainer("user", Windows.Storage.ApplicationDataCreateDisposition.Always);
         }
 
         public void saveUser(User user)
         {
-            userContainer.Values.Remove("gitLabUsername");
-            userContainer.Values.Add("gitLabUsername", user.gitLabUsername);
-            userContainer.Values.Remove("gitLabPassword");
-            userContainer.Values.Add("gitLabPassword", user.gitLabPassword);
-            userContainer.Values.Remove("gitUsername");
-            userContainer.Values.Add("gitUsername", user.gitUsername);
-            userContainer.Values.Remove("gitEmail");
-            userContainer.Values.Add("gitEmail", user.gitEmail);
+            UserContainer.Values.Remove("gitLabUsername");
+            UserContainer.Values.Add("gitLabUsername", user.GitLabUsername);
+            UserContainer.Values.Remove("gitLabPassword");
+            UserContainer.Values.Add("gitLabPassword", user.GitLabPassword);
+            UserContainer.Values.Remove("gitUsername");
+            UserContainer.Values.Add("gitUsername", user.GitUsername);
+            UserContainer.Values.Remove("gitEmail");
+            UserContainer.Values.Add("gitEmail", user.GitEmail);
         }
 
         public User savedUser()
         {
             User user = new User();
-            user.gitLabUsername = userContainer.Values["gitLabUsername"] as string;
-            user.gitLabPassword = userContainer.Values["gitLabPassword"] as string;
-            user.gitUsername = userContainer.Values["gitUsername"] as string;
-            user.gitEmail = userContainer.Values["gitEmail"] as string;
+            user.GitLabUsername = UserContainer.Values["gitLabUsername"] as string;
+            user.GitLabPassword = UserContainer.Values["gitLabPassword"] as string;
+            user.GitUsername = UserContainer.Values["gitUsername"] as string;
+            user.GitEmail = UserContainer.Values["gitEmail"] as string;
             return user;
         }
 
         public void saveSong(Song song)
         {
             Windows.Storage.ApplicationDataCompositeValue composite = new Windows.Storage.ApplicationDataCompositeValue();
-            composite["file"] = song.file;
-            composite["localPath"] = song.localPath;
-            songContainer.Values[song.title] = composite;
+            composite["file"] = song.File;
+            composite["localPath"] = song.LocalPath;
+            SongContainer.Values[song.Title] = composite;
         }
 
         public void unsaveSong(Song song)
         {
-            songContainer.Values.Remove(song.title);
+            SongContainer.Values.Remove(song.Title);
         }
 
         public List<Song> savedSongs()
         {
             List<Song> savedSongs = new List<Song>();
-            foreach (var item in songContainer.Values)
+            foreach (var item in SongContainer.Values)
             {
                 Windows.Storage.ApplicationDataCompositeValue composite = (Windows.Storage.ApplicationDataCompositeValue)item.Value;
                 Song song = new Song(item.Key, composite["file"] as string, composite["localPath"] as string);
@@ -60,9 +60,9 @@ namespace App1.Adapters
             return savedSongs;
         }
 
-        private Windows.Storage.ApplicationDataContainer localSettings;
-        private Windows.Storage.ApplicationDataContainer songContainer;
-        private Windows.Storage.ApplicationDataContainer userContainer;
+        private Windows.Storage.ApplicationDataContainer LocalSettings;
+        private Windows.Storage.ApplicationDataContainer SongContainer;
+        private Windows.Storage.ApplicationDataContainer UserContainer;
 
     }
 }

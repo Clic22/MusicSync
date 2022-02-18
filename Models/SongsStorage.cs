@@ -7,8 +7,8 @@ namespace App1.Models
     {
         public SongsStorage(ISaver NewSaver)
         {
-            saver = NewSaver;
-            foreach (Song song in saver.savedSongs())
+            Saver = NewSaver;
+            foreach (Song song in Saver.savedSongs())
             {
                 this.Add(song);
             }
@@ -17,16 +17,16 @@ namespace App1.Models
         public void addNewSong(Song newSong)
         {
             this.Add(newSong);
-            saver.saveSong(newSong);
+            Saver.saveSong(newSong);
 
         }
 
         public void deleteSong(Song song)
         {
             this.Remove(song);
-            saver.unsaveSong(song);
+            Saver.unsaveSong(song);
         }
 
-        private ISaver saver;
+        private ISaver Saver;
     }
 }

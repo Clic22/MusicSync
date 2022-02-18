@@ -17,14 +17,14 @@ namespace App1
         public SettingsPage(ISaver NewSaver)
         {
             this.InitializeComponent();
-            saver = NewSaver;
+            Saver = NewSaver;
             importSavedUser();
         }
 
         public async void saveSettingsClick(object sender, RoutedEventArgs e)
         {
             User user = new User(gitLabUsername.Text, gitLabPassword.Password, gitUsername.Text, gitEmail.Text);
-            saver.saveUser(user);
+            Saver.saveUser(user);
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = this.XamlRoot;
             dialog.Title = "Settings Saved";
@@ -35,16 +35,16 @@ namespace App1
 
         private void importSavedUser()
         {
-            User user = saver.savedUser();
+            User user = Saver.savedUser();
             loadUserSettingsInUI(user);
         }
 
         private void loadUserSettingsInUI(User user)
         {
-            gitLabUsername.Text = user.gitLabUsername;
-            gitLabPassword.Password = user.gitLabPassword;
-            gitUsername.Text = user.gitUsername;
-            gitEmail.Text = user.gitEmail;
+            gitLabUsername.Text = user.GitLabUsername;
+            gitLabPassword.Password = user.GitLabPassword;
+            gitUsername.Text = user.GitUsername;
+            gitEmail.Text = user.GitEmail;
         }
 
         private void RevealModeCheckbox_Changed(object sender, RoutedEventArgs e)
@@ -59,6 +59,6 @@ namespace App1
             }
         }
 
-        ISaver saver;
+        ISaver Saver;
     }
 }

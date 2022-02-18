@@ -40,18 +40,18 @@ namespace App1.Models
         {
             if (lockFileExist(song))
             {
-                song.status = Song.SongStatus.locked;
+                song.Status = Song.SongStatus.locked;
             }
             else
             {
-                song.status = Song.SongStatus.upToDate;
+                song.Status = Song.SongStatus.upToDate;
             }
         }
 
         private bool lockFileCreatedByUser(Song song)
         {
-            string username = File.ReadAllText(song.localPath + @"\.lock");
-            if (username == User.gitUsername)
+            string username = File.ReadAllText(song.LocalPath + @"\.lock");
+            if (username == User.GitUsername)
             {
                 return true;
             }
@@ -60,17 +60,17 @@ namespace App1.Models
 
         private void createLockFile(Song song)
         {
-            File.WriteAllText(song.localPath + @"\.lock", User.gitUsername);
+            File.WriteAllText(song.LocalPath + @"\.lock", User.GitUsername);
         }
 
         private void removeLockFile(Song song)
         {
-            File.Delete(song.localPath + @"\.lock");
+            File.Delete(song.LocalPath + @"\.lock");
         }
 
         private bool lockFileExist(Song song)
         {
-            if (File.Exists(song.localPath + @"\.lock"))
+            if (File.Exists(song.LocalPath + @"\.lock"))
             {
                 return true;
             }

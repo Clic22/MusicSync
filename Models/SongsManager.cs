@@ -55,7 +55,7 @@ namespace App1.Models
         public async Task<bool> openSong(Song song)
         {
             await updateSongAsync(song);
-            if (song.status == Song.SongStatus.upToDate)
+            if (song.Status == Song.SongStatus.upToDate)
             {
                 Locker.lockSong(song);
             }
@@ -80,7 +80,7 @@ namespace App1.Models
         private static void openSongWithDAW(Song song)
         {
             var p = new Process();
-            p.StartInfo = new ProcessStartInfo(song.localPath + @"\" + song.file)
+            p.StartInfo = new ProcessStartInfo(song.LocalPath + @"\" + song.File)
             {
                 UseShellExecute = true
             };

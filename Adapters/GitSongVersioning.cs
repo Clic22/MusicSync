@@ -27,7 +27,7 @@ namespace App1.Adapters
             {
                 LocalSettingsSaver saver = new LocalSettingsSaver();
                 User user = saver.savedUser();
-                using (var repo = new Repository(song.localPath))
+                using (var repo = new Repository(song.LocalPath))
                 {
                     // Credential information to fetch
                     PullOptions options = new PullOptions();
@@ -36,13 +36,13 @@ namespace App1.Adapters
                         (url, usernameFromUrl, types) =>
                             new UsernamePasswordCredentials()
                             {
-                                Username = user.gitLabUsername,
-                                Password = user.gitLabPassword
+                                Username = user.GitLabUsername,
+                                Password = user.GitLabPassword
                             });
 
                     // User information to create a merge commit
                     var signature = new Signature(
-                        new Identity(user.gitUsername, user.gitEmail), DateTimeOffset.Now);
+                        new Identity(user.GitUsername, user.GitEmail), DateTimeOffset.Now);
 
                     // Pull
                     Commands.Pull(repo, signature, options);
@@ -54,7 +54,7 @@ namespace App1.Adapters
         {
             await Task.Run(() =>
             {
-                using (var repo = new Repository(song.localPath))
+                using (var repo = new Repository(song.LocalPath))
                 {
                     Branch originMaster = repo.Branches["origin/master"];
                     repo.Reset(ResetMode.Hard, originMaster.Tip);
@@ -64,7 +64,7 @@ namespace App1.Adapters
 
         private void addAllChanges(Song song)
         {
-            using (var repo = new Repository(song.localPath))
+            using (var repo = new Repository(song.LocalPath))
             {
                 Commands.Stage(repo, "*");
             }
@@ -74,11 +74,11 @@ namespace App1.Adapters
         {
             LocalSettingsSaver saver = new LocalSettingsSaver();
             User user = saver.savedUser();
-            using (var repo = new Repository(song.localPath))
+            using (var repo = new Repository(song.LocalPath))
             {
                 // Create the committer's signature and commit
                 var signature = new Signature(
-                    new Identity(user.gitUsername, user.gitEmail), DateTimeOffset.Now);
+                    new Identity(user.GitUsername, user.GitEmail), DateTimeOffset.Now);
                 Signature committer = signature;
 
                 // Commit to the repository
@@ -90,12 +90,12 @@ namespace App1.Adapters
         {
             LocalSettingsSaver saver = new LocalSettingsSaver();
             User user = saver.savedUser();
-            using (var repo = new Repository(song.localPath))
+            using (var repo = new Repository(song.LocalPath))
             {
                 Remote remote = repo.Network.Remotes["origin"];
                 var options = new PushOptions();
                 options.CredentialsProvider = (_url, _user, _cred) =>
-                    new UsernamePasswordCredentials { Username = user.gitLabUsername, Password = user.gitLabPassword, };
+                    new UsernamePasswordCredentials { Username = user.GitLabUsername, Password = user.GitLabPassword, };
                 repo.Network.Push(remote, @"refs/heads/master", options);
             }
         }
