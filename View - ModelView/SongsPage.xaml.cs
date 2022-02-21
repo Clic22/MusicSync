@@ -82,7 +82,7 @@ namespace App1
             if (result == ContentDialogResult.Primary)
             {
                 Song song = (sender as Button).DataContext as Song;
-                SongsManager.uploadNewSongVersion(song, title.Text, description.Text);
+                await SongsManager.uploadNewSongVersion(song, title.Text, description.Text);
                 await displayContentDialog($"New Version of '{song.Title}' Uploaded");
             }
             title.Text = String.Empty;

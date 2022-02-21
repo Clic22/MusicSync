@@ -11,7 +11,7 @@ namespace App1.Models
             VersionTool = NewVersionTool;
             Saver = NewSaver;
             SongList = new SongsStorage(Saver);
-            Locker = new Locker(VersionTool, Saver.savedUser());
+            Locker = new Locker(VersionTool);
         }
 
         public async Task updateAllSongsAsync()
@@ -28,11 +28,10 @@ namespace App1.Models
             Locker.updateSongStatus(song);
         }
 
-        public async void uploadNewSongVersion(Song song, string changeTitle, string changeDescription)
+        public async Task uploadNewSongVersion(Song song, string changeTitle, string changeDescription)
         {
-            if (Locker.isLockedByUser(song))
+            if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
-                Locker.unlockSong(song);
                 await VersionTool.uploadSongAsync(song, changeTitle, changeDescription);
             }
         }
@@ -43,13 +42,12 @@ namespace App1.Models
             SongList.addNewSong(song);
         }
 
-        public void deleteSong(Song song)
+        public async void deleteSong(Song song)
         {
-            if (Locker.isLockedByUser(song))
+            if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
-                Locker.unlockSong(song);
+                SongList.deleteSong(song);
             }
-            SongList.deleteSong(song);
         }
 
         public async Task<bool> openSong(Song song)
@@ -57,9 +55,9 @@ namespace App1.Models
             await updateSongAsync(song);
             if (song.Status == Song.SongStatus.upToDate)
             {
-                Locker.lockSong(song);
+                await Locker.lockSongAsync(song, Saver.savedUser());
             }
-            if (Locker.isLockedByUser(song))
+            if (Locker.isLockedByUser(song, Saver.savedUser()))
             {
                 openSongWithDAW(song);
                 return true;
@@ -70,10 +68,9 @@ namespace App1.Models
         public async void revertSong(Song song)
         {
             await updateSongAsync(song);
-            if (Locker.isLockedByUser(song))
+            if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
                 await VersionTool.revertSongAsync(song);
-                Locker.unlockSong(song);
             }
         }
 

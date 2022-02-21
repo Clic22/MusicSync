@@ -47,5 +47,6 @@ namespace App1.Models
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
     }
 }

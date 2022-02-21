@@ -1,35 +1,45 @@
 ﻿using App1.Models.Ports;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace App1.Models
 {
     public class Locker
     {
-        public Locker(IVersionTool NewVersionTool, User NewUser)
+        public Locker(IVersionTool NewVersionTool)
         {
             VersionTool = NewVersionTool;
-            User = NewUser;
         }
 
-        public async void lockSong(Song song)
+        public async Task<bool> lockSongAsync(Song song, User user)
         {
-            createLockFile(song);
-            await VersionTool.uploadSongAsync(song, "lock", string.Empty);
-            updateSongStatus(song);
+            if (!lockFileExist(song) || isLockedByUser(song,user))
+            {
+                createLockFile(song, user);
+                await VersionTool.uploadSongAsync(song, "lock", string.Empty);
+                updateSongStatus(song);
+                return true;
+            }
+            return false;
         }
 
-        public async void unlockSong(Song song)
+        public async Task<bool> unlockSongAsync(Song song, User user)
         {
-            removeLockFile(song);
-            await VersionTool.uploadSongAsync(song, "unlock", string.Empty);
-            updateSongStatus(song);
+            if(isLockedByUser(song,user))
+            {
+                removeLockFile(song);
+                await VersionTool.uploadSongAsync(song, "unlock", string.Empty);
+                updateSongStatus(song);
+                return true;
+            }
+            return false;
         }
 
-        public bool isLockedByUser(Song song)
+        public bool isLockedByUser(Song song, User user)
         {
             if (lockFileExist(song))
             {
-                if (lockFileCreatedByUser(song))
+                if (lockFileCreatedByUser(song, user))
                     return true;
             }
             return false;
@@ -48,19 +58,19 @@ namespace App1.Models
             }
         }
 
-        private bool lockFileCreatedByUser(Song song)
+        private bool lockFileCreatedByUser(Song song, User user)
         {
             string username = File.ReadAllText(song.LocalPath + @"\.lock");
-            if (username == User.GitUsername)
+            if (username == user.GitUsername)
             {
                 return true;
             }
             return false;
         }
 
-        private void createLockFile(Song song)
+        private void createLockFile(Song song, User user)
         {
-            File.WriteAllText(song.LocalPath + @"\.lock", User.GitUsername);
+            File.WriteAllText(song.LocalPath + @"\.lock", user.GitUsername);
         }
 
         private void removeLockFile(Song song)
@@ -78,7 +88,5 @@ namespace App1.Models
         }
 
         private IVersionTool VersionTool;
-        private User User;
-
     }
 }
