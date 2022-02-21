@@ -12,7 +12,7 @@ namespace App1Tests.Models
         protected TestsBase()
         {
             string title = "title";
-            string localPath = @"C:\Users\Aymeric Meindre\source\repos\App1Tests\Tmp";
+            string localPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\App1Tests\Tmp";
             string file = "file";
             song = new Song(title, file, localPath);
             string GitUsername1 = "Hear@fdjskjè_";
