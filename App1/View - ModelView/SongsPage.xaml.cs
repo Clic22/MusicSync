@@ -3,6 +3,7 @@ using App1.Models;
 using App1.Models.Ports;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Threading.Tasks;
 using Windows.Storage.Pickers;
@@ -12,9 +13,6 @@ using Windows.Storage.Pickers;
 
 namespace App1
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class SongsPage : Page
     {
         public SongsPage()
@@ -23,6 +21,11 @@ namespace App1
             Saver = new LocalSettingsSaver();
             VersionTool = new GitSongVersioning();
             SongsManager = new SongsManager(VersionTool, Saver);
+        }
+
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            await SongsManager.updateAllSongsAsync();
         }
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)
