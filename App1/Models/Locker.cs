@@ -11,16 +11,20 @@ namespace App1.Models
             VersionTool = NewVersionTool;
         }
 
-        public async Task<bool> lockSongAsync(Song song, User user)
+        public async Task<(bool,string)> lockSongAsync(Song song, User user)
         {
             if (!lockFileExist(song) || isLockedByUser(song,user))
             {
                 createLockFile(song, user);
-                await VersionTool.uploadSongAsync(song, "lock", string.Empty);
+                string errorMessage = await VersionTool.uploadSongAsync(song, "lock", string.Empty);
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    return (false,errorMessage);
+                }
                 updateSongStatus(song);
-                return true;
+                return (true, "Song Locked");
             }
-            return false;
+            return (false, "Already Locked");
         }
 
         public async Task<bool> unlockSongAsync(Song song, User user)

@@ -4,8 +4,8 @@ namespace App1.Models.Ports
 {
     public interface IVersionTool
     {
-        public Task uploadSongAsync(Song song, string title, string description);
-        public Task updateSongAsync(Song song);
-        public Task revertSongAsync(Song song);
+        public Task<string> uploadSongAsync(Song song, string title, string description);
+        public Task<string> updateSongAsync(Song song);
+        public Task<string> revertSongAsync(Song song);
     }
 }

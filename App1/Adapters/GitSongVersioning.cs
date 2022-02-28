@@ -11,56 +11,82 @@ namespace App1.Adapters
     {
         public GitSongVersioning() { }
 
-        public async Task uploadSongAsync(Song song, string title, string description)
+        public async Task<string> uploadSongAsync(Song song, string title, string description)
         {
-            await Task.Run(() =>
+            try
             {
-                addAllChanges(song);
-                commitChanges(song, title, description);
-                pushChangesToRepo(song);
-            });
-        }
-
-        public async Task updateSongAsync(Song song)
-        {
-            await Task.Run(() =>
-            {
-                LocalSettingsSaver saver = new LocalSettingsSaver();
-                User user = saver.savedUser();
-                using (var repo = new Repository(song.LocalPath))
+                await Task.Run(() =>
                 {
-                    // Credential information to fetch
-                    PullOptions options = new PullOptions();
-                    options.FetchOptions = new FetchOptions();
-                    options.FetchOptions.CredentialsProvider = new CredentialsHandler(
-                        (url, usernameFromUrl, types) =>
-                            new UsernamePasswordCredentials()
-                            {
-                                Username = user.GitLabUsername,
-                                Password = user.GitLabPassword
-                            });
-
-                    // User information to create a merge commit
-                    var signature = new Signature(
-                        new Identity(user.GitUsername, user.GitEmail), DateTimeOffset.Now);
-
-                    // Pull
-                    Commands.Pull(repo, signature, options);
-                }
-            });
-        }
-
-        public async Task revertSongAsync(Song song)
-        {
-            await Task.Run(() =>
+                    addAllChanges(song);
+                    commitChanges(song, title, description);
+                    pushChangesToRepo(song);
+                });
+                return String.Empty;
+            }
+            catch(LibGit2SharpException ex)
             {
-                using (var repo = new Repository(song.LocalPath))
-                {
-                    Branch originMaster = repo.Branches["origin/master"];
-                    repo.Reset(ResetMode.Hard, originMaster.Tip);
-                }
-            });
+                return ex.Message;
+            }
         }
+
+        public async Task<string> updateSongAsync(Song song)
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    LocalSettingsSaver saver = new LocalSettingsSaver();
+                    User user = saver.savedUser();
+                    using (var repo = new Repository(song.LocalPath))
+                    {
+                        // Credential information to fetch
+                        PullOptions options = new PullOptions();
+                        options.FetchOptions = new FetchOptions();
+                        options.FetchOptions.CredentialsProvider = new CredentialsHandler(
+                            (url, usernameFromUrl, types) =>
+                                new UsernamePasswordCredentials()
+                                {
+                                    Username = user.GitLabUsername,
+                                    Password = user.GitLabPassword
+                                });
+
+                        // User information to create a merge commit
+                        var signature = new Signature(
+                            new Identity(user.GitUsername, user.GitEmail), DateTimeOffset.Now);
+
+                        // Pull
+                        Commands.Pull(repo, signature, options);
+                    }
+                });
+                return String.Empty;
+            }
+            catch (LibGit2SharpException ex)
+            {
+
+                return ex.Message;
+            }
+            
+        }
+
+        public async Task<string> revertSongAsync(Song song)
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    using (var repo = new Repository(song.LocalPath))
+                    {
+                        Branch originMaster = repo.Branches["origin/master"];
+                        repo.Reset(ResetMode.Hard, originMaster.Tip);
+                    }
+                });
+                return String.Empty;
+            }
+            catch(LibGit2SharpException ex)
+            {
+                return ex.Message;
+            }
+}
 
         private void addAllChanges(Song song)
         {

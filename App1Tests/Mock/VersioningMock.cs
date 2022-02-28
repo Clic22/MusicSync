@@ -10,34 +10,53 @@ namespace App1Tests.Mock
 {
     public class VersioningMock : IVersionTool
     {
-        public VersioningMock() {
-            SongsVersioned = new Dictionary<string, (Song, Song)>();
+        public VersioningMock(User user) {
+            this.user = user;
+            string GitUsername1 = "Hear@fdjskjè_";
+            string GitLabPassword1 = "12df546@";
+            string GitLabUsername1 = "Clic5456";
+            string GitEmail1 = "testdklsjfhg@yahoo.com";
+            user1 = new User(GitLabUsername1, GitLabPassword1, GitUsername1, GitEmail1); ;
+            string GitUsername2 = "Lithorama52";
+            string GitLabPassword2 = "15@^_usnjdfb@";
+            string GitLabUsername2 = "Erratum12";
+            string GitEmail2 = "erratum12@gmail.com";
+            user2 = new User(GitLabUsername2, GitLabPassword2, GitUsername2, GitEmail2);
         }
 
-        public async Task uploadSongAsync(Song song, string title, string description)
+        public async Task<string> uploadSongAsync(Song song, string title, string description)
         {
-            await Task.Run(() =>
-            {
-                
-            });
+            string errorMessage = await UserErrorAsync();
+            return errorMessage;
         }
 
-        public async Task updateSongAsync(Song song)
+        public async Task<string> updateSongAsync(Song song)
         {
-            await Task.Run(() =>
-            {
-                
-            });
+            string errorMessage = await UserErrorAsync();
+            return errorMessage;
         }
 
-        public async Task revertSongAsync(Song song)
+        public async Task<string> revertSongAsync(Song song)
         {
-            await Task.Run(() =>
-            {
-                
-            });
+            string errorMessage = await UserErrorAsync();
+            return errorMessage;
         }
 
-        public Dictionary<string, (Song, Song)> SongsVersioned;
+        private async Task<string> UserErrorAsync()
+        {
+
+            string errorMessage = await Task.Run(() =>
+            {
+                if (user != user1 && user != user2)
+                    return "Error Bad Credentials";
+                else
+                    return string.Empty;
+            });
+            return errorMessage;
+        }
+
+        public User? user { get; set; }
+        private User user1;
+        private User user2;
     }
 }

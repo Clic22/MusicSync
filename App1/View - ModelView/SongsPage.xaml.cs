@@ -25,13 +25,25 @@ namespace App1
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            await SongsManager.updateAllSongsAsync();
+            string errorMessage =  await SongsManager.updateAllSongsAsync();
+            if (errorMessage != string.Empty)
+            {
+                await displayContentDialog(errorMessage);
+            }
         }
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)
         {
-            await SongsManager.updateAllSongsAsync();
-            await displayContentDialog("All Songs Updated");
+            string errorMessage = await SongsManager.updateAllSongsAsync();
+            if (errorMessage != string.Empty)
+            {
+                await displayContentDialog(errorMessage);
+            }
+            else
+            {
+                await displayContentDialog("All Songs Updated");
+            }
+            
         }
 
         private async void addSongClick(object sender, RoutedEventArgs e)
@@ -75,8 +87,16 @@ namespace App1
         private async void updateSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            await SongsManager.updateSongAsync(song);
-            await displayContentDialog($"Song '{song.Title}' Updated");
+            string errorMessage = await SongsManager.updateSongAsync(song);
+            if (errorMessage != string.Empty)
+            {
+                await displayContentDialog(errorMessage);
+            }
+            else
+            {
+                await displayContentDialog($"Song '{song.Title}' Updated");
+            }
+            
         }
 
         private async void uploadNewVersionClick(object sender, RoutedEventArgs e)
@@ -85,8 +105,16 @@ namespace App1
             if (result == ContentDialogResult.Primary)
             {
                 Song song = (sender as Button).DataContext as Song;
-                await SongsManager.uploadNewSongVersion(song, title.Text, description.Text);
-                await displayContentDialog($"New Version of '{song.Title}' Uploaded");
+                string errorMessage = await SongsManager.uploadNewSongVersion(song, title.Text, description.Text);
+                if (errorMessage != string.Empty)
+                {
+                    await displayContentDialog(errorMessage);
+                }
+                else
+                {
+                    await displayContentDialog($"New Version of '{song.Title}' Uploaded");
+                }
+
             }
             title.Text = String.Empty;
             description.Text = String.Empty;
@@ -96,17 +124,25 @@ namespace App1
         private async void openSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            bool opened = await SongsManager.openSong(song);
-            if (!opened)
+            (bool, string) opened = await SongsManager.openSong(song);
+            if (!opened.Item1)
             {
-                await displayContentDialog($"Song Locked");
+                await displayContentDialog(opened.Item2);
             }
         }
 
-        private void revertSongClick(object sender, RoutedEventArgs e)
+        private async void revertSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            SongsManager.revertSong(song);
+            string errorMessage = await SongsManager.revertSong(song);
+            if (errorMessage != string.Empty)
+            {
+                await displayContentDialog(errorMessage);
+            }
+            else
+            {
+                await displayContentDialog($"'{song.Title}' Reverted");
+            }
         }
 
         private async Task displayContentDialog(string text)

@@ -14,26 +14,34 @@ namespace App1.Models
             Locker = new Locker(VersionTool);
         }
 
-        public async Task updateAllSongsAsync()
+        public async Task<string> updateAllSongsAsync()
         {
             foreach (Song song in SongList)
             {
-                await updateSongAsync(song);
+                string errorMessage = await updateSongAsync(song);
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    return errorMessage;
+                }
             }
+            return string.Empty;
         }
 
-        public async Task updateSongAsync(Song song)
+        public async Task<string> updateSongAsync(Song song)
         {
-            await VersionTool.updateSongAsync(song);
+            string errorMessage = await VersionTool.updateSongAsync(song);
             Locker.updateSongStatus(song);
+            return errorMessage;
         }
 
-        public async Task uploadNewSongVersion(Song song, string changeTitle, string changeDescription)
+        public async Task<string> uploadNewSongVersion(Song song, string changeTitle, string changeDescription)
         {
+            string errorMessage = string.Empty;
             if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
-                await VersionTool.uploadSongAsync(song, changeTitle, changeDescription);
+                errorMessage = await VersionTool.uploadSongAsync(song, changeTitle, changeDescription);
             }
+            return errorMessage;
         }
 
         public void addSong(string songTitle, string songFile, string songLocalPath)
@@ -50,28 +58,41 @@ namespace App1.Models
             }
         }
 
-        public async Task<bool> openSong(Song song)
+        public async Task<(bool,string)> openSong(Song song)
         {
-            await updateSongAsync(song);
-            if (song.Status == Song.SongStatus.upToDate)
+            string errorMessage = await updateSongAsync(song);
+            if (string.IsNullOrEmpty(errorMessage))
             {
-                await Locker.lockSongAsync(song, Saver.savedUser());
+                (bool, string) locked = (new bool(),string.Empty);
+                if (song.Status == Song.SongStatus.upToDate)
+                {
+                    locked = await Locker.lockSongAsync(song, Saver.savedUser());
+                }
+                if (Locker.isLockedByUser(song, Saver.savedUser()))
+                {
+                    openSongWithDAW(song);
+                    return (true, string.Empty);
+                }
+                return locked;
             }
-            if (Locker.isLockedByUser(song, Saver.savedUser()))
+            else
             {
-                openSongWithDAW(song);
-                return true;
+                return (false, errorMessage);
             }
-            return false;
+            
         }
 
-        public async void revertSong(Song song)
+        public async Task<string> revertSong(Song song)
         {
-            await updateSongAsync(song);
-            if (await Locker.unlockSongAsync(song, Saver.savedUser()))
+            string errorMessage = await updateSongAsync(song);
+            if (string.IsNullOrEmpty(errorMessage))
             {
-                await VersionTool.revertSongAsync(song);
+                if (await Locker.unlockSongAsync(song, Saver.savedUser()))
+                {
+                    errorMessage = await VersionTool.revertSongAsync(song);
+                }
             }
+            return errorMessage;
         }
 
         private static void openSongWithDAW(Song song)
