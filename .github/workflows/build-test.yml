@@ -50,8 +50,8 @@ jobs:
 
     strategy:
       matrix:
-        configuration: [Debug]
-        platform: [x86]
+        configuration: [Debug, Release]
+        platform: [x86, x64]
 
     runs-on: windows-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
@@ -92,6 +92,8 @@ jobs:
     
     # Execute all unit tests in the solution
     - name: Execute unit tests
-      run: vstest.console.exe D:\a\MusicSync\MusicSync\App1Tests\bin\Debug\net6.0-windows10.0.19041.0\App1Tests.dll 
+      run: vstest.console.exe D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\App1Tests.dll
+      env:
+        Configuration: ${{ matrix.configuration }}
 
     
