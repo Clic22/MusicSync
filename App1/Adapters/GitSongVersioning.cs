@@ -62,7 +62,10 @@ namespace App1.Adapters
             }
             catch (LibGit2SharpException ex)
             {
-
+                return ex.Message;
+            }
+            catch (ArgumentException ex)
+            {
                 return ex.Message;
             }
             
