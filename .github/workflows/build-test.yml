@@ -111,6 +111,16 @@ jobs:
         New-Item -Path .\.sonar\scanner -ItemType Directory
         dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
+    # Execute all unit tests in the solution
+    - name: Execute unit tests coverlet
+      uses: b3b00/coverlet-action@1.2.2
+      with:
+       testProject: 'App1Tests/App1Tests.csproj'
+       output: 'coverage.info'
+       outputFormat: 'opencover'
+       excludes: '[program]*,[test]test.*'
+       threshold: 80
+
     - name: Build and analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
@@ -118,12 +128,9 @@ jobs:
         Configuration: ${{ matrix.configuration }}
       shell: powershell
       run: |
-        .\.sonar\scanner\dotnet-sonarscanner begin /k:"Clic22_MusicSync" /o:"clic22" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+        .\.sonar\scanner\dotnet-sonarscanner begin /k:"Clic22_MusicSync" /o:"clic22" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="coverage.info" 
         msbuild $env:Solution_Name /p:Configuration=$env:Configuration
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
-    # Execute all unit tests in the solution
-    - name: Execute unit tests
-      run: vstest.console.exe D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\App1Tests.dll
-      env:
-        Configuration: ${{ matrix.configuration }}
+    
+    
