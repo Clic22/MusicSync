@@ -93,6 +93,6 @@ jobs:
     
     # Execute all unit tests in the solution
     - name: Execute unit tests
-      run: vstest.console.exe App1Tests 
+      run: vstest.console.exe D:\a\MusicSync\MusicSync\App1Tests\bin\Debug\net6.0-windows10.0.19041.0\App1Tests.dll 
 
     
