@@ -50,7 +50,7 @@ namespace App1.Models
             SongList.addNewSong(song);
         }
 
-        public async void deleteSong(Song song)
+        public async Task deleteSong(Song song)
         {
             if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
