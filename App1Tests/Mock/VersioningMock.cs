@@ -46,7 +46,7 @@ namespace App1Tests.Mock
         {
             string errorMessage = await Task.Run(() =>
             {
-                if ( user == Null || 
+                if ( user == null || 
                     (userIsDifferentFrom(user1) && 
                     userIsDifferentFrom(user2)))
                     return "Error Bad Credentials";
