@@ -63,6 +63,7 @@ namespace App1Tests.Mock
                     user.GitUsername != expectedUser.GitUsername ||
                     user.GitEmail != expectedUser.GitEmail)
                     return true;
+            return false;
         }
 
         public User? user { get; set; }
