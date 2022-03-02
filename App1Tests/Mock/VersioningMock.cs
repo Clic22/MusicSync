@@ -46,19 +46,23 @@ namespace App1Tests.Mock
         {
             string errorMessage = await Task.Run(() =>
             {
-                if ((user.GitLabUsername != user1.GitLabUsername ||
-                    user.GitLabPassword != user1.GitLabPassword ||
-                    user.GitUsername != user1.GitUsername ||
-                    user.GitEmail != user1.GitEmail) && 
-                    (user.GitLabUsername != user2.GitLabUsername ||
-                    user.GitLabPassword != user2.GitLabPassword ||
-                    user.GitUsername != user2.GitUsername ||
-                    user.GitEmail != user2.GitEmail))
+                if ( user == Null || 
+                    (userIsDifferentFrom(user1) && 
+                    userIsDifferentFrom(user2)))
                     return "Error Bad Credentials";
                 else
                     return string.Empty;
             });
             return errorMessage;
+        }
+        
+        private bool userIsDifferentFrom(User expectedUser)
+        {
+            if (user.GitLabUsername != expectedUser.GitLabUsername ||
+                    user.GitLabPassword != expectedUser.GitLabPassword ||
+                    user.GitUsername != expectedUser.GitUsername ||
+                    user.GitEmail != expectedUser.GitEmail)
+                    return true;
         }
 
         public User? user { get; set; }
