@@ -111,12 +111,6 @@ jobs:
         New-Item -Path .\.sonar\scanner -ItemType Directory
         dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
-    # Execute all unit tests in the solution
-    - name: Execute unit tests
-      run: vstest.console.exe D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\App1Tests.dll /EnableCodeCoverage /logger:"trx"
-      env:
-        Configuration: ${{ matrix.configuration }}
-
     - name: Build and analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
@@ -126,4 +120,5 @@ jobs:
       run: |
         .\.sonar\scanner\dotnet-sonarscanner begin /k:"Clic22_MusicSync" /o:"clic22" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/*.trx"
         msbuild $env:Solution_Name /p:Configuration=$env:Configuration
+        vstest.console.exe D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\App1Tests.dll /EnableCodeCoverage /logger:"trx"
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
