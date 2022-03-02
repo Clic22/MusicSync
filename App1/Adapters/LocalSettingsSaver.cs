@@ -60,9 +60,9 @@ namespace App1.Adapters
             return savedSongs;
         }
 
-        private Windows.Storage.ApplicationDataContainer LocalSettings;
-        private Windows.Storage.ApplicationDataContainer SongContainer;
-        private Windows.Storage.ApplicationDataContainer UserContainer;
+        private readonly Windows.Storage.ApplicationDataContainer LocalSettings;
+        private readonly Windows.Storage.ApplicationDataContainer SongContainer;
+        private readonly Windows.Storage.ApplicationDataContainer UserContainer;
 
     }
 }
