@@ -124,9 +124,6 @@ jobs:
         Configuration: ${{ matrix.configuration }}
       shell: powershell
       run: |
-        .\.sonar\scanner\dotnet-sonarscanner begin /k:"Clic22_MusicSync" /o:"clic22" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/*.trx" 
+        .\.sonar\scanner\dotnet-sonarscanner begin /k:"Clic22_MusicSync" /o:"clic22" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/*.trx"
         msbuild $env:Solution_Name /p:Configuration=$env:Configuration
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-
-    
-    
