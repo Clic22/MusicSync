@@ -46,13 +46,13 @@ namespace App1Tests.Mock
         {
             string errorMessage = await Task.Run(() =>
             {
-                if ((user.GitLabUsername != user1.GitLabUsername &&
-                    user.GitLabPassword != user1.GitLabPassword &&
-                    user.GitUsername != user1.GitUsername &&
+                if ((user.GitLabUsername != user1.GitLabUsername ||
+                    user.GitLabPassword != user1.GitLabPassword ||
+                    user.GitUsername != user1.GitUsername ||
                     user.GitEmail != user1.GitEmail) && 
-                    (user.GitLabUsername != user2.GitLabUsername &&
-                    user.GitLabPassword != user2.GitLabPassword &&
-                    user.GitUsername != user2.GitUsername &&
+                    (user.GitLabUsername != user2.GitLabUsername ||
+                    user.GitLabPassword != user2.GitLabPassword ||
+                    user.GitUsername != user2.GitUsername ||
                     user.GitEmail != user2.GitEmail))
                     return "Error Bad Credentials";
                 else
