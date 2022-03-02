@@ -112,14 +112,10 @@ jobs:
         dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
     # Execute all unit tests in the solution
-    - name: Execute unit tests coverlet
-      uses: b3b00/coverlet-action@1.2.2
-      with:
-       testProject: 'App1Tests/App1Tests.csproj'
-       output: 'coverage.info'
-       outputFormat: 'opencover'
-       excludes: '[program]*,[test]test.*'
-       threshold: 80
+    - name: Execute unit tests
+      run: vstest.console.exe D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\App1Tests.dll /EnableCodeCoverage 
+      env:
+        Configuration: ${{ matrix.configuration }}
 
     - name: Build and analyze
       env:
