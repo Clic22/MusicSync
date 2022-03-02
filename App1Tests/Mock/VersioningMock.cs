@@ -53,7 +53,7 @@ namespace App1Tests.Mock
                     (user.GitLabUsername != user2.GitLabUsername &&
                     user.GitLabPassword != user2.GitLabPassword &&
                     user.GitUsername != user2.GitUsername &&
-                    user.GitEmail != user2.GitEmail)
+                    user.GitEmail != user2.GitEmail))
                     return "Error Bad Credentials";
                 else
                     return string.Empty;
