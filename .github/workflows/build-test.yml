@@ -118,7 +118,7 @@ jobs:
         Configuration: ${{ matrix.configuration }}
       shell: powershell
       run: |
-        .\.sonar\scanner\dotnet-sonarscanner begin /k:"Clic22_MusicSync" /o:"clic22" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vstest.reportsPaths="**/*.trx" /d:sonar.cs.vscoveragexml.reportsPaths:"**/*.xml"
+        .\.sonar\scanner\dotnet-sonarscanner begin /k:"Clic22_MusicSync" /o:"clic22" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vstest.reportsPaths="TestResults/**/*.trx" /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/**/*.xml"
         msbuild $env:Solution_Name /p:Configuration=$env:Configuration
         vstest.console.exe D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\App1Tests.dll /EnableCodeCoverage /logger:"trx" /collect:"Code Coverage;Format=Xml"
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
