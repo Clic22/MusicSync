@@ -78,10 +78,10 @@ namespace App1
             }
         }
 
-        private void deleteSongClick(object sender, RoutedEventArgs e)
+        private async void deleteSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            SongsManager.deleteSong(song);
+            await SongsManager.deleteSong(song);
         }
 
         private async void updateSongClick(object sender, RoutedEventArgs e)
@@ -156,7 +156,7 @@ namespace App1
         }
 
         private SongsManager SongsManager;
-        private static ISaver Saver;
-        private static IVersionTool VersionTool;
+        private ISaver Saver;
+        private IVersionTool VersionTool;
     }
 }

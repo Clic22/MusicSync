@@ -44,7 +44,9 @@ namespace App1.Models
             if (lockFileExist(song))
             {
                 if (lockFileCreatedByUser(song, user))
+                {
                     return true;
+                }
             }
             return false;
 
@@ -91,6 +93,6 @@ namespace App1.Models
             return false;
         }
 
-        private IVersionTool VersionTool;
+        private readonly IVersionTool VersionTool;
     }
 }

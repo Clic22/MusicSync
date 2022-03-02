@@ -27,6 +27,6 @@ namespace App1.Models
             Saver.unsaveSong(song);
         }
 
-        private ISaver Saver;
+        private readonly ISaver Saver;
     }
 }
