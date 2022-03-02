@@ -46,9 +46,8 @@ namespace App1Tests.Mock
         {
             string errorMessage = await Task.Run(() =>
             {
-                if ( user == null || 
-                    (userIsDifferentFrom(user1) && 
-                    userIsDifferentFrom(user2)))
+                if (userIsDifferentFrom(user1) && 
+                    userIsDifferentFrom(user2))
                     return "Error Bad Credentials";
                 else
                     return string.Empty;
@@ -58,11 +57,12 @@ namespace App1Tests.Mock
         
         private bool userIsDifferentFrom(User expectedUser)
         {
-            if (user.GitLabUsername != expectedUser.GitLabUsername ||
-                    user.GitLabPassword != expectedUser.GitLabPassword ||
-                    user.GitUsername != expectedUser.GitUsername ||
-                    user.GitEmail != expectedUser.GitEmail)
-                    return true;
+            if (user == null || 
+                user.GitLabUsername != expectedUser.GitLabUsername ||
+                user.GitLabPassword != expectedUser.GitLabPassword ||
+                user.GitUsername != expectedUser.GitUsername ||
+                user.GitEmail != expectedUser.GitEmail)
+                return true;
             return false;
         }
 
