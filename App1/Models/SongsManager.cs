@@ -85,12 +85,9 @@ namespace App1.Models
         public async Task<string> revertSong(Song song)
         {
             string errorMessage = await updateSongAsync(song);
-            if (string.IsNullOrEmpty(errorMessage))
+            if (string.IsNullOrEmpty(errorMessage) && await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
-                if (await Locker.unlockSongAsync(song, Saver.savedUser()))
-                {
-                    errorMessage = await VersionTool.revertSongAsync(song);
-                }
+                errorMessage = await VersionTool.revertSongAsync(song);
             }
             return errorMessage;
         }
@@ -106,8 +103,8 @@ namespace App1.Models
         }
 
         public SongsStorage SongList { get; private set; }
-        private IVersionTool VersionTool;
-        private Locker Locker;
-        private ISaver Saver;
+        private readonly IVersionTool VersionTool;
+        private readonly Locker Locker;
+        private readonly ISaver Saver;
     }
 }
