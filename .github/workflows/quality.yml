@@ -57,9 +57,7 @@ jobs:
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
     env:
-      Solution_Name: App1/App1.sln                      # Replace with your solution name, i.e. MyWpfApp.sln.
-      ModelsTests_Path: D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\ModelsTests.dll
-      AdaptersTests_Path: D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\AdaptersTests.dll
+      Solution_Name: App1/App1.sln                      # Replace with your solution name, i.e. MyWpfApp.sln. 
 
     steps:
     - name: Set up JDK 11
@@ -133,7 +131,7 @@ jobs:
         Configuration: ${{ matrix.configuration }}
       shell: powershell
       run: |
-        vstest.console.exe $env:ModelsTests_Path $env:AdaptersTests_Path /EnableCodeCoverage /logger:"trx" /collect:"Code Coverage;Format=Xml"
+        vstest.console.exe D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\ModelsTests.dll D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\AdaptersTests.dll /EnableCodeCoverage /logger:"trx" /collect:"Code Coverage;Format=Xml"
         
     - name: Sonar end
       env:
