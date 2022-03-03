@@ -1,24 +1,23 @@
 ﻿using App1.Models;
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace App1Tests.Models
 {
-    [TestClass]
     public class SongTest
     {
-        [TestMethod]
+        [Fact]
         public void DefaultSongCreation()
         {
             Song song = new Song();
-            Assert.IsNotNull(song);
-            Assert.IsNull(song.Title);
-            Assert.IsNull(song.LocalPath);
-            Assert.IsNull(song.File);
-            Assert.AreEqual(Song.SongStatus.upToDate, song.Status);
+            Assert.NotNull(song);
+            Assert.Null(song.Title);
+            Assert.Null(song.LocalPath);
+            Assert.Null(song.File);
+            Assert.Equal(Song.SongStatus.upToDate, song.Status);
         }
 
-        [TestMethod]
+        [Fact]
         public void DefaultSongCreationWithArguments()
         {
             string expected_title = "title";
@@ -26,31 +25,22 @@ namespace App1Tests.Models
             string expected_file = "file";
             Song song = new Song(expected_title, expected_file, expected_localPath );
 
-            Assert.IsNotNull(song);
-            Assert.AreEqual(expected_title, song.Title);
-            Assert.AreEqual(expected_localPath, song.LocalPath);
-            Assert.AreEqual(expected_file, song.File);
-            Assert.AreEqual(Song.SongStatus.upToDate, song.Status);
+            Assert.NotNull(song);
+            Assert.Equal(expected_title, song.Title);
+            Assert.Equal(expected_localPath, song.LocalPath);
+            Assert.Equal(expected_file, song.File);
+            Assert.Equal(Song.SongStatus.upToDate, song.Status);
         }
 
-        [TestMethod]
+        [Fact]
         public void SetStatusTriggerPropertyChanged()
         {
-            bool result = false;
             Song song = new Song();
-            song.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == "Status")
-                {
-                    result = true;
-                }
-            };
-
-            song.Status = Song.SongStatus.locked;
-            Assert.AreEqual(result, true);
+            Action action = () => song.Status = Song.SongStatus.locked;
+            Assert.PropertyChanged(song, "Status", action);
         }
 
-        [TestMethod]
+        [Fact]
         public void TwoEqualSongsTest()
         {
             string expected_title = "title";
@@ -59,7 +49,7 @@ namespace App1Tests.Models
             Song song1 = new Song(expected_title, expected_file, expected_localPath);
             Song song2 = new Song(expected_title, expected_file, expected_localPath);
 
-            Assert.AreEqual(song1, song2);
+            Assert.Equal(song1, song2);
         }
     }
 }
