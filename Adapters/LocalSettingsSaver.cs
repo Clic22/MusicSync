@@ -51,11 +51,19 @@ namespace App1.Adapters
         public List<Song> savedSongs()
         {
             List<Song> savedSongs = new List<Song>();
+            string? file;
+            string? localPath;
+
             foreach (var item in SongContainer.Values)
             {
                 Windows.Storage.ApplicationDataCompositeValue composite = (Windows.Storage.ApplicationDataCompositeValue)item.Value;
-                Song song = new Song(item.Key, composite["file"] as string, composite["localPath"] as string);
-                savedSongs.Add(song);
+                file = composite["file"] as string;
+                localPath = composite["localPath"] as string;
+                if (localPath != null && file != null)
+                {
+                    Song song = new Song(item.Key, file, localPath);
+                    savedSongs.Add(song);
+                }
             }
             return savedSongs;
         }

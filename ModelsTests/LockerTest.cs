@@ -4,6 +4,7 @@ using App1Tests.Mock;
 using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace App1Tests.Models
 {
@@ -49,12 +50,10 @@ namespace App1Tests.Models
     public class LockerTest : TestsBase
     {
         [TestMethod]
-        public async void LockSongTest()
+        public async Task LockSongTest()
         {
-
             (bool,string) result = await locker.lockSongAsync(song,user1);
 
-            
             Assert.IsTrue(result.Item1);
             Assert.AreEqual("Song Locked", result.Item2);
             Assert.AreEqual(Song.SongStatus.locked, song.Status);
@@ -77,7 +76,7 @@ namespace App1Tests.Models
         }
 
         [TestMethod]
-        public async void UnlockSongTest()
+        public async Task UnlockSongTest()
         {
             await locker.lockSongAsync(song,user1);
 
@@ -92,7 +91,7 @@ namespace App1Tests.Models
         }
 
         [TestMethod]
-        public async void TryUnlockSongWithDifferentUserTest()
+        public async Task TryUnlockSongWithDifferentUserTest()
         {
             locker.updateSongStatus(song);
             Assert.AreEqual(Song.SongStatus.upToDate, song.Status);
@@ -114,7 +113,7 @@ namespace App1Tests.Models
         }
 
         [TestMethod]
-        public async void TryLockSongAlreadyLockedTest()
+        public async Task TryLockSongAlreadyLockedTest()
         {
             locker.updateSongStatus(song);
             Assert.AreEqual(Song.SongStatus.upToDate, song.Status);
@@ -137,7 +136,7 @@ namespace App1Tests.Models
         }
 
         [TestMethod]
-        public async void TryLockSongAlreadyLockedByUserTest()
+        public async Task TryLockSongAlreadyLockedByUserTest()
         {
             locker.updateSongStatus(song);
             Assert.AreEqual(Song.SongStatus.upToDate, song.Status);
@@ -160,7 +159,7 @@ namespace App1Tests.Models
         }
 
         [TestMethod]
-        public async void TryLockSongWithWrongCredentialTest()
+        public async Task TryLockSongWithWrongCredentialTest()
         {
             locker.updateSongStatus(song);
             Assert.AreEqual(Song.SongStatus.upToDate, song.Status);
