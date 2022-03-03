@@ -58,8 +58,8 @@ jobs:
 
     env:
       Solution_Name: App1/App1.sln                      # Replace with your solution name, i.e. MyWpfApp.sln.
-	ModelsTests_Path: D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\ModelsTests.dll
-	AdaptersTests_Path: D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\AdaptersTests.dll
+      ModelsTests_Path: D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\ModelsTests.dll
+      AdaptersTests_Path: D:\a\MusicSync\MusicSync\App1Tests\bin\$env:Configuration\net6.0-windows10.0.19041.0\AdaptersTests.dll
 
     steps:
     - name: Set up JDK 11
