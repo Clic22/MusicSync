@@ -18,8 +18,9 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore App1/App1.sln
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore App1/App1.sln
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal App1/App1.sln
+ 
