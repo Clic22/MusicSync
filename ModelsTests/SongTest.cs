@@ -49,5 +49,17 @@ namespace App1Tests.Models
             song.Status = Song.SongStatus.locked;
             Assert.AreEqual(result, true);
         }
+
+        [TestMethod]
+        public void TwoEqualSongsTest()
+        {
+            string expected_title = "title";
+            string expected_localPath = "path";
+            string expected_file = "file";
+            Song song1 = new Song(expected_title, expected_file, expected_localPath);
+            Song song2 = new Song(expected_title, expected_file, expected_localPath);
+
+            Assert.AreEqual(song1, song2);
+        }
     }
 }

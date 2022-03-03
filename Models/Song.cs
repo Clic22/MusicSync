@@ -48,5 +48,20 @@ namespace App1.Models
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        public override bool Equals(object obj)
+        {
+            var song = obj as Song;
+            if (song == null)
+                return false;
+            if(this.Title != song.Title ||
+               this.Status != song.Status ||
+               this.LocalPath != song.LocalPath ||
+               this.File != song.File)
+            {
+                return false;
+            }
+            return true;    
+        }
+
     }
 }

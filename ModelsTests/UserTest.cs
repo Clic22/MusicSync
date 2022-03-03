@@ -33,5 +33,19 @@ namespace App1Tests.Models
             Assert.AreEqual(expectedGitEmail,user.GitEmail);
             Assert.AreEqual(expectedGitLabUsername,user.GitLabUsername);
         }
+
+        [TestMethod]
+        public void TwoEqualUsersTest()
+        {
+            string expectedGitUsername = "Hear@fdjskjè_";
+            string expectedGitLabPassword = "12df546@";
+            string expectedGitLabUsername = "CLic5456";
+            string expectedGitEmail = "testdklsjfhg@yahoo.com";
+
+            User user1 = new User(expectedGitLabUsername, expectedGitLabPassword, expectedGitUsername, expectedGitEmail); ;
+            User user2 = new User(expectedGitLabUsername, expectedGitLabPassword, expectedGitUsername, expectedGitEmail); ;
+
+            Assert.AreEqual(user1, user2);
+        }
     }
 }

@@ -18,6 +18,21 @@ namespace App1.Models
         public string? GitLabPassword { get; set; }
         public string? GitUsername { get; set; }
         public string? GitEmail { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var song = obj as User;
+            if (song == null)
+                return false;
+            if (this.GitLabUsername != song.GitLabUsername ||
+               this.GitLabPassword != song.GitLabPassword ||
+               this.GitUsername != song.GitUsername ||
+               this.GitEmail != song.GitEmail)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
 
