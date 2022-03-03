@@ -1,9 +1,5 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
-using LibGit2Sharp;
-using LibGit2Sharp.Handlers;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace App1Tests.Mock

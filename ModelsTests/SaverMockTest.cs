@@ -3,13 +3,14 @@ using App1.Models.Ports;
 using App1Tests.Mock;
 using System;
 using System.Collections.Generic;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace App1Tests.Models
 {
+    [TestClass]
     public class SaverMockTest
     {
-        [Fact]
+        [TestMethod]
         public void SaveUserTest()
         {
             string expectedGitLabUsername = "Clic22";
@@ -22,10 +23,10 @@ namespace App1Tests.Models
             saver.saveUser(expectedUser);
             User userSaved = saver.savedUser();
 
-            Assert.Equal(expectedUser, userSaved);
+            Assert.AreEqual(expectedUser, userSaved);
         }
 
-        [Fact]
+        [TestMethod]
         public void SaveSongTest()
         {
             Song expectedSong = new Song();
@@ -37,7 +38,7 @@ namespace App1Tests.Models
             saver.saveSong(expectedSong);
             List<Song> Songs = saver.savedSongs();
 
-            Assert.Contains(expectedSong, Songs);
+            CollectionAssert.Contains(Songs,expectedSong);
         }
     }
 }

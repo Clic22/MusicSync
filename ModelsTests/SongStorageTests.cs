@@ -3,13 +3,14 @@ using App1.Models.Ports;
 using App1Tests.Mock;
 using System.Collections.Generic;
 using System;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace App1Tests.Models
 {
+    [TestClass]
     public class SongStorageTest
     {
-        [Fact]
+        [TestMethod]
         public void FillSongStorageWithSavedSongsTest()
         {
             ISaver saver = new SaverMock();
@@ -25,19 +26,19 @@ namespace App1Tests.Models
 
             songsStorage.addNewSong(song);
             songsStorage.addNewSong(song2);
-            Assert.Contains(song, songsStorage);
-            Assert.Contains(song2, songsStorage);
+            CollectionAssert.Contains(songsStorage,song);
+            CollectionAssert.Contains(songsStorage,song2);
 
             List<Song> savedSongs = saver.savedSongs();
-            Assert.Contains(song, savedSongs);
-            Assert.Contains(song2, savedSongs);
+            CollectionAssert.Contains(savedSongs, song);
+            CollectionAssert.Contains(savedSongs, song2);
 
             SongsStorage songsStorage2 = new SongsStorage(saver);
-            Assert.Contains(song, songsStorage2);
-            Assert.Contains(song2, songsStorage2);
+            CollectionAssert.Contains(songsStorage2, song);
+            CollectionAssert.Contains(songsStorage2, song2);
         }
 
-        [Fact]
+        [TestMethod]
         public void AddNewSongTest()
         {
           ISaver saver = new SaverMock();
@@ -47,14 +48,14 @@ namespace App1Tests.Models
           string expected_file = "file";
           Song song = new Song(expected_title, expected_file, expected_localPath );
           
-          songsStorage.addNewSong(song); 
-          Assert.Contains(song, songsStorage);
+          songsStorage.addNewSong(song);
+            CollectionAssert.Contains(songsStorage,song);
           
           List<Song> savedSongs = saver.savedSongs();
-          Assert.Contains(song, savedSongs);
+            CollectionAssert.Contains(savedSongs, song);
         }
 
-        [Fact]
+        [TestMethod]
         public void DeleteSongTest()
         {
             ISaver saver = new SaverMock();
@@ -67,9 +68,9 @@ namespace App1Tests.Models
             songsStorage.addNewSong(song);
             
             songsStorage.deleteSong(song);
-            Assert.DoesNotContain(song,songsStorage);
+            CollectionAssert.DoesNotContain(songsStorage,song);
             List<Song> savedSongs = saver.savedSongs();
-            Assert.DoesNotContain(song,savedSongs);
+            CollectionAssert.DoesNotContain(savedSongs,song);
         }
     }
 }
