@@ -63,5 +63,10 @@ namespace App1.Models
             return true;    
         }
 
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.Title, this.Status, this.LocalPath, this.File);
+        }
+
     }
 }

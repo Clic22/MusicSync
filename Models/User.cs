@@ -33,6 +33,11 @@ namespace App1.Models
             }
             return true;
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.GitLabUsername, this.GitLabPassword, this.GitUsername, this.GitEmail);
+        }
     }
 }
 
