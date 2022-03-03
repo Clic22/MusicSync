@@ -51,5 +51,32 @@ namespace App1Tests.Models
 
             Assert.Equal(song1, song2);
         }
+
+        [Fact]
+        public void TwoDifferentSongsTest()
+        {
+            string expected_title = "title";
+            string expected_localPath = "path";
+            string expected_file = "file";
+            Song song1 = new Song(expected_title, expected_file, expected_localPath);
+            expected_title = "title2";
+            expected_localPath = "path2";
+            expected_file = "file2";
+            Song song2 = new Song(expected_title, expected_file, expected_localPath);
+
+            Assert.NotEqual(song1, song2);
+        }
+
+        [Fact]
+        public void OneNullSongsTest()
+        {
+            string expected_title = "title";
+            string expected_localPath = "path";
+            string expected_file = "file";
+            Song song1 = new Song(expected_title, expected_file, expected_localPath);
+            Song? song2 = null;
+
+            Assert.NotEqual(song1, song2);
+        }
     }
 }
