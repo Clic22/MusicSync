@@ -3,7 +3,7 @@ using App1.Models.Ports;
 using App1Tests.Mock;
 using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace App1Tests.Models
 {
@@ -28,7 +28,7 @@ namespace App1Tests.Models
             user2 = new User(GitLabUsername2, GitLabPassword2, GitUsername2, GitEmail2);
 
             IVersionTool version = new VersioningMock(user1);
-            locker = new Locker(version);
+            locker = new Locker(version); 
         }
 
         public void Dispose()
@@ -51,14 +51,14 @@ namespace App1Tests.Models
         public async void LockSongTest()
         {
 
-            (bool, string) result = await locker.lockSongAsync(song, user1);
+            (bool,string) result = await locker.lockSongAsync(song,user1);
 
-
+            
             Assert.True(result.Item1);
             Assert.Equal("Song Locked", result.Item2);
             Assert.Equal(Song.SongStatus.locked, song.Status);
             Assert.True(locker.isLockedByUser(song, user1));
-
+            
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace App1Tests.Models
         [Fact]
         public async void UnlockSongTest()
         {
-            await locker.lockSongAsync(song, user1);
+            await locker.lockSongAsync(song,user1);
 
             Assert.Equal(Song.SongStatus.locked, song.Status);
             Assert.True(locker.isLockedByUser(song, user1));
