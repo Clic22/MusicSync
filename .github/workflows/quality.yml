@@ -122,9 +122,10 @@ jobs:
     - name: Build and analyze
       env:
         Configuration: ${{ matrix.configuration }}
+        Platform: ${{ matrix.platform}}
       shell: powershell
       run: |
-        msbuild $env:Solution_Name /p:Configuration=$env:Configuration
+        msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:Platform=$env:Platform
 
 
     - name: Test and coverage
