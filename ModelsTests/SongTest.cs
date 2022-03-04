@@ -76,7 +76,7 @@ namespace App1Tests.Models
             Song song1 = new Song(expected_title, expected_file, expected_localPath);
             Song? song2 = null;
 
-            Assert.NotEqual(song1, song2);
+            song1.Equals(song2);
         }
     }
 }
