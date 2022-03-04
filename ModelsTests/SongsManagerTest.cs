@@ -155,6 +155,23 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
+        public async Task updateSongLockedTest()
+        {
+            //Add song for synchronization
+            songsManager.addSong(title, file, localPath);
+            //Simulate a change on version workspace
+            Directory.CreateDirectory(version.VersionPath + expectedSong.LocalPath);
+            FileStream fileStream = File.Create(version.VersionPath + expectedSong.LocalPath + ".lock");
+            fileStream.Close();
+
+            string errorMessage = await songsManager.updateSongAsync(expectedSong);
+
+            Assert.Equal(Song.SongStatus.locked, expectedSong.Status);
+            Assert.True(File.Exists(expectedSong.LocalPath + ".lock"));
+            Assert.Equal(string.Empty, errorMessage);
+        }
+
+        [Fact]
         public async Task TryUpdateSongWithWrongGitLabUsernameTest()
         {
             //Add song for synchronization
