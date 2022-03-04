@@ -213,6 +213,52 @@ namespace ModelsTests.SongsManagerTest
             Assert.Equal("Error Bad Credentials", errorMessage);
         }
 
+        [Fact]
+        public async Task updateAllSongsTest()
+        {
+            string title1 = "title1";
+            string file1 = "file1.song";
+            string localPath1 = @"./SongsManagerTest/song1/";
+            Directory.CreateDirectory(localPath1);
+            //FileStream fileStream1 = File.Create(localPath1 + file1);
+            //fileStream1.Close();
+            Song song1 = new Song(title1, file1, localPath1);
+
+            string title2 = "title2";
+            string file2 = "file2.song";
+            string localPath2 = @"./SongsManagerTest/song2/";
+            Directory.CreateDirectory(localPath2);
+            //FileStream fileStream2 = File.Create(localPath2 + file1);
+            //fileStream2.Close();
+            Song song2 = new Song(title2, file2, localPath2);
+
+            //Add song for synchronization
+            songsManager.addSong(title1, file1, localPath1);
+            songsManager.addSong(title2, file2, localPath2);
+            //Simulate a change on song 1 version workspace
+            Directory.CreateDirectory(version.VersionPath + song1.LocalPath);
+            FileStream fileStream = File.Create(version.VersionPath + song1.LocalPath + "audio1.wav");
+            fileStream.Close();
+            Assert.True(File.Exists(version.VersionPath + song1.LocalPath + "audio1.wav"));
+            Assert.False(File.Exists(song1.LocalPath + "audio1.wav"));
+
+            //Simulate a change on song 2 version workspace
+            Directory.CreateDirectory(version.VersionPath + song2.LocalPath);
+            fileStream = File.Create(version.VersionPath + song2.LocalPath + "audio2.wav");
+            fileStream.Close();
+            Assert.True(File.Exists(version.VersionPath + song2.LocalPath + "audio2.wav"));
+            Assert.False(File.Exists(song2.LocalPath + "audio2.wav"));
+
+            string errorMessage = await songsManager.updateAllSongsAsync();
+
+            Assert.True(File.Exists(song1.LocalPath + "audio1.wav"));
+            Assert.True(File.Exists(song2.LocalPath + "audio2.wav"));
+            Assert.Equal(string.Empty, errorMessage);
+
+            Directory.Delete(song1.LocalPath, true);
+            Directory.Delete(song2.LocalPath, true);
+        }
+
     }
 
 }
