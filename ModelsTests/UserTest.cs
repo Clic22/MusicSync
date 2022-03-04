@@ -74,7 +74,7 @@ namespace ModelsTests.UserTest
 
             User user1 = new User(expectedGitLabUsername, expectedGitLabPassword, expectedGitUsername, expectedGitEmail); ;
             User? user2 = null;
-            user1.Equals(user2);
+            Assert.False(user1.Equals(user2));
         }
     }
 }

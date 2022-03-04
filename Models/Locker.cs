@@ -48,12 +48,9 @@ namespace App1.Models
 
         public bool isLockedByUser(Song song, User user)
         {
-            if (lockFileExist(song))
+            if (lockFileExist(song) && lockFileCreatedByUser(song, user))
             {
-                if (lockFileCreatedByUser(song, user))
-                {
-                    return true;
-                }
+                return true;
             }
             return false;
 

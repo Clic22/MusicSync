@@ -48,7 +48,7 @@ namespace App1.Models
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             var song = obj as Song;
             if (song == null)

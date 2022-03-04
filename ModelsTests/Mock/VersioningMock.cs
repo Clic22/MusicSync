@@ -20,8 +20,8 @@ namespace App1Tests.Mock
             string GitLabUsername2 = "Erratum12";
             string GitEmail2 = "erratum12@gmail.com";
             user2 = new User(GitLabUsername2, GitLabPassword2, GitUsername2, GitEmail2);
-            VersionPath = @"./versionStorage/";
-            Directory.CreateDirectory(VersionPath);
+            versionPath = @"./versionStorage/";
+            Directory.CreateDirectory(versionPath);
         }
 
         public async Task<string> uploadSongAsync(Song song, string title, string description)
@@ -31,11 +31,11 @@ namespace App1Tests.Mock
             {
                 if (song.LocalPath != null)
                 {
-                    if(Directory.Exists(VersionPath + song.LocalPath))
+                    if(Directory.Exists(versionPath + song.LocalPath))
                     {
-                        Directory.Delete(VersionPath + song.LocalPath, true);
+                        Directory.Delete(versionPath + song.LocalPath, true);
                     }
-                    Copy(song.LocalPath, VersionPath + song.LocalPath);
+                    Copy(song.LocalPath, versionPath + song.LocalPath);
                 }
             }
             return errorMessage;
@@ -48,7 +48,7 @@ namespace App1Tests.Mock
             {
                 if (song.LocalPath != null)
                 {
-                    Copy(VersionPath + song.LocalPath, song.LocalPath);
+                    Copy(versionPath + song.LocalPath, song.LocalPath);
                 }
             }
             return errorMessage;
@@ -62,7 +62,7 @@ namespace App1Tests.Mock
                 if (song.LocalPath != null)
                 {
                     Directory.Delete(song.LocalPath, true);
-                    Copy(VersionPath + song.LocalPath, song.LocalPath);
+                    Copy(versionPath + song.LocalPath, song.LocalPath);
                 }
 
             }
@@ -102,10 +102,9 @@ namespace App1Tests.Mock
         }
 
         public User user { get; set; }
-        public string VersionPath { get => versionPath; set => versionPath = value; }
-
+        public string versionPath;
         private User user1;
         private User user2;
-        private string versionPath;
+        
     }
 }

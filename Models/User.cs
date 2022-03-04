@@ -19,7 +19,7 @@ namespace App1.Models
         public string? GitUsername { get; set; }
         public string? GitEmail { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             var song = obj as User;
             if (song == null)
