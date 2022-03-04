@@ -38,9 +38,9 @@ namespace ModelsTests.SongsManagerTest
         {
 
             Directory.Delete(expectedSong.LocalPath, true);
-            if (Directory.Exists(version.VersionPath + expectedSong.LocalPath))
+            if (Directory.Exists(version.versionPath + expectedSong.LocalPath))
             {
-                Directory.Delete(version.VersionPath + expectedSong.LocalPath, true);
+                Directory.Delete(version.versionPath + expectedSong.LocalPath, true);
             }
             songsManager.SongList.Clear();
         }
@@ -95,7 +95,7 @@ namespace ModelsTests.SongsManagerTest
             User user2 = new User(GitLabUsername, GitLabPassword, GitUsername, GitEmail);
             await locker.lockSongAsync(expectedSong, user2);
             Assert.True(File.Exists(expectedSong.LocalPath + @"\.lock"));
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + @"\.lock"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
 
             //WHEN we want to delete the song
             await songsManager.deleteSong(expectedSong);
@@ -106,7 +106,7 @@ namespace ModelsTests.SongsManagerTest
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             Assert.True(File.Exists(expectedSong.LocalPath + expectedSong.File));
             Assert.True(File.Exists(expectedSong.LocalPath + @"\.lock"));
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + @"\.lock"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace ModelsTests.SongsManagerTest
             Assert.Contains(expectedSong, saver.savedSongs());
             await locker.lockSongAsync(expectedSong, user);
             Assert.True(File.Exists(expectedSong.LocalPath + @"\.lock"));
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + @"\.lock"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
 
             //WHEN we want to delete the song
             await songsManager.deleteSong(expectedSong);
@@ -131,8 +131,8 @@ namespace ModelsTests.SongsManagerTest
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             Assert.True(File.Exists(expectedSong.LocalPath + expectedSong.File));
             Assert.False(File.Exists(expectedSong.LocalPath + @"\.lock"));
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + expectedSong.File));
-            Assert.False(File.Exists(version.VersionPath + expectedSong.LocalPath + @"\.lock"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + expectedSong.File));
+            Assert.False(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
         }
 
         [Fact]
@@ -141,15 +141,15 @@ namespace ModelsTests.SongsManagerTest
             //Add song for synchronization
             songsManager.addSong(title, file, localPath);
             //Simulate a change on version workspace
-            Directory.CreateDirectory(version.VersionPath + expectedSong.LocalPath);
-            FileStream fileStream = File.Create(version.VersionPath + expectedSong.LocalPath + "audio.wav");
+            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
+            FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio.wav");
             fileStream.Close();
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + "audio.wav"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
             Assert.False(File.Exists(expectedSong.LocalPath + "audio.wav"));
 
             string errorMessage = await songsManager.updateSongAsync(expectedSong);
 
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + "audio.wav"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
             Assert.True(File.Exists(expectedSong.LocalPath + "audio.wav"));
             Assert.Equal(string.Empty, errorMessage);
         }
@@ -160,8 +160,8 @@ namespace ModelsTests.SongsManagerTest
             //Add song for synchronization
             songsManager.addSong(title, file, localPath);
             //Simulate a change on version workspace
-            Directory.CreateDirectory(version.VersionPath + expectedSong.LocalPath);
-            FileStream fileStream = File.Create(version.VersionPath + expectedSong.LocalPath + ".lock");
+            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
+            FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + ".lock");
             fileStream.Close();
 
             string errorMessage = await songsManager.updateSongAsync(expectedSong);
@@ -177,17 +177,17 @@ namespace ModelsTests.SongsManagerTest
             //Add song for synchronization
             songsManager.addSong(title, file, localPath);
             //Simulate a change on version workspace
-            Directory.CreateDirectory(version.VersionPath + expectedSong.LocalPath);
-            FileStream fileStream = File.Create(version.VersionPath + expectedSong.LocalPath + "audio.wav");
+            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
+            FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio.wav");
             fileStream.Close();
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + "audio.wav"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
             Assert.False(File.Exists(expectedSong.LocalPath + "audio.wav"));
 
             user.GitLabUsername = "Wrong Username";
 
             string errorMessage = await songsManager.updateSongAsync(expectedSong);
 
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + "audio.wav"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
             Assert.False(File.Exists(expectedSong.LocalPath + "audio.wav"));
             Assert.Equal("Error Bad Credentials", errorMessage);
         }
@@ -198,17 +198,17 @@ namespace ModelsTests.SongsManagerTest
             //Add song for synchronization
             songsManager.addSong(title, file, localPath);
             //Simulate a change on version workspace
-            Directory.CreateDirectory(version.VersionPath + expectedSong.LocalPath);
-            FileStream fileStream = File.Create(version.VersionPath + expectedSong.LocalPath + "audio.wav");
+            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
+            FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio.wav");
             fileStream.Close();
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + "audio.wav"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
             Assert.False(File.Exists(expectedSong.LocalPath + "audio.wav"));
 
             user.GitLabPassword = "Wrong Password";
 
             string errorMessage = await songsManager.updateSongAsync(expectedSong);
 
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + "audio.wav"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
             Assert.False(File.Exists(expectedSong.LocalPath + "audio.wav"));
             Assert.Equal("Error Bad Credentials", errorMessage);
         }
@@ -236,17 +236,17 @@ namespace ModelsTests.SongsManagerTest
             songsManager.addSong(title1, file1, localPath1);
             songsManager.addSong(title2, file2, localPath2);
             //Simulate a change on song 1 version workspace
-            Directory.CreateDirectory(version.VersionPath + song1.LocalPath);
-            FileStream fileStream = File.Create(version.VersionPath + song1.LocalPath + "audio1.wav");
+            Directory.CreateDirectory(version.versionPath + song1.LocalPath);
+            FileStream fileStream = File.Create(version.versionPath + song1.LocalPath + "audio1.wav");
             fileStream.Close();
-            Assert.True(File.Exists(version.VersionPath + song1.LocalPath + "audio1.wav"));
+            Assert.True(File.Exists(version.versionPath + song1.LocalPath + "audio1.wav"));
             Assert.False(File.Exists(song1.LocalPath + "audio1.wav"));
 
             //Simulate a change on song 2 version workspace
-            Directory.CreateDirectory(version.VersionPath + song2.LocalPath);
-            fileStream = File.Create(version.VersionPath + song2.LocalPath + "audio2.wav");
+            Directory.CreateDirectory(version.versionPath + song2.LocalPath);
+            fileStream = File.Create(version.versionPath + song2.LocalPath + "audio2.wav");
             fileStream.Close();
-            Assert.True(File.Exists(version.VersionPath + song2.LocalPath + "audio2.wav"));
+            Assert.True(File.Exists(version.versionPath + song2.LocalPath + "audio2.wav"));
             Assert.False(File.Exists(song2.LocalPath + "audio2.wav"));
 
             string errorMessage = await songsManager.updateAllSongsAsync();
@@ -257,8 +257,8 @@ namespace ModelsTests.SongsManagerTest
 
             Directory.Delete(song1.LocalPath, true);
             Directory.Delete(song2.LocalPath, true);
-            Directory.Delete(version.VersionPath + song1.LocalPath, true);
-            Directory.Delete(version.VersionPath + song2.LocalPath, true);
+            Directory.Delete(version.versionPath + song1.LocalPath, true);
+            Directory.Delete(version.versionPath + song2.LocalPath, true);
         }
 
         [Fact]
@@ -272,8 +272,8 @@ namespace ModelsTests.SongsManagerTest
             fileStream = File.Create(expectedSong.LocalPath + "audio2.wav");
             fileStream.Close();
             //Different Version in version workspace
-            Directory.CreateDirectory(version.VersionPath + expectedSong.LocalPath);
-            fileStream = File.Create(version.VersionPath + expectedSong.LocalPath + "audio3.wav");
+            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
+            fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio3.wav");
             fileStream.Close();
 
             string errorMessage = await songsManager.revertSongAsync(expectedSong);
@@ -295,16 +295,16 @@ namespace ModelsTests.SongsManagerTest
             fileStream = File.Create(expectedSong.LocalPath + "audio2.wav");
             fileStream.Close();
             //Different Version in version workspace
-            Directory.CreateDirectory(version.VersionPath + expectedSong.LocalPath);
-            fileStream = File.Create(version.VersionPath + expectedSong.LocalPath + "audio3.wav");
+            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
+            fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio3.wav");
             fileStream.Close();
 
             string errorMessage = await songsManager.uploadNewSongVersion(expectedSong,"New Version","No description");
 
-            Assert.False(File.Exists(version.VersionPath + expectedSong.LocalPath + "audio3.wav"));
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + "audio1.wav"));
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + "audio2.wav"));
-            Assert.True(File.Exists(version.VersionPath + expectedSong.LocalPath + expectedSong.File));
+            Assert.False(File.Exists(version.versionPath + expectedSong.LocalPath + "audio3.wav"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio1.wav"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio2.wav"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + expectedSong.File));
             Assert.Equal(string.Empty, errorMessage);
         }
     }
