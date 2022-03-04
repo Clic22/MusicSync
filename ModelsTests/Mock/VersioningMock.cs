@@ -62,7 +62,6 @@ namespace App1Tests.Mock
                 if (song.LocalPath != null)
                 {
                     Directory.Delete(song.LocalPath, true);
-                    Directory.CreateDirectory(song.LocalPath);
                     Copy(VersionPath + song.LocalPath, song.LocalPath);
                 }
 
