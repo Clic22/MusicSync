@@ -257,8 +257,32 @@ namespace ModelsTests.SongsManagerTest
 
             Directory.Delete(song1.LocalPath, true);
             Directory.Delete(song2.LocalPath, true);
+            Directory.Delete(version.VersionPath + song1.LocalPath, true);
+            Directory.Delete(version.VersionPath + song2.LocalPath, true);
         }
 
+        [Fact]
+        public async Task revertSongTest()
+        {
+            //Add song for synchronization
+            songsManager.addSong(title, file, localPath);
+            //Simulate Modifications in local workspace
+            FileStream fileStream = File.Create(expectedSong.LocalPath + "audio1.wav");
+            fileStream.Close();
+            fileStream = File.Create(expectedSong.LocalPath + "audio2.wav");
+            fileStream.Close();
+            //Different Version in version workspace
+            Directory.CreateDirectory(version.VersionPath + expectedSong.LocalPath);
+            fileStream = File.Create(version.VersionPath + expectedSong.LocalPath + "audio3.wav");
+            fileStream.Close();
+
+            string errorMessage = await songsManager.revertSongAsync(expectedSong);
+
+            Assert.True(File.Exists(expectedSong.LocalPath + "audio3.wav"));
+            Assert.False(File.Exists(expectedSong.LocalPath + "audio1.wav"));
+            Assert.False(File.Exists(expectedSong.LocalPath + "audio2.wav"));
+            Assert.Equal(string.Empty, errorMessage);
+        }
     }
 
 }

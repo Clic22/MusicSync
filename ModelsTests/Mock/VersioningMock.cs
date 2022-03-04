@@ -59,13 +59,13 @@ namespace App1Tests.Mock
             (bool errorBool, string errorMessage) = await UserErrorAsync();
             if (!errorBool)
             {
-                if (!errorBool)
+                if (song.LocalPath != null)
                 {
-                    if (song.LocalPath != null)
-                    {
-                        Copy(VersionPath + song.LocalPath, song.LocalPath);
-                    }
+                    Directory.Delete(song.LocalPath, true);
+                    Directory.CreateDirectory(song.LocalPath);
+                    Copy(VersionPath + song.LocalPath, song.LocalPath);
                 }
+
             }
             return errorMessage;
         }
@@ -100,8 +100,6 @@ namespace App1Tests.Mock
             foreach (var file in Directory.GetFiles(sourceDir))
                 File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)));
 
-            foreach (var directory in Directory.GetDirectories(sourceDir))
-                Copy(directory, Path.Combine(targetDir, Path.GetFileName(directory)));
         }
 
         public User user { get; set; }

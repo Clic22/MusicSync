@@ -29,11 +29,18 @@ namespace App1.Models
 
         public async Task<bool> unlockSongAsync(Song song, User user)
         {
-            if(isLockedByUser(song,user))
+            if(lockFileExist(song))
             {
-                removeLockFile(song);
-                await VersionTool.uploadSongAsync(song, "unlock", string.Empty);
-                updateSongStatus(song);
+                if(isLockedByUser(song,user))
+                {
+                    removeLockFile(song);
+                    await VersionTool.uploadSongAsync(song, "unlock", string.Empty);
+                    updateSongStatus(song);
+                    return true;
+                }
+            }
+            else
+            {
                 return true;
             }
             return false;

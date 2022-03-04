@@ -134,7 +134,7 @@ namespace App1
         private async void revertSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            string errorMessage = await SongsManager.revertSong(song);
+            string errorMessage = await SongsManager.revertSongAsync(song);
             if (errorMessage != string.Empty)
             {
                 await displayContentDialog(errorMessage);

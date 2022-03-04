@@ -99,6 +99,21 @@ namespace ModelsTests.LockerTest
         }
 
         [Fact]
+        public async Task UnlockSongUnlockedTest()
+        {
+            Assert.Equal(Song.SongStatus.upToDate, song.Status);
+            Assert.False(locker.isLockedByUser(song, user1));
+            Assert.False(File.Exists(version.VersionPath + song.LocalPath + @"\.lock"));
+
+            bool result = await locker.unlockSongAsync(song, user1);
+
+            Assert.True(result);
+            Assert.Equal(Song.SongStatus.upToDate, song.Status);
+            Assert.False(locker.isLockedByUser(song, user1));
+            Assert.False(File.Exists(version.VersionPath + song.LocalPath + @"\.lock"));
+        }
+
+        [Fact]
         public async Task TryUnlockSongWithDifferentUserTest()
         {
             locker.updateSongStatus(song);

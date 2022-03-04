@@ -80,7 +80,7 @@ namespace App1.Models
             
         }
 
-        public async Task<string> revertSong(Song song)
+        public async Task<string> revertSongAsync(Song song)
         {
             string errorMessage = await updateSongAsync(song);
             if (string.IsNullOrEmpty(errorMessage) && await Locker.unlockSongAsync(song, Saver.savedUser()))
