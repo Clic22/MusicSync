@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System;
 using Xunit;
 
-namespace App1Tests.Models
+namespace ModelsTests.SongStorageTest
 {
     public class SongStorageTest
     {

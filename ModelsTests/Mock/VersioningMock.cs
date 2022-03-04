@@ -1,6 +1,8 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
+using System.IO;
 using System.Threading.Tasks;
+
 
 namespace App1Tests.Mock
 {
@@ -18,37 +20,66 @@ namespace App1Tests.Mock
             string GitLabUsername2 = "Erratum12";
             string GitEmail2 = "erratum12@gmail.com";
             user2 = new User(GitLabUsername2, GitLabPassword2, GitUsername2, GitEmail2);
+            VersionPath = @"./versionStorage/";
+            Directory.CreateDirectory(VersionPath);
         }
 
         public async Task<string> uploadSongAsync(Song song, string title, string description)
         {
-            string errorMessage = await UserErrorAsync();
+            (bool errorBool, string errorMessage) = await UserErrorAsync();
+            if (!errorBool)
+            {
+                if (song.LocalPath != null)
+                {
+                    if(Directory.Exists(VersionPath + song.LocalPath))
+                    {
+                        Directory.Delete(VersionPath + song.LocalPath, true);
+                    }
+                    Copy(song.LocalPath, VersionPath + song.LocalPath);
+                }
+            }
             return errorMessage;
         }
 
         public async Task<string> updateSongAsync(Song song)
         {
-            string errorMessage = await UserErrorAsync();
+            (bool errorBool, string errorMessage) = await UserErrorAsync();
+            if (!errorBool)
+            {
+                if (song.LocalPath != null)
+                {
+                    Copy(VersionPath + song.LocalPath, song.LocalPath);
+                }
+            }
             return errorMessage;
         }
 
         public async Task<string> revertSongAsync(Song song)
         {
-            string errorMessage = await UserErrorAsync();
+            (bool errorBool, string errorMessage) = await UserErrorAsync();
+            if (!errorBool)
+            {
+                if (!errorBool)
+                {
+                    if (song.LocalPath != null)
+                    {
+                        Copy(VersionPath + song.LocalPath, song.LocalPath);
+                    }
+                }
+            }
             return errorMessage;
         }
 
-        private async Task<string> UserErrorAsync()
+        private async Task<(bool,string)> UserErrorAsync()
         {
-            string errorMessage = await Task.Run(() =>
+            return await Task.Run(() =>
             {
                 if (userIsDifferentFrom(user1) && 
                     userIsDifferentFrom(user2))
-                    return "Error Bad Credentials";
+                    return (true,"Error Bad Credentials");
                 else
-                    return string.Empty;
+                    return (false,string.Empty);
             });
-            return errorMessage;
         }
         
         private bool userIsDifferentFrom(User expectedUser)
@@ -62,8 +93,22 @@ namespace App1Tests.Mock
             return false;
         }
 
+        void Copy(string sourceDir, string targetDir)
+        {
+            Directory.CreateDirectory(targetDir);
+
+            foreach (var file in Directory.GetFiles(sourceDir))
+                File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)));
+
+            foreach (var directory in Directory.GetDirectories(sourceDir))
+                Copy(directory, Path.Combine(targetDir, Path.GetFileName(directory)));
+        }
+
         public User user { get; set; }
+        public string VersionPath { get => versionPath; set => versionPath = value; }
+
         private User user1;
         private User user2;
+        private string versionPath;
     }
 }

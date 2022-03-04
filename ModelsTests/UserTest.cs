@@ -1,7 +1,7 @@
 ﻿using App1.Models;
 using Xunit;
 
-namespace App1Tests.Models
+namespace ModelsTests.UserTest
 {
     public class UserTest
     {

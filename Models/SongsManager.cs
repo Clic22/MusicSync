@@ -52,10 +52,8 @@ namespace App1.Models
 
         public async Task deleteSong(Song song)
         {
-            if (await Locker.unlockSongAsync(song, Saver.savedUser()))
-            {
-                SongList.deleteSong(song);
-            }
+            await Locker.unlockSongAsync(song, Saver.savedUser());
+            SongList.deleteSong(song);
         }
 
         public async Task<(bool,string)> openSong(Song song)

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace App1Tests.Models
+namespace ModelsTests.SaverMockTest
 {
     public class SaverMockTest
     {

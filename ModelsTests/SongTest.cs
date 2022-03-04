@@ -2,7 +2,7 @@
 using System;
 using Xunit;
 
-namespace App1Tests.Models
+namespace ModelsTests.SongTest
 {
     public class SongTest
     {

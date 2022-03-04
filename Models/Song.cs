@@ -54,7 +54,6 @@ namespace App1.Models
             if (song == null)
                 return false;
             if(this.Title != song.Title ||
-               this.Status != song.Status ||
                this.LocalPath != song.LocalPath ||
                this.File != song.File)
             {
@@ -65,7 +64,7 @@ namespace App1.Models
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(this.Title, this.Status, this.LocalPath, this.File);
+            return HashCode.Combine(this.Title, this.LocalPath, this.File);
         }
 
     }
