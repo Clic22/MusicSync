@@ -62,10 +62,7 @@ namespace App1.Models
             if (string.IsNullOrEmpty(errorMessage))
             {
                 (bool, string) locked = (new bool(),string.Empty);
-                if (song.Status == Song.SongStatus.upToDate)
-                {
-                    locked = await Locker.lockSongAsync(song, Saver.savedUser());
-                }
+                locked = await Locker.lockSongAsync(song, Saver.savedUser());
                 if (Locker.isLockedByUser(song, Saver.savedUser()))
                 {
                     openSongWithDAW(song);
