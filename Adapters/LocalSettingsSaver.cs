@@ -14,14 +14,10 @@ namespace App1.Adapters
 
         public void saveUser(User user)
         {
-            UserContainer.Values.Remove("gitLabUsername");
-            UserContainer.Values.Add("gitLabUsername", user.GitLabUsername);
-            UserContainer.Values.Remove("gitLabPassword");
-            UserContainer.Values.Add("gitLabPassword", user.GitLabPassword);
-            UserContainer.Values.Remove("gitUsername");
-            UserContainer.Values.Add("gitUsername", user.GitUsername);
-            UserContainer.Values.Remove("gitEmail");
-            UserContainer.Values.Add("gitEmail", user.GitEmail);
+            saveUserValue("gitLabUsername", user.GitLabUsername);
+            saveUserValue("gitLabPassword", user.GitLabPassword);
+            saveUserValue("gitUsername", user.GitUsername);
+            saveUserValue("gitEmail", user.GitEmail);
         }
 
         public User savedUser()
@@ -67,9 +63,14 @@ namespace App1.Adapters
             return savedSongs;
         }
 
+        private void saveUserValue(string valueName, string? value)
+        {
+            UserContainer.Values.Remove(valueName);
+            UserContainer.Values.Add(valueName, value);
+        }
+
         private readonly Windows.Storage.ApplicationDataContainer LocalSettings;
         private readonly Windows.Storage.ApplicationDataContainer SongContainer;
         private readonly Windows.Storage.ApplicationDataContainer UserContainer;
-
     }
 }
