@@ -124,7 +124,7 @@ namespace App1
         private async void openSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            (bool, string) opened = await SongsManager.openSong(song);
+            (bool, string) opened = await SongsManager.openSongAsync(song);
             if (!opened.Item1)
             {
                 await displayContentDialog(opened.Item2);

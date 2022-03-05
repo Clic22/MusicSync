@@ -56,7 +56,7 @@ namespace App1.Models
             SongList.deleteSong(song);
         }
 
-        public async Task<(bool,string)> openSong(Song song)
+        public async Task<(bool,string)> openSongAsync(Song song)
         {
             string errorMessage = await updateSongAsync(song);
             if (string.IsNullOrEmpty(errorMessage))

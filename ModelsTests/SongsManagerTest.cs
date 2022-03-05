@@ -314,6 +314,23 @@ namespace ModelsTests.SongsManagerTest
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + expectedSong.File));
             Assert.Equal(string.Empty, errorMessage);
         }
+
+        [Fact]
+        public async Task OpenSongTest()
+        {
+            //Add song for synchronization
+            songsManager.addSong(title, file, localPath);
+            //Simulate a change on version workspace
+            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
+
+            (bool, string) errorMessage = await songsManager.openSongAsync(expectedSong);
+
+            Assert.Equal(Song.SongStatus.locked, expectedSong.Status);
+            Assert.True(File.Exists(expectedSong.LocalPath + ".lock"));
+            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + ".lock"));
+            Assert.True(errorMessage.Item1);
+            Assert.Equal(string.Empty, errorMessage.Item2);
+        }
     }
 
 }
