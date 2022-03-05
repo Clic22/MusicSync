@@ -36,8 +36,10 @@ namespace ModelsTests.SongsManagerTest
 
         public void Dispose()
         {
-
-            Directory.Delete(expectedSong.LocalPath, true);
+            if(expectedSong.LocalPath != null)
+            {
+                Directory.Delete(expectedSong.LocalPath, true);
+            }
             if (Directory.Exists(version.versionPath + expectedSong.LocalPath))
             {
                 Directory.Delete(version.versionPath + expectedSong.LocalPath, true);
@@ -254,9 +256,14 @@ namespace ModelsTests.SongsManagerTest
             Assert.True(File.Exists(song1.LocalPath + "audio1.wav"));
             Assert.True(File.Exists(song2.LocalPath + "audio2.wav"));
             Assert.Equal(string.Empty, errorMessage);
-
-            Directory.Delete(song1.LocalPath, true);
-            Directory.Delete(song2.LocalPath, true);
+            if (song1.LocalPath != null)
+            {
+                Directory.Delete(song1.LocalPath, true);
+            }
+            if (song2.LocalPath != null)
+            {
+                Directory.Delete(song2.LocalPath, true);
+            }
             Directory.Delete(version.versionPath + song1.LocalPath, true);
             Directory.Delete(version.versionPath + song2.LocalPath, true);
         }

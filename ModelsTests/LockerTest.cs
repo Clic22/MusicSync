@@ -38,7 +38,10 @@ namespace ModelsTests.LockerTest
 
         public void Dispose()
         {
-            Directory.Delete(song.LocalPath, true);
+            if (song.LocalPath != null)
+            {
+                Directory.Delete(song.LocalPath, true);
+            }
             if (Directory.Exists(version.versionPath + song.LocalPath))
             {
                 Directory.Delete(version.versionPath + song.LocalPath, true);
