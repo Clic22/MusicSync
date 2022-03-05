@@ -7,7 +7,7 @@ namespace App1.Adapters
     {
         public LocalSettingsSaver()
         {
-            LocalSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            Windows.Storage.ApplicationDataContainer LocalSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             SongContainer = LocalSettings.CreateContainer("songs", Windows.Storage.ApplicationDataCreateDisposition.Always);
             UserContainer = LocalSettings.CreateContainer("user", Windows.Storage.ApplicationDataCreateDisposition.Always);
         }
@@ -69,7 +69,6 @@ namespace App1.Adapters
             UserContainer.Values.Add(valueName, value);
         }
 
-        private readonly Windows.Storage.ApplicationDataContainer LocalSettings;
         private readonly Windows.Storage.ApplicationDataContainer SongContainer;
         private readonly Windows.Storage.ApplicationDataContainer UserContainer;
     }

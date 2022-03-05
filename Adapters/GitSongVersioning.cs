@@ -98,7 +98,7 @@ namespace App1.Adapters
                 var signature = new Signature(
                     new Identity(user.GitUsername, user.GitEmail), DateTimeOffset.Now);
                 Signature committer = signature;
-                Commit commit = repo.Commit($"{title}\n\n{description.ReplaceLineEndings()}", signature, committer);
+                repo.Commit($"{title}\n\n{description.ReplaceLineEndings()}", signature, committer);
             }
         }
 
