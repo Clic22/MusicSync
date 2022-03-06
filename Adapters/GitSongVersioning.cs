@@ -2,8 +2,6 @@
 using App1.Models.Ports;
 using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
-using System;
-using System.Threading.Tasks;
 
 namespace App1.Adapters
 {
@@ -35,26 +33,18 @@ namespace App1.Adapters
             {
                 await Task.Run(() =>
                 {
-                    LocalSettingsSaver saver = new LocalSettingsSaver();
+                    ISaver saver = new LocalSettingsSaver();
                     User user = saver.savedUser();
                     using (var repo = new Repository(song.LocalPath))
                     {
-                        // Credential information to fetch
                         PullOptions options = new PullOptions();
                         options.FetchOptions = new FetchOptions();
-                        options.FetchOptions.CredentialsProvider = new CredentialsHandler(
-                            (url, usernameFromUrl, types) =>
+                        options.FetchOptions.CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) =>
                                 new UsernamePasswordCredentials()
-                                {
-                                    Username = user.GitLabUsername,
-                                    Password = user.GitLabPassword
-                                });
+                                {Username = user.GitLabUsername, Password = user.GitLabPassword});
 
-                        // User information to create a merge commit
-                        var signature = new Signature(
-                            new Identity(user.GitUsername, user.GitEmail), DateTimeOffset.Now);
+                        var signature = new Signature(new Identity(user.GitUsername, user.GitEmail), DateTimeOffset.Now);
 
-                        // Pull
                         Commands.Pull(repo, signature, options);
                     }
                 });
@@ -89,7 +79,7 @@ namespace App1.Adapters
             {
                 return ex.Message;
             }
-}
+        }
 
         private void addAllChanges(Song song)
         {
@@ -101,23 +91,20 @@ namespace App1.Adapters
 
         private void commitChanges(Song song, string title, string description)
         {
-            LocalSettingsSaver saver = new LocalSettingsSaver();
+            ISaver saver = new LocalSettingsSaver();
             User user = saver.savedUser();
             using (var repo = new Repository(song.LocalPath))
             {
-                // Create the committer's signature and commit
                 var signature = new Signature(
                     new Identity(user.GitUsername, user.GitEmail), DateTimeOffset.Now);
                 Signature committer = signature;
-
-                // Commit to the repository
-                Commit commit = repo.Commit($"{title}\n\n{description.ReplaceLineEndings()}", signature, committer);
+                repo.Commit($"{title}\n\n{description.ReplaceLineEndings()}", signature, committer);
             }
         }
 
         private void pushChangesToRepo(Song song)
         {
-            LocalSettingsSaver saver = new LocalSettingsSaver();
+            ISaver saver = new LocalSettingsSaver();
             User user = saver.savedUser();
             using (var repo = new Repository(song.LocalPath))
             {

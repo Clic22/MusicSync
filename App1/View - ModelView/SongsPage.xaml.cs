@@ -124,7 +124,7 @@ namespace App1
         private async void openSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            (bool, string) opened = await SongsManager.openSong(song);
+            (bool, string) opened = await SongsManager.openSongAsync(song);
             if (!opened.Item1)
             {
                 await displayContentDialog(opened.Item2);
@@ -134,7 +134,7 @@ namespace App1
         private async void revertSongClick(object sender, RoutedEventArgs e)
         {
             Song song = (sender as Button).DataContext as Song;
-            string errorMessage = await SongsManager.revertSong(song);
+            string errorMessage = await SongsManager.revertSongAsync(song);
             if (errorMessage != string.Empty)
             {
                 await displayContentDialog(errorMessage);

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System;
 using Xunit;
 
-namespace App1Tests.Models
+namespace ModelsTests.SongStorageTest
 {
     public class SongStorageTest
     {
@@ -25,8 +25,8 @@ namespace App1Tests.Models
 
             songsStorage.addNewSong(song);
             songsStorage.addNewSong(song2);
-            Assert.Contains(song, songsStorage);
-            Assert.Contains(song2, songsStorage);
+            Assert.Contains(song,songsStorage);
+            Assert.Contains(song2,songsStorage);
 
             List<Song> savedSongs = saver.savedSongs();
             Assert.Contains(song, savedSongs);
@@ -47,11 +47,11 @@ namespace App1Tests.Models
           string expected_file = "file";
           Song song = new Song(expected_title, expected_file, expected_localPath );
           
-          songsStorage.addNewSong(song); 
-          Assert.Contains(song, songsStorage);
+          songsStorage.addNewSong(song);
+            Assert.Contains(song,songsStorage);
           
           List<Song> savedSongs = saver.savedSongs();
-          Assert.Contains(song, savedSongs);
+            Assert.Contains(song,savedSongs);
         }
 
         [Fact]

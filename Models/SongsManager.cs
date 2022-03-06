@@ -52,22 +52,16 @@ namespace App1.Models
 
         public async Task deleteSong(Song song)
         {
-            if (await Locker.unlockSongAsync(song, Saver.savedUser()))
-            {
-                SongList.deleteSong(song);
-            }
+            await Locker.unlockSongAsync(song, Saver.savedUser());
+            SongList.deleteSong(song);
         }
 
-        public async Task<(bool,string)> openSong(Song song)
+        public async Task<(bool,string)> openSongAsync(Song song)
         {
             string errorMessage = await updateSongAsync(song);
             if (string.IsNullOrEmpty(errorMessage))
             {
-                (bool, string) locked = (new bool(),string.Empty);
-                if (song.Status == Song.SongStatus.upToDate)
-                {
-                    locked = await Locker.lockSongAsync(song, Saver.savedUser());
-                }
+                (bool, string)  locked = await Locker.lockSongAsync(song, Saver.savedUser());
                 if (Locker.isLockedByUser(song, Saver.savedUser()))
                 {
                     openSongWithDAW(song);
@@ -82,7 +76,7 @@ namespace App1.Models
             
         }
 
-        public async Task<string> revertSong(Song song)
+        public async Task<string> revertSongAsync(Song song)
         {
             string errorMessage = await updateSongAsync(song);
             if (string.IsNullOrEmpty(errorMessage) && await Locker.unlockSongAsync(song, Saver.savedUser()))

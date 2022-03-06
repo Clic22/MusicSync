@@ -29,9 +29,9 @@ namespace App1.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public string Title { get; set; }
-        public string File { get; set; }
-        public string LocalPath { get; set; }
+        public string? Title { get; set; }
+        public string? File { get; set; }
+        public string? LocalPath { get; set; }
         private SongStatus status_;
         public SongStatus Status
         {
@@ -46,7 +46,26 @@ namespace App1.Models
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public override bool Equals(object? obj)
+        {
+            var song = obj as Song;
+            if (song == null)
+                return false;
+            if(this.Title != song.Title ||
+               this.LocalPath != song.LocalPath ||
+               this.File != song.File)
+            {
+                return false;
+            }
+            return true;    
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.Title, this.LocalPath, this.File);
+        }
 
     }
 }

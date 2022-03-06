@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace App1Tests.Models
+namespace ModelsTests.SaverMockTest
 {
     public class SaverMockTest
     {
@@ -37,7 +37,7 @@ namespace App1Tests.Models
             saver.saveSong(expectedSong);
             List<Song> Songs = saver.savedSongs();
 
-            Assert.Contains(expectedSong, Songs);
+            Assert.Contains(expectedSong,Songs);
         }
     }
 }
