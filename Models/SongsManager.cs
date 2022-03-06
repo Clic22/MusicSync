@@ -61,8 +61,7 @@ namespace App1.Models
             string errorMessage = await updateSongAsync(song);
             if (string.IsNullOrEmpty(errorMessage))
             {
-                (bool, string) locked = (new bool(),string.Empty);
-                locked = await Locker.lockSongAsync(song, Saver.savedUser());
+                (bool, string)  locked = await Locker.lockSongAsync(song, Saver.savedUser());
                 if (Locker.isLockedByUser(song, Saver.savedUser()))
                 {
                     openSongWithDAW(song);
