@@ -116,7 +116,7 @@ namespace App1.Adapters
             }
         }
 
-        private void commitChanges(Song song, string title, string description)
+        static private void commitChanges(Song song, string title, string description)
         {
             ISaver saver = new LocalSettingsSaver();
             User user = saver.savedUser();
