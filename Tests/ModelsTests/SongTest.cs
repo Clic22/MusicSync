@@ -14,6 +14,7 @@ namespace ModelsTests.SongTest
             Assert.Null(song.Title);
             Assert.Null(song.LocalPath);
             Assert.Null(song.File);
+            Assert.Null(song.VersionDescription);
             Assert.Equal(Song.SongStatus.upToDate, song.Status);
         }
 
@@ -29,15 +30,8 @@ namespace ModelsTests.SongTest
             Assert.Equal(expected_title, song.Title);
             Assert.Equal(expected_localPath, song.LocalPath);
             Assert.Equal(expected_file, song.File);
+            Assert.Null(song.VersionDescription);
             Assert.Equal(Song.SongStatus.upToDate, song.Status);
-        }
-
-        [Fact]
-        public void SetStatusTriggerPropertyChanged()
-        {
-            Song song = new Song();
-            Action action = () => song.Status = Song.SongStatus.locked;
-            Assert.PropertyChanged(song, "Status", action);
         }
 
         [Fact]

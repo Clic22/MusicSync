@@ -346,6 +346,26 @@ namespace ModelsTests.SongsManagerTest
             Assert.False(errorMessage.Item1);
             Assert.Equal("Already Locked", errorMessage.Item2);
         }
+
+        [Theory]
+        [InlineData("New Version", "No Description")]
+        [InlineData("Update Guitars", "Add more delays on string and guitars")]
+        public async Task songVersionDescriptionTest(string title, string description)
+        {
+            //Add song for synchronization
+            songsManager.addSong(title, file, localPath);
+            //Simulate Modifications in local workspace
+            FileStream fileStream = File.Create(expectedSong.LocalPath + "audio1.wav");
+            fileStream.Close();
+            fileStream = File.Create(expectedSong.LocalPath + "audio2.wav");
+            fileStream.Close();
+
+            string errorMessage = await songsManager.uploadNewSongVersion(expectedSong, title, description);
+
+            string versionDescription = await songsManager.versionDescriptionAsync(expectedSong);
+
+            Assert.Equal(title+"\n\n"+description, versionDescription);
+        }
     }
 
 }

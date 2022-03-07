@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AdaptersTests (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "AdaptersTests (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

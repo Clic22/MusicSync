@@ -81,6 +81,27 @@ namespace App1.Adapters
             }
         }
 
+        public async Task<string> songVersionDescriptionAsync(Song song)
+        {
+            string songVersionDescription = string.Empty;
+            try
+            {
+                await Task.Run(() =>
+                {
+                    using (var repo = new Repository(song.LocalPath))
+                    {
+                        Commit commit = (Commit)repo.Commits.Take(1);
+                        songVersionDescription = commit.Message;
+                    }
+                });
+                return songVersionDescription;
+            }
+            catch 
+            {
+                return songVersionDescription;
+            }
+        }
+
         private void addAllChanges(Song song)
         {
             using (var repo = new Repository(song.LocalPath))
@@ -115,5 +136,6 @@ namespace App1.Adapters
                 repo.Network.Push(remote, @"refs/heads/master", options);
             }
         }
+
     }
 }
