@@ -27,6 +27,24 @@ namespace App1.Adapters
             }
         }
 
+        public async Task<string> uploadSongAsync(Song song, string file, string title, string description)
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    addChanges(song, file);
+                    commitChanges(song, title, description);
+                    pushChangesToRepo(song);
+                });
+                return String.Empty;
+            }
+            catch (LibGit2SharpException ex)
+            {
+                return ex.Message;
+            }
+        }
+
         public async Task<string> updateSongAsync(Song song)
         {
             try
@@ -86,6 +104,15 @@ namespace App1.Adapters
             using (var repo = new Repository(song.LocalPath))
             {
                 Commands.Stage(repo, "*");
+            }
+        }
+
+        private void addChanges(Song song, string file)
+        {
+            using (var repo = new Repository(song.LocalPath))
+            {
+                repo.Index.Add(file);
+                repo.Index.Write();
             }
         }
 
