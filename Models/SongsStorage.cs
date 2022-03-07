@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace App1.Models
 {
-    public class SongsStorage : ObservableCollection<Song>
+    public class SongsStorage : List<Song>
     {
         public SongsStorage(ISaver NewSaver)
         {

@@ -30,9 +30,7 @@
                             <Button Content="v1.0.0" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0">
                                 <Button.Flyout>
                                     <Flyout>
-                                        <StackPanel>
-                                            <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind VersionDescription}" Margin="0,0,0,12" />
-                                        </StackPanel>
+                                        <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind VersionDescription}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Flyout>
                                 </Button.Flyout>
                             </Button>

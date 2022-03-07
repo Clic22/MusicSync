@@ -10,6 +10,9 @@
 
         public Song()
         {
+            Title = string.Empty;
+            File = string.Empty;
+            LocalPath = string.Empty;
             Status = SongStatus.upToDate;
         }
 
@@ -40,10 +43,9 @@
             return HashCode.Combine(this.Title, this.LocalPath, this.File);
         }
 
-        public string? Title { get; set; }
-        public string? File { get; set; }
-        public string? LocalPath { get; set; }
-        public string? VersionDescription { get; set; }
+        public string Title { get; set; }
+        public string File { get; set; }
+        public string LocalPath { get; set; }
         public SongStatus Status;
     }
 }

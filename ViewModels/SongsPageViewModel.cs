@@ -8,45 +8,117 @@ namespace App1.ViewModels
     public class SongsPageViewModel
     {
         public SongsPageViewModel() { 
-            SongsVersioned = new ObservableCollection<SongVersioned> { new SongVersioned() };
+            SongsVersioned = new ObservableCollection<SongVersioned>();
             Saver = new LocalSettingsSaver();
             VersionTool = new GitSongVersioning();
             SongsManager = new SongsManager(VersionTool, Saver);
+            intializeSongsVersioned();
         }
 
-        public Task<string> updateAllSongsAsync()
+        public async Task<string> updateAllSongsAsync()
         {
-            throw new NotImplementedException();
+            string errorMessage = string.Empty;
+            foreach (SongVersioned songVersioned in SongsVersioned)
+            {
+                Song? song = SongsManager.SongList.Find(song => song.Title == songVersioned.Title);
+                if (song != null)
+                {
+                    errorMessage = await SongsManager.updateSongAsync(song);
+                    refreshSongVersioned(song);
+                    if (errorMessage != string.Empty)
+                    {
+                        return errorMessage;
+                    }
+                }
+                else
+                {
+                     return errorMessage = "Error: Song not found";
+                }  
+            }
+            return errorMessage;
         }
 
-        public void addSong(string text1, string text2, string text3)
+        public void addSong(string songTitle, string songFile, string songLocalPath)
         {
-            throw new NotImplementedException();
+            SongsManager.addSong(songTitle, songFile, songLocalPath);
+            SongsVersioned.Add(new SongVersioned(songTitle));
+            Song? song = SongsManager.SongList.Find(song => song.Title == songTitle);
+            refreshSongVersioned(song);
         }
 
-        public Task deleteSong(SongVersioned song)
+        public async Task deleteSong(SongVersioned songVersioned)
         {
-            throw new NotImplementedException();
+            Song? song = SongsManager.SongList.Find(song => song.Title == songVersioned.Title);
+            if (song != null)
+                await SongsManager.deleteSong(song);
+            SongsVersioned.Remove(songVersioned);
         }
 
-        public Task<string> updateSongAsync(SongVersioned song)
+        public async Task<string> updateSongAsync(SongVersioned songVersioned)
         {
-            throw new NotImplementedException();
+            Song? song = SongsManager.SongList.Find(song => song.Title == songVersioned.Title);
+            string errorMessage = string.Empty;
+            if (song != null)
+            {
+                errorMessage = await SongsManager.updateSongAsync(song);
+                refreshSongVersioned(song);
+            }  
+            else
+            {
+                errorMessage =  "Error: Song not found";
+            }
+            return errorMessage;
         }
 
-        public Task<(bool, string)> openSongAsync(SongVersioned song)
+        public Task<(bool, string)> openSongAsync(SongVersioned songVersioned)
         {
-            throw new NotImplementedException();
+            Song? song = SongsManager.SongList.Find(song => song.Title == songVersioned.Title);
+            return SongsManager.openSongAsync(song);
         }
 
-        public Task<string> revertSongAsync(SongVersioned song)
+        public Task<string> revertSongAsync(SongVersioned songVersioned)
         {
-            throw new NotImplementedException();
+            Song? song = SongsManager.SongList.Find(song => song.Title == songVersioned.Title);
+            return SongsManager.revertSongAsync(song);
         }
 
-        public Task<string> uploadNewSongVersion(SongVersioned song, string text1, string text2)
+        public Task<string> uploadNewSongVersion(SongVersioned songVersioned, string changeTitle, string changeDescription)
         {
-            throw new NotImplementedException();
+            Song? song = SongsManager.SongList.Find(song => song.Title == songVersioned.Title);
+            return SongsManager.uploadNewSongVersion(song, changeTitle, changeDescription);
+        }
+
+        private Task intializeSongsVersioned()
+        {
+            return Task.Run(() =>
+            {
+                foreach (Song song in SongsManager.SongList)
+                {
+                    SongVersioned songVersioned = new SongVersioned(song.Title);
+                    SongsVersioned.Add(songVersioned);
+                }
+            });
+        }
+
+        private void refreshSongVersioned(Song song)
+        {
+            SongVersioned songVersioned = SongsVersioned.First(songVersioned => songVersioned.Title == song.Title);
+            refreshSongStatus(songVersioned, song);
+            refreshDescription(songVersioned, song);
+        }
+
+        private void refreshSongStatus(SongVersioned songVersioned, Song song)
+        {
+            if (song.Status == Song.SongStatus.locked)
+                songVersioned.Status = "Locked";
+            else if (song.Status == Song.SongStatus.upToDate)
+                songVersioned.Status = "Up to Date";
+        }
+
+        private async void refreshDescription(SongVersioned songVersioned, Song song)
+        {
+            string description = await SongsManager.versionDescriptionAsync(song);
+            songVersioned.VersionDescription = description;
         }
 
         public ObservableCollection<SongVersioned> SongsVersioned;

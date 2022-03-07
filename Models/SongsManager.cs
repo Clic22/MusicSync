@@ -48,6 +48,7 @@ namespace App1.Models
         {
             Song song = new Song(songTitle, songFile, songLocalPath);
             SongList.addNewSong(song);
+            Locker.updateSongStatus(song);
         }
 
         public async Task deleteSong(Song song)

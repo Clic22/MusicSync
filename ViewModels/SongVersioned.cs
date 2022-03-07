@@ -18,6 +18,14 @@ namespace App1.ViewModels
             versionDescription_ = string.Empty;
         }
 
+        public SongVersioned(string title)
+        {
+            title_ = title;
+            status_ = "Up to Date";
+            versionNumber_ = string.Empty;
+            versionDescription_ = string.Empty;
+        }
+
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
