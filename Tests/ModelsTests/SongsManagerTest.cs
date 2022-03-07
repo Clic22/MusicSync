@@ -306,7 +306,7 @@ namespace ModelsTests.SongsManagerTest
             fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio3.wav");
             fileStream.Close();
 
-            string errorMessage = await songsManager.uploadNewSongVersion(expectedSong,"New Version","No description");
+            string errorMessage = await songsManager.uploadNewSongVersion(expectedSong,"New Version","No description","v1.0.0");
 
             Assert.False(File.Exists(version.versionPath + expectedSong.LocalPath + "audio3.wav"));
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio1.wav"));
@@ -360,7 +360,7 @@ namespace ModelsTests.SongsManagerTest
             fileStream = File.Create(expectedSong.LocalPath + "audio2.wav");
             fileStream.Close();
 
-            string errorMessage = await songsManager.uploadNewSongVersion(expectedSong, title, description);
+            string errorMessage = await songsManager.uploadNewSongVersion(expectedSong, title, description, "v1.0.0");
 
             string versionDescription = await songsManager.versionDescriptionAsync(expectedSong);
 

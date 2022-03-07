@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:App1.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:muxc="using:ABI.Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
     >
 
@@ -27,10 +27,10 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="{x:Bind Title}" FontSize="20" Margin="12" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
-                            <Button Content="v1.0.0" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0">
+                            <Button x:Name="Test" Content="{x:Bind VersionNumber}" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0">
                                 <Button.Flyout>
-                                    <Flyout>
-                                        <TextBlock Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind VersionDescription}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Flyout Placement="Bottom">
+                                        <TextBlock Text="{x:Bind VersionDescription}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Flyout>
                                 </Button.Flyout>
                             </Button>
@@ -97,6 +97,11 @@
                 <TextBox x:Name="title" AutomationProperties.Name="simple text editor" Margin="12"/>
                 <TextBlock x:Name="descriptionLabel" Text="Description" Height="20" Margin="12"/>
                 <TextBox x:Name="description" AutomationProperties.Name="simple text editor" TextWrapping="Wrap" AcceptsReturn="True" Height="200" Margin="12"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="12">
+                    <CheckBox Content="Composition" Checked="Composition_Checked" Unchecked="Composition_Unchecked" Margin="12" />
+                    <CheckBox Content="Mix" Checked="Mix_Checked" Unchecked="Mix_Unchecked"  Margin="12"/>
+                    <CheckBox Content="Mastering" Checked="Mastering_Checked" Unchecked="Mastering_Unchecked"  Margin="12"/>
+                </StackPanel>
             </StackPanel>
         </ContentDialog>
     </Grid>

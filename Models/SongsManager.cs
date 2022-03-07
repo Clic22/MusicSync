@@ -34,12 +34,12 @@ namespace App1.Models
             return errorMessage;
         }
 
-        public async Task<string> uploadNewSongVersion(Song song, string changeTitle, string changeDescription)
+        public async Task<string> uploadNewSongVersion(Song song, string changeTitle, string changeDescription, string versionNumber)
         {
             string errorMessage = string.Empty;
             if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
-                errorMessage = await VersionTool.uploadSongAsync(song, changeTitle, changeDescription);
+                errorMessage = await VersionTool.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
             }
             return errorMessage;
         }
@@ -91,6 +91,12 @@ namespace App1.Models
         {
             string versionDescriprion = await VersionTool.songVersionDescriptionAsync(song);
             return versionDescriprion;
+        }
+
+        public async Task<string> versionNumberAsync(Song song)
+        {
+            string versionNumber = await VersionTool.songVersionNumberAsync(song);
+            return versionNumber;
         }
 
         private static void openSongWithDAW(Song song)
