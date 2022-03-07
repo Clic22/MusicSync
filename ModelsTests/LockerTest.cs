@@ -61,6 +61,12 @@ namespace ModelsTests.LockerTest
         [Fact]
         public async Task LockSongTest()
         {
+            //Simulate change in local workspace
+            FileStream fileStream = File.Create(song.LocalPath + "audio1.wav");
+            fileStream.Close();
+            Assert.True(File.Exists(song.LocalPath + "audio1.wav"));
+            Assert.False(File.Exists(version.versionPath + song.LocalPath + "audio1.wav"));
+
             (bool,string) result = await locker.lockSongAsync(song,user1);
 
             Assert.True(result.Item1);
@@ -68,6 +74,30 @@ namespace ModelsTests.LockerTest
             Assert.Equal(Song.SongStatus.locked, song.Status);
             Assert.True(locker.isLockedByUser(song, user1));
             Assert.True(File.Exists(version.versionPath + song.LocalPath + @"\.lock"));
+            Assert.False(File.Exists(version.versionPath + song.LocalPath + @"audio1.wav"));
+        }
+
+        [Fact]
+        public async Task UnlockSongTest()
+        {
+            await locker.lockSongAsync(song, user1);
+
+            Assert.Equal(Song.SongStatus.locked, song.Status);
+            Assert.True(locker.isLockedByUser(song, user1));
+            Assert.True(File.Exists(version.versionPath + song.LocalPath + @"\.lock"));
+            //Simulate change in local workspace
+            FileStream fileStream = File.Create(song.LocalPath + "audio1.wav");
+            fileStream.Close();
+            Assert.True(File.Exists(song.LocalPath + "audio1.wav"));
+            Assert.False(File.Exists(version.versionPath + song.LocalPath + "audio1.wav"));
+
+            bool result = await locker.unlockSongAsync(song, user1);
+
+            Assert.True(result);
+            Assert.Equal(Song.SongStatus.upToDate, song.Status);
+            Assert.False(locker.isLockedByUser(song, user1));
+            Assert.False(File.Exists(version.versionPath + song.LocalPath + @"\.lock"));
+            Assert.False(File.Exists(version.versionPath + song.LocalPath + @"audio1.wav"));
         }
 
         [Fact]
@@ -82,23 +112,6 @@ namespace ModelsTests.LockerTest
 
             Assert.Equal(Song.SongStatus.locked, song.Status);
             Assert.True(locker.isLockedByUser(song, user1));
-        }
-
-        [Fact]
-        public async Task UnlockSongTest()
-        {
-            await locker.lockSongAsync(song,user1);
-
-            Assert.Equal(Song.SongStatus.locked, song.Status);
-            Assert.True(locker.isLockedByUser(song, user1));
-            Assert.True(File.Exists(version.versionPath + song.LocalPath + @"\.lock"));
-
-            bool result = await locker.unlockSongAsync(song, user1);
-
-            Assert.True(result);
-            Assert.Equal(Song.SongStatus.upToDate, song.Status);
-            Assert.False(locker.isLockedByUser(song, user1));
-            Assert.False(File.Exists(version.versionPath + song.LocalPath + @"\.lock"));
         }
 
         [Fact]

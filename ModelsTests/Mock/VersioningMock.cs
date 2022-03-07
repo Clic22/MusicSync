@@ -41,6 +41,30 @@ namespace App1Tests.Mock
             return errorMessage;
         }
 
+        public async Task<string> uploadSongAsync(Song song, string file, string title, string description)
+        {
+            (bool errorBool, string errorMessage) = await UserErrorAsync();
+            if (!errorBool)
+            {
+                if (song.LocalPath != null)
+                {
+                    if (File.Exists(versionPath + song.LocalPath + file))
+                    {
+                        File.Delete(versionPath + song.LocalPath + file);
+                    }
+                    if (File.Exists(song.LocalPath + file))
+                    {
+                        if (!Directory.Exists(versionPath + song.LocalPath))
+                        {
+                            Directory.CreateDirectory(versionPath + song.LocalPath);
+                        }
+                        File.Copy(song.LocalPath + file, versionPath + song.LocalPath + file);
+                    }
+                }
+            }
+            return errorMessage;
+        }
+
         public async Task<string> updateSongAsync(Song song)
         {
             (bool errorBool, string errorMessage) = await UserErrorAsync();

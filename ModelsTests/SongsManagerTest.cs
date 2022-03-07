@@ -133,7 +133,7 @@ namespace ModelsTests.SongsManagerTest
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             Assert.True(File.Exists(expectedSong.LocalPath + expectedSong.File));
             Assert.False(File.Exists(expectedSong.LocalPath + @"\.lock"));
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + expectedSong.File));
+            Assert.False(File.Exists(version.versionPath + expectedSong.LocalPath + expectedSong.File));
             Assert.False(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
         }
 

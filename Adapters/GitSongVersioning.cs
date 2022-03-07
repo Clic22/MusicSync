@@ -27,6 +27,24 @@ namespace App1.Adapters
             }
         }
 
+        public async Task<string> uploadSongAsync(Song song, string file, string title, string description)
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    addChanges(song, file);
+                    commitChanges(song, title, description);
+                    pushChangesToRepo(song);
+                });
+                return String.Empty;
+            }
+            catch (LibGit2SharpException ex)
+            {
+                return ex.Message;
+            }
+        }
+
         public async Task<string> updateSongAsync(Song song)
         {
             try
@@ -89,7 +107,16 @@ namespace App1.Adapters
             }
         }
 
-        private void commitChanges(Song song, string title, string description)
+        private void addChanges(Song song, string file)
+        {
+            using (var repo = new Repository(song.LocalPath))
+            {
+                repo.Index.Add(file);
+                repo.Index.Write();
+            }
+        }
+
+        static private void commitChanges(Song song, string title, string description)
         {
             ISaver saver = new LocalSettingsSaver();
             User user = saver.savedUser();
