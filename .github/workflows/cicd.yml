@@ -48,7 +48,7 @@ jobs:
   ci:
     strategy:
       matrix:
-        configuration: [Debug, Release]
+        configuration: [Release]
         platform: [x64, x86] 
 
     runs-on: windows-latest  # For a list of available runner types, refer to
