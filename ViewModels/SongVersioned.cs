@@ -10,12 +10,6 @@ namespace App1.ViewModels
 {
     public class SongVersioned : INotifyPropertyChanged
     {
-        public SongVersioned()
-        {
-            title_ = string.Empty;
-            status_ = string.Empty;
-        }
-
         public SongVersioned(string title)
         {
             title_ = title;
@@ -34,11 +28,6 @@ namespace App1.ViewModels
             get
             {
                 return title_;
-            }
-            set
-            {
-                title_ = value;
-                NotifyPropertyChanged();
             }
         }
         private string status_;
