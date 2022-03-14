@@ -36,7 +36,7 @@
 # For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
 # refer to https://github.com/microsoft/github-actions-for-desktop-apps
 
-name: MusicSync App Quality
+name: Quality
 
 on:
   push:
@@ -46,11 +46,12 @@ on:
 
 jobs:
 
-  build:
+  quality:
 
     strategy:
       matrix:
-        configuration: [Release]
+        configuration: [Debug, Release]
+        platform: [x64, x86] 
 
     runs-on: windows-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
@@ -82,11 +83,12 @@ jobs:
     - name: Setup VSTest Path
       uses: darenm/Setup-VSTest@v1
 
-    # Restore the application
+    # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration /p:Platform=$env:Platform
       env:
         Configuration: ${{ matrix.configuration }}
+        Platform: ${{ matrix.platform }}
 
     - name: Cache SonarCloud packages
       uses: actions/cache@v1
@@ -120,17 +122,23 @@ jobs:
     - name: Build and analyze
       env:
         Configuration: ${{ matrix.configuration }}
+        Platform: ${{ matrix.platform }}
       shell: powershell
       run: |
-        msbuild $env:Solution_Name /p:Configuration=$env:Configuration
+        msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:Platform=$env:Platform
 
 
     - name: Test and coverage
       shell: powershell
       run: |
+<<<<<<< HEAD
         vstest.console.exe D:\a\MusicSync\MusicSync\Tests\ModelsTests\bin\$env:Configuration\net6.0\ModelsTests.dll D:\a\MusicSync\MusicSync\Tests\ViewModelsTests\bin\$env:Configuration\net6.0\ViewModelsTests.dll /EnableCodeCoverage /logger:"trx" /collect:"Code Coverage;Format=Xml"
+=======
+        vstest.console.exe D:\a\MusicSync\MusicSync\ModelsTests\bin\$env:Platform\$env:Configuration\net6.0\ModelsTests.dll /EnableCodeCoverage /logger:"trx" /collect:"Code Coverage;Format=Xml"
+>>>>>>> ccfa4c9584a1795b1ae6edd0529a7335ca1d2de4
       env:
         Configuration: ${{ matrix.configuration }}
+        Platform: ${{ matrix.platform }}
 
     - name: Sonar end
       env:
