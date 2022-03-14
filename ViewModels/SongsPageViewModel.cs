@@ -86,11 +86,10 @@ namespace App1.ViewModels
             return errorMessage;
         }
 
-        public async Task<string> uploadNewSongVersion(SongVersioned songVersioned, string changeTitle, string changeDescription, bool composition, bool mix, bool mastering)
+        public async Task<string> uploadNewSongVersion(SongVersioned songVersioned, string changeTitle, string changeDescription)
         {
             Song? song = SongsManager.SongList.Find(song => song.Title == songVersioned.Title);
-            string versionNumber = incrementVersionNumber(songVersioned, composition, mix, mastering);
-            string errorMessage = await SongsManager.uploadNewSongVersion(song, changeTitle, changeDescription, versionNumber);
+            string errorMessage = await SongsManager.uploadNewSongVersion(song, changeTitle, changeDescription);
             refreshSongVersioned(song);
             return errorMessage;
         }
@@ -107,37 +106,10 @@ namespace App1.ViewModels
             });
         }
 
-        private string incrementVersionNumber(SongVersioned songVersioned, bool composition, bool mix, bool mastering)
-        {
-            string[] versionNumberSplit = songVersioned.VersionNumber.Split(".");
-            int compoNumber = int.Parse(versionNumberSplit[0]);
-            int mixNumber = int.Parse(versionNumberSplit[1]);
-            int masteringNumber = int.Parse(versionNumberSplit[2]);
-            if (composition)
-            {
-                compoNumber = compoNumber + 1;
-                mixNumber = 0;
-                masteringNumber = 0;
-            }
-            if (mix)
-            {
-                mixNumber = mixNumber + 1;
-                masteringNumber = 0;
-            }
-            if (mastering)
-            {
-                masteringNumber = masteringNumber + 1;
-            }
-            string newVersionNumber = compoNumber.ToString() + "." + mixNumber.ToString() + "." + masteringNumber.ToString()  ;
-            return newVersionNumber;
-        }
-
         private void refreshSongVersioned(Song song)
         {
             SongVersioned songVersioned = SongsVersioned.First(songVersioned => songVersioned.Title == song.Title);
             refreshSongStatus(songVersioned, song);
-            refreshDescription(songVersioned, song);
-            refreshVersionNumber(songVersioned, song);
         }
 
         private void refreshSongStatus(SongVersioned songVersioned, Song song)
@@ -146,18 +118,6 @@ namespace App1.ViewModels
                 songVersioned.Status = "Locked";
             else if (song.Status == Song.SongStatus.upToDate)
                 songVersioned.Status = "Up to Date";
-        }
-
-        private async void refreshDescription(SongVersioned songVersioned, Song song)
-        {
-            string description = await SongsManager.versionDescriptionAsync(song);
-            songVersioned.VersionDescription = description;
-        }
-
-        private async void refreshVersionNumber(SongVersioned songVersioned, Song song)
-        {
-            string versionNumber = await SongsManager.versionNumberAsync(song);
-            songVersioned.VersionNumber = versionNumber;
         }
 
         public ObservableCollection<SongVersioned> SongsVersioned;

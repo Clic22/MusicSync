@@ -101,7 +101,7 @@ namespace App1
             if (result == ContentDialogResult.Primary)
             {
                 SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                string errorMessage = await SongsPageViewModel.uploadNewSongVersion(song, title.Text, description.Text, composition, mix, mastering);
+                string errorMessage = await SongsPageViewModel.uploadNewSongVersion(song, title.Text, description.Text);
                 if (errorMessage != string.Empty)
                 {
                     await displayContentDialog(errorMessage);
@@ -114,36 +114,6 @@ namespace App1
             }
             title.Text = String.Empty;
             description.Text = String.Empty;
-        }
-
-        private void Composition_Checked(object sender, RoutedEventArgs e)
-        {
-            composition = true;
-        }
-
-        private void Composition_Unchecked(object sender, RoutedEventArgs e)
-        {
-            composition = false;
-        }
-
-        private void Mix_Checked(object sender, RoutedEventArgs e)
-        {
-            mix = true;
-        }
-
-        private void Mix_Unchecked(object sender, RoutedEventArgs e)
-        {
-            mix = false;
-        }
-
-        private void Mastering_Checked(object sender, RoutedEventArgs e)
-        {
-            mastering = true;
-        }
-
-        private void Mastering_Unchecked(object sender, RoutedEventArgs e)
-        {
-            mastering = false;
         }
 
         private async void openSongClick(object sender, RoutedEventArgs e)
@@ -181,8 +151,5 @@ namespace App1
         }
 
         private SongsPageViewModel SongsPageViewModel;
-        private bool composition;
-        private bool mix;
-        private bool mastering;
     }
 }

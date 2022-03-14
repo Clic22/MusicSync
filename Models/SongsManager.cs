@@ -34,12 +34,12 @@ namespace App1.Models
             return errorMessage;
         }
 
-        public async Task<string> uploadNewSongVersion(Song song, string changeTitle, string changeDescription, string versionNumber)
+        public async Task<string> uploadNewSongVersion(Song song, string changeTitle, string changeDescription)
         {
             string errorMessage = string.Empty;
             if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
-                errorMessage = await VersionTool.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+                errorMessage = await VersionTool.uploadSongAsync(song, changeTitle, changeDescription);
             }
             return errorMessage;
         }

@@ -25,7 +25,7 @@ namespace App1Tests.Mock
             songVersionDescription = string.Empty;
         }
 
-        public async Task<string> uploadSongAsync(Song song, string title, string description, string versionNumber)
+        public async Task<string> uploadSongAsync(Song song, string title, string description)
         {
             (bool errorBool, string errorMessage) = await UserErrorAsync();
             songVersionDescription = title + "\n\n" + description;
@@ -38,13 +38,12 @@ namespace App1Tests.Mock
                         Directory.Delete(versionPath + song.LocalPath, true);
                     }
                     Copy(song.LocalPath, versionPath + song.LocalPath);
-                    songVersionNumber = versionNumber;
                 }
             }
             return errorMessage;
         }
 
-        public async Task<string> uploadSongAsync(Song song, string file, string title)
+        public async Task<string> uploadSongAsync(Song song, string file, string title, string description)
         {
             (bool errorBool, string errorMessage) = await UserErrorAsync();
             if (!errorBool)

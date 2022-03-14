@@ -9,7 +9,7 @@ namespace App1.Adapters
     {
         public GitSongVersioning() { }
 
-        public async Task<string> uploadSongAsync(Song song, string title, string description, string versionNumber)
+        public async Task<string> uploadSongAsync(Song song, string title, string description)
         {
             try
             {
@@ -17,7 +17,6 @@ namespace App1.Adapters
                 {
                     addAllChanges(song);
                     commitChanges(song, title, description);
-                    tagRepo(song,versionNumber);
                     pushChangesToRepo(song);
                 });
                 return String.Empty;
@@ -28,14 +27,14 @@ namespace App1.Adapters
             }
         }
 
-        public async Task<string> uploadSongAsync(Song song, string file, string title)
+        public async Task<string> uploadSongAsync(Song song, string file, string title, string description)
         {
             try
             {
                 await Task.Run(() =>
                 {
                     addChanges(song, file);
-                    commitChanges(song, title, string.Empty);
+                    commitChanges(song, title, description);
                     pushChangesToRepo(song);
                 });
                 return String.Empty;
