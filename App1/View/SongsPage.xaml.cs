@@ -5,6 +5,9 @@ using System;
 using System.Threading.Tasks;
 using App1.ViewModels;
 using Windows.Storage.Pickers;
+using App1.Models.Ports;
+using App1.Models;
+using App1.Adapters;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -16,7 +19,10 @@ namespace App1
         public SongsPage()
         {
             this.InitializeComponent();
-            SongsPageViewModel = new SongsPageViewModel();
+            ISaver saver = new LocalSettingsSaver();
+            IVersionTool versionTool = new GitSongVersioning();
+            ISongsManager songsManager = new SongsManager(versionTool, saver);
+            SongsPageViewModel = new SongsPageViewModel(songsManager);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)

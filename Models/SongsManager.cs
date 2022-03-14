@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace App1.Models
 {
-    public class SongsManager
+    public class SongsManager : ISongsManager
     {
         public SongsManager(IVersionTool NewVersionTool, ISaver NewSaver)
         {
@@ -95,6 +95,11 @@ namespace App1.Models
                 UseShellExecute = true
             };
             p.Start();
+        }
+
+        public Song? findSong(string songTitle)
+        {
+            return SongList.Find(song => song.Title == songTitle);
         }
 
         public SongsStorage SongList { get; private set; }

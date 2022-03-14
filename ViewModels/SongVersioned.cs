@@ -54,5 +54,22 @@ namespace App1.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
+        public override bool Equals(object? obj)
+        {
+            var song = obj as SongVersioned;
+            if (song == null)
+                return false;
+            if (this.Title != song.Title)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.Title);
+        }
     }
 }
