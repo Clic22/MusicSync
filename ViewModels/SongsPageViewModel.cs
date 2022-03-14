@@ -43,11 +43,11 @@ namespace App1.ViewModels
             refreshSongVersioned(song);
         }
 
-        public async Task deleteSong(SongVersioned songVersioned)
+        public async Task deleteSongAsync(SongVersioned songVersioned)
         {
             Song? song = SongsManager.findSong(songVersioned.Title);
             if (song != null)
-                await SongsManager.deleteSong(song);
+                await SongsManager.deleteSongAsync(song);
             SongsVersioned.Remove(songVersioned);
         }
 

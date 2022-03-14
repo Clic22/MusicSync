@@ -83,7 +83,7 @@ namespace App1
         private async void deleteSongClick(object sender, RoutedEventArgs e)
         {
             SongVersioned song = (sender as Button).DataContext as SongVersioned;
-            await SongsPageViewModel.deleteSong(song);
+            await SongsPageViewModel.deleteSongAsync(song);
         }
 
         private async void updateSongClick(object sender, RoutedEventArgs e)

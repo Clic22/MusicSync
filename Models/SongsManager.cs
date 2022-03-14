@@ -51,7 +51,7 @@ namespace App1.Models
             Locker.updateSongStatus(song);
         }
 
-        public async Task deleteSong(Song song)
+        public async Task deleteSongAsync(Song song)
         {
             await Locker.unlockSongAsync(song, Saver.savedUser());
             SongList.deleteSong(song);
