@@ -74,7 +74,7 @@ namespace ModelsTests.SongsManagerTest
         {
             songsManager.addSong(title, file, localPath);
 
-            await songsManager.deleteSong(expectedSong);
+            await songsManager.deleteSongAsync(expectedSong);
             Song? song = songsManager.findSong(title);
             Assert.Null(song);
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
@@ -101,7 +101,7 @@ namespace ModelsTests.SongsManagerTest
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
 
             //WHEN we want to delete the song
-            await songsManager.deleteSong(expectedSong);
+            await songsManager.deleteSongAsync(expectedSong);
 
             //THEN we expect the song being removed from song storage and save. We expect the song to be
             //unlocked, lock file not being removed from local and version workspace.
@@ -128,7 +128,7 @@ namespace ModelsTests.SongsManagerTest
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
 
             //WHEN we want to delete the song
-            await songsManager.deleteSong(expectedSong);
+            await songsManager.deleteSongAsync(expectedSong);
 
             //THEN we expect the song being removed from song storage and save. We expect the song to be
             //locked, lock file removed from local and version workspace.
