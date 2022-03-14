@@ -115,7 +115,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        .\.sonar\scanner\dotnet-sonarscanner begin /k:"Clic22_MusicSync" /o:"clic22" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vstest.reportsPaths="TestResults/**/*.trx" /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/**/*.xml"
+        .\.sonar\scanner\dotnet-sonarscanner begin /k:"Clic22_MusicSync" /o:"clic22" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vstest.reportsPaths="TestResults/**/*.trx" /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/**/*.xml" /d:sonar.exclusions=**\*.xaml,**\*.xaml.cs
         
     - name: Build and analyze
       env:
