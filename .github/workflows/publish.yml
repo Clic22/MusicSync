@@ -4,10 +4,10 @@
 name: Publish
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  workflow_run:
+    workflows: ["Quality"]
+    types:
+      - completed
     
 jobs:
 
