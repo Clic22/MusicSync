@@ -131,7 +131,7 @@ jobs:
     - name: Test and coverage
       shell: powershell
       run: |
-        vstest.console.exe D:\a\MusicSync\MusicSync\Tests\ModelsTests\bin\$env:Configuration\net6.0\ModelsTests.dll D:\a\MusicSync\MusicSync\Tests\ViewModelsTests\bin\$env:Configuration\net6.0\ViewModelsTests.dll /EnableCodeCoverage /logger:"trx" /collect:"Code Coverage;Format=Xml"
+        vstest.console.exe D:\a\MusicSync\MusicSync\Tests\ModelsTests\bin\$env:Platform\$env:Configuration\net6.0\ModelsTests.dll D:\a\MusicSync\MusicSync\Tests\ViewModelsTests\bin\$env:Platform\$env:Configuration\net6.0\ViewModelsTests.dll /EnableCodeCoverage /logger:"trx" /collect:"Code Coverage;Format=Xml"
       env:
         Configuration: ${{ matrix.configuration }}
         Platform: ${{ matrix.platform }}
