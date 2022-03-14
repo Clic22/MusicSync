@@ -22,13 +22,11 @@ namespace App1Tests.Mock
             user2 = new User(GitLabUsername2, GitLabPassword2, GitUsername2, GitEmail2);
             versionPath = @"./versionStorage/";
             Directory.CreateDirectory(versionPath);
-            songVersionDescription = string.Empty;
         }
 
         public async Task<string> uploadSongAsync(Song song, string title, string description)
         {
             (bool errorBool, string errorMessage) = await UserErrorAsync();
-            songVersionDescription = title + "\n\n" + description;
             if (!errorBool)
             {
                 if (song.LocalPath != null)
@@ -95,16 +93,6 @@ namespace App1Tests.Mock
             return errorMessage;
         }
 
-        public async Task<string> songVersionDescriptionAsync(Song song)
-        {
-            return songVersionDescription;
-        }
-
-        public async Task<string> songVersionNumberAsync(Song song)
-        {
-            return songVersionNumber;
-        }
-
         private async Task<(bool,string)> UserErrorAsync()
         {
             return await Task.Run(() =>
@@ -141,7 +129,5 @@ namespace App1Tests.Mock
         public string versionPath;
         private User user1;
         private User user2;
-        private string songVersionDescription;
-        private string songVersionNumber;
     }
 }

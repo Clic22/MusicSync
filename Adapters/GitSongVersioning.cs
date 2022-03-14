@@ -99,47 +99,6 @@ namespace App1.Adapters
             }
         }
 
-        public async Task<string> songVersionDescriptionAsync(Song song)
-        {
-            string songVersionDescription = string.Empty;
-            try
-            {
-                await Task.Run(() =>
-                {
-                    using (var repo = new Repository(song.LocalPath))
-                    {
-                        Tag songVersionNumber = repo.Tags.Last();
-                        songVersionDescription = ((Commit)songVersionNumber.Target).Message;
-                    }
-                });
-                return songVersionDescription;
-            }
-            catch 
-            {
-                return songVersionDescription;
-            }
-        }
-
-        public async Task<string> songVersionNumberAsync(Song song)
-        {
-            string songVersionNumber = string.Empty;
-            try
-            {
-                await Task.Run(() =>
-                {
-                    using (var repo = new Repository(song.LocalPath))
-                    {
-                        songVersionNumber = repo.Tags.Last().FriendlyName;
-                    }
-                });
-                return songVersionNumber;
-            }
-            catch
-            {
-                return songVersionNumber;
-            }
-        }
-
         private void addAllChanges(Song song)
         {
             using (var repo = new Repository(song.LocalPath))
@@ -189,14 +148,5 @@ namespace App1.Adapters
                 repo.Network.Push(remote, @"refs/heads/test_version_tool", options);
             }
         }
-
-        private void tagRepo(Song song, string versionNumber)
-        {
-            using (var repo = new Repository(song.LocalPath))
-            {
-                repo.ApplyTag(versionNumber);
-            }
-        }
-
     }
 }

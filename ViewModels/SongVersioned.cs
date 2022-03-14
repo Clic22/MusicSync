@@ -14,16 +14,12 @@ namespace App1.ViewModels
         {
             title_ = string.Empty;
             status_ = string.Empty;
-            versionNumber_ = string.Empty;
-            versionDescription_ = string.Empty;
         }
 
         public SongVersioned(string title)
         {
             title_ = title;
-            status_ = "Up to Date";
-            versionNumber_ = string.Empty;
-            versionDescription_ = string.Empty;
+            status_ = string.Empty;
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
@@ -55,32 +51,6 @@ namespace App1.ViewModels
             set
             {
                 status_ = value;
-                NotifyPropertyChanged();
-            }
-        }
-        private string versionNumber_;
-        public string VersionNumber
-        {
-            get
-            {
-                return versionNumber_;
-            }
-            set
-            {
-                versionNumber_ = value;
-                NotifyPropertyChanged();
-            }
-        }
-        private string versionDescription_;
-        public string VersionDescription
-        {
-            get
-            {
-                return versionDescription_;
-            }
-            set
-            {
-                versionDescription_ = value;
                 NotifyPropertyChanged();
             }
         }

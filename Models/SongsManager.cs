@@ -87,18 +87,6 @@ namespace App1.Models
             return errorMessage;
         }
 
-        public async Task<string> versionDescriptionAsync(Song song)
-        {
-            string versionDescriprion = await VersionTool.songVersionDescriptionAsync(song);
-            return versionDescriprion;
-        }
-
-        public async Task<string> versionNumberAsync(Song song)
-        {
-            string versionNumber = await VersionTool.songVersionNumberAsync(song);
-            return versionNumber;
-        }
-
         private static void openSongWithDAW(Song song)
         {
             var p = new Process();
