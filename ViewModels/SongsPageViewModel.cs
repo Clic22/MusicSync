@@ -116,10 +116,13 @@ namespace App1.ViewModels
 
         private void intializeSongsVersioned()
         {
-            foreach (Song song in SongsManager.SongList)
+            if (SongsManager.SongList != null)
             {
-                SongVersioned songVersioned = new SongVersioned(song.Title);
-                SongsVersioned.Add(songVersioned);
+                foreach (Song song in SongsManager.SongList)
+                {
+                    SongVersioned songVersioned = new SongVersioned(song.Title);
+                    SongsVersioned.Add(songVersioned);
+                }
             }
         }
 
