@@ -103,7 +103,7 @@ namespace App1
 
         private async void uploadNewVersionClick(object sender, RoutedEventArgs e)
         {
-            ContentDialogResult result = await uploadNewSongVersionAsyncContentDialog.ShowAsync();
+            ContentDialogResult result = await uploadNewSongVersionContentDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
                 SongVersioned song = (sender as Button).DataContext as SongVersioned;

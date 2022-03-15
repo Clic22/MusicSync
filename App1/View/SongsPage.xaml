@@ -87,7 +87,7 @@
         </ContentDialog>
 
         <ContentDialog
-        x:Name="uploadNewSongVersionAsyncContentDialog"
+        x:Name="uploadNewSongVersionContentDialog"
         Title="Upload New Version"
         PrimaryButtonText="Upload"  
         CloseButtonText="Cancel"
