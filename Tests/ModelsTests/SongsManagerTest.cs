@@ -72,7 +72,7 @@ namespace ModelsTests.SongsManagerTest
         [Fact]
         public void tryFindNullSongTest()
         {
-            Assert.Throws<NullReferenceException>(() => songsManager.findSong(title));
+            Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace ModelsTests.SongsManagerTest
             songsManager.addSong(title, file, localPath);
 
             await songsManager.deleteSongAsync(expectedSong);
-            Assert.Throws<NullReferenceException>(() => songsManager.findSong(title));
+            Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             Assert.True(File.Exists(expectedSong.LocalPath + expectedSong.File));
         }
@@ -110,7 +110,7 @@ namespace ModelsTests.SongsManagerTest
 
             //THEN we expect the song being removed from song storage and save. We expect the song to be
             //unlocked, lock file not being removed from local and version workspace.
-            Assert.Throws<NullReferenceException>(() => songsManager.findSong(title));
+            Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             Assert.True(File.Exists(expectedSong.LocalPath + expectedSong.File));
             Assert.True(File.Exists(expectedSong.LocalPath + @"\.lock"));
@@ -136,7 +136,7 @@ namespace ModelsTests.SongsManagerTest
 
             //THEN we expect the song being removed from song storage and save. We expect the song to be
             //locked, lock file removed from local and version workspace.
-            Assert.Throws<NullReferenceException>(() => songsManager.findSong(title));
+            Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             Assert.True(File.Exists(expectedSong.LocalPath + expectedSong.File));
             Assert.False(File.Exists(expectedSong.LocalPath + @"\.lock"));

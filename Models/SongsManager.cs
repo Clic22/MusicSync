@@ -106,7 +106,7 @@ namespace App1.Models
             }
             else
             {
-                throw new NullReferenceException("Song not Found in SongList");
+                throw new InvalidOperationException("Song not Found in SongList");
             }
         }
 
