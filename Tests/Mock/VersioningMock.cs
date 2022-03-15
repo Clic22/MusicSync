@@ -130,6 +130,6 @@ namespace App1Tests.Mock
         public string versionPath;
         private readonly User user1;
         private readonly User user2;
-        private Dictionary<Song, string> versionDescription;
+        private readonly Dictionary<Song, string> versionDescription;
     }
 }
