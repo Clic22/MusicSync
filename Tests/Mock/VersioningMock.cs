@@ -14,7 +14,7 @@ namespace App1Tests.Mock
             string GitLabPassword1 = "12df546@";
             string GitLabUsername1 = "Clic5456";
             string GitEmail1 = "testdklsjfhg@yahoo.com";
-            user1 = new User(GitLabUsername1, GitLabPassword1, GitUsername1, GitEmail1); ;
+            user1 = new User(GitLabUsername1, GitLabPassword1, GitUsername1, GitEmail1);
             string GitUsername2 = "Lithorama52";
             string GitLabPassword2 = "15@^_usnjdfb@";
             string GitLabUsername2 = "Erratum12";
