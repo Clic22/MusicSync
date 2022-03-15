@@ -40,7 +40,10 @@ namespace App1.ViewModels
             SongsManager.addSong(songTitle, songFile, songLocalPath);
             SongsVersioned.Add(new SongVersioned(songTitle));
             Song? song = SongsManager.findSong(songTitle);
-            refreshSongVersioned(song);
+            if (song != null)
+            {
+                refreshSongVersioned(song);
+            }
         }
 
         public async Task deleteSongAsync(SongVersioned songVersioned)
@@ -70,8 +73,16 @@ namespace App1.ViewModels
         public async Task<(bool, string)> openSongAsync(SongVersioned songVersioned)
         {
             Song? song = SongsManager.findSong(songVersioned.Title);
-            (bool, string) errorMessage = await SongsManager.openSongAsync(song);
-            refreshSongVersioned(song);
+            (bool, string) errorMessage;
+            if (song != null)
+            {
+                errorMessage = await SongsManager.openSongAsync(song);
+                refreshSongVersioned(song);
+            }
+            else
+            {
+                errorMessage = (false,"Error : Song not Found");
+            }
             return errorMessage;
         }
 
@@ -79,15 +90,26 @@ namespace App1.ViewModels
         {
             Song? song = SongsManager.findSong(songVersioned.Title);
             string errorMessage = await SongsManager.revertSongAsync(song);
-            refreshSongVersioned(song);
+            if (song != null)
+            {
+                refreshSongVersioned(song);
+            }
             return errorMessage;
         }
 
         public async Task<string> uploadNewSongVersion(SongVersioned songVersioned, string changeTitle, string changeDescription)
         {
             Song? song = SongsManager.findSong(songVersioned.Title);
-            string errorMessage = await SongsManager.uploadNewSongVersion(song, changeTitle, changeDescription);
-            refreshSongVersioned(song);
+            string errorMessage = String.Empty;
+            if (song != null)
+            {
+                errorMessage = await SongsManager.uploadNewSongVersion(song, changeTitle, changeDescription);
+                refreshSongVersioned(song);
+            }
+            else
+            {
+                errorMessage = "Error : Song not Found";
+            }
             return errorMessage;
         }
 
@@ -118,6 +140,6 @@ namespace App1.ViewModels
         }
 
         public ObservableCollection<SongVersioned> SongsVersioned;
-        private ISongsManager SongsManager;
+        private readonly ISongsManager SongsManager;
     }
 }

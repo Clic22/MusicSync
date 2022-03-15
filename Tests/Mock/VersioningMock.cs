@@ -27,16 +27,14 @@ namespace App1Tests.Mock
         public async Task<string> uploadSongAsync(Song song, string title, string description)
         {
             (bool errorBool, string errorMessage) = await UserErrorAsync();
-            if (!errorBool)
+
+            if (!errorBool && song.LocalPath != null)
             {
-                if (song.LocalPath != null)
+                if(Directory.Exists(versionPath + song.LocalPath))
                 {
-                    if(Directory.Exists(versionPath + song.LocalPath))
-                    {
-                        Directory.Delete(versionPath + song.LocalPath, true);
-                    }
-                    Copy(song.LocalPath, versionPath + song.LocalPath);
+                    Directory.Delete(versionPath + song.LocalPath, true);
                 }
+                Copy(song.LocalPath, versionPath + song.LocalPath);
             }
             return errorMessage;
         }
@@ -44,22 +42,19 @@ namespace App1Tests.Mock
         public async Task<string> uploadSongAsync(Song song, string file, string title, string description)
         {
             (bool errorBool, string errorMessage) = await UserErrorAsync();
-            if (!errorBool)
+            if (!errorBool && song.LocalPath != null)
             {
-                if (song.LocalPath != null)
+                if (File.Exists(versionPath + song.LocalPath + file))
                 {
-                    if (File.Exists(versionPath + song.LocalPath + file))
+                    File.Delete(versionPath + song.LocalPath + file);
+                }
+                if (File.Exists(song.LocalPath + file))
+                {
+                    if (!Directory.Exists(versionPath + song.LocalPath))
                     {
-                        File.Delete(versionPath + song.LocalPath + file);
+                        Directory.CreateDirectory(versionPath + song.LocalPath);
                     }
-                    if (File.Exists(song.LocalPath + file))
-                    {
-                        if (!Directory.Exists(versionPath + song.LocalPath))
-                        {
-                            Directory.CreateDirectory(versionPath + song.LocalPath);
-                        }
-                        File.Copy(song.LocalPath + file, versionPath + song.LocalPath + file);
-                    }
+                    File.Copy(song.LocalPath + file, versionPath + song.LocalPath + file);
                 }
             }
             return errorMessage;
@@ -68,12 +63,9 @@ namespace App1Tests.Mock
         public async Task<string> updateSongAsync(Song song)
         {
             (bool errorBool, string errorMessage) = await UserErrorAsync();
-            if (!errorBool)
+            if (!errorBool && song.LocalPath != null)
             {
-                if (song.LocalPath != null)
-                {
-                    Copy(versionPath + song.LocalPath, song.LocalPath);
-                }
+                Copy(versionPath + song.LocalPath, song.LocalPath);
             }
             return errorMessage;
         }
@@ -81,15 +73,13 @@ namespace App1Tests.Mock
         public async Task<string> revertSongAsync(Song song)
         {
             (bool errorBool, string errorMessage) = await UserErrorAsync();
-            if (!errorBool)
-            {
-                if (song.LocalPath != null)
-                {
-                    Directory.Delete(song.LocalPath, true);
-                    Copy(versionPath + song.LocalPath, song.LocalPath);
-                }
 
+            if (!errorBool && song.LocalPath != null)
+            {
+                Directory.Delete(song.LocalPath, true);
+                Copy(versionPath + song.LocalPath, song.LocalPath);
             }
+
             return errorMessage;
         }
 
@@ -127,7 +117,7 @@ namespace App1Tests.Mock
 
         public User user { get; set; }
         public string versionPath;
-        private User user1;
-        private User user2;
+        private readonly User user1;
+        private readonly User user2;
     }
 }

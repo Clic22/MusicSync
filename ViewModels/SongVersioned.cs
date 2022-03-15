@@ -22,7 +22,7 @@ namespace App1.ViewModels
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        private string title_;
+        private readonly string title_;
         public string Title
         {
             get
