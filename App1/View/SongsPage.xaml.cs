@@ -53,7 +53,7 @@ namespace App1
             ContentDialogResult result = await addNewSongContentDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                SongsPageViewModel.addSong(songTitle.Text, songFile.Text, songLocalPath.Text);
+                await SongsPageViewModel.addSongAsync(songTitle.Text, songFile.Text, songLocalPath.Text);
             }
             songTitle.Text = String.Empty;
             songFile.Text = String.Empty;
@@ -103,11 +103,11 @@ namespace App1
 
         private async void uploadNewVersionClick(object sender, RoutedEventArgs e)
         {
-            ContentDialogResult result = await uploadNewSongVersionContentDialog.ShowAsync();
+            ContentDialogResult result = await uploadNewSongVersionAsyncContentDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
                 SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                string errorMessage = await SongsPageViewModel.uploadNewSongVersion(song, title.Text, description.Text);
+                string errorMessage = await SongsPageViewModel.uploadNewSongVersionAsync(song, title.Text, description.Text);
                 if (errorMessage != string.Empty)
                 {
                     await displayContentDialog(errorMessage);

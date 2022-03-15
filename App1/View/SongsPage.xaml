@@ -27,7 +27,13 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="{x:Bind Title}" FontSize="20" Margin="12" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
-                            <Button x:Name="Test" Content="v1.0.0" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0"/>
+                            <Button Content="v1.0.0" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0">
+                                <Button.Flyout>
+                                    <Flyout Placement="Bottom">
+                                        <TextBlock Text="{x:Bind VersionDescription}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="2" Grid.Row="0">
                                 <TextBlock Text="{x:Bind Status}" Margin="8" />
                                 <Button FontFamily="Segoe MDL2 Assets" Content="&#xE8D6;" Name="Open" ToolTipService.ToolTip="Open Song" Click="openSongClick" Margin="4"></Button>
@@ -81,7 +87,7 @@
         </ContentDialog>
 
         <ContentDialog
-        x:Name="uploadNewSongVersionContentDialog"
+        x:Name="uploadNewSongVersionAsyncContentDialog"
         Title="Upload New Version"
         PrimaryButtonText="Upload"  
         CloseButtonText="Cancel"

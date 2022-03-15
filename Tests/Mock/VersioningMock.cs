@@ -22,6 +22,7 @@ namespace App1Tests.Mock
             user2 = new User(GitLabUsername2, GitLabPassword2, GitUsername2, GitEmail2);
             versionPath = @"./versionStorage/";
             Directory.CreateDirectory(versionPath);
+            versionDescription = new Dictionary<Song, string>();
         }
 
         public async Task<string> uploadSongAsync(Song song, string title, string description)
@@ -35,6 +36,7 @@ namespace App1Tests.Mock
                     Directory.Delete(versionPath + song.LocalPath, true);
                 }
                 Copy(song.LocalPath, versionPath + song.LocalPath);
+                versionDescription[song] = title + "\n\n" + description;
             }
             return errorMessage;
         }
@@ -56,6 +58,7 @@ namespace App1Tests.Mock
                     }
                     File.Copy(song.LocalPath + file, versionPath + song.LocalPath + file);
                 }
+                versionDescription[song] = title + "\n\n" + description;
             }
             return errorMessage;
         }
@@ -115,9 +118,18 @@ namespace App1Tests.Mock
 
         }
 
+        public async Task<string> versionDescriptionAsync(Song song)
+        {
+            return await Task.Run(() =>
+            {
+                return versionDescription[song];
+            });
+        }
+
         public User user { get; set; }
         public string versionPath;
         private readonly User user1;
         private readonly User user2;
+        private Dictionary<Song, string> versionDescription;
     }
 }

@@ -148,5 +148,18 @@ namespace App1.Adapters
                 repo.Network.Push(remote, @"refs/heads/master", options);
             }
         }
+
+        public async Task<string> versionDescriptionAsync(Song song)
+        {
+            string songVersionDescription = string.Empty;
+            await Task.Run(() =>
+            {
+                using (var repo = new Repository(song.LocalPath))
+                {
+                    songVersionDescription = repo.Commits.Take(1).First<Commit>().Message;
+                }
+            });
+            return songVersionDescription;
+        }
     }
 }
