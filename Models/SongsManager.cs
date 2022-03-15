@@ -97,9 +97,17 @@ namespace App1.Models
             p.Start();
         }
 
-        public Song? findSong(string songTitle)
+        public Song findSong(string songTitle)
         {
-            return SongList.Find(song => song.Title == songTitle);
+            Song? song = SongList.Find(song => song.Title == songTitle);
+            if (song != null)
+            {
+                return song;
+            }
+            else
+            {
+                throw new Exception("Song not Found in SongList");
+            }
         }
 
         public SongsStorage SongList { get; private set; }

@@ -13,6 +13,6 @@ namespace App1.Models.Ports
         public Task deleteSongAsync(Song song);
         public Task<(bool, string)> openSongAsync(Song song);
         public Task<string> revertSongAsync(Song song);
-        public Song? findSong(string songTitle);
+        public Song findSong(string songTitle);
     }
 }

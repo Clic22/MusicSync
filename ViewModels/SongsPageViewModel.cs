@@ -17,20 +17,13 @@ namespace App1.ViewModels
             string errorMessage = string.Empty;
             foreach (SongVersioned songVersioned in SongsVersioned)
             {
-                Song? song = SongsManager.findSong(songVersioned.Title);
-                if (song != null)
+                Song song = SongsManager.findSong(songVersioned.Title);
+                errorMessage = await SongsManager.updateSongAsync(song);
+                if (errorMessage != string.Empty)
                 {
-                    errorMessage = await SongsManager.updateSongAsync(song);
-                    refreshSongVersioned(songVersioned,song);
-                    if (errorMessage != string.Empty)
-                    {
-                        return errorMessage;
-                    }
+                    return errorMessage;
                 }
-                else
-                {
-                     return errorMessage = "Error: Song not found";
-                }  
+                refreshSongVersioned(songVersioned, song);
             }
             return errorMessage;
         }
@@ -40,77 +33,46 @@ namespace App1.ViewModels
             SongsManager.addSong(songTitle, songFile, songLocalPath);
             SongsVersioned.Add(new SongVersioned(songTitle));
             SongVersioned songVersioned = SongsVersioned.First(songVersioned => songVersioned.Title == songTitle);
-            Song? song = SongsManager.findSong(songTitle);
-            if (song != null)
-            {
-                refreshSongVersioned(songVersioned,song);
-            }
+            Song song = SongsManager.findSong(songTitle);
+            refreshSongVersioned(songVersioned,song);
         }
 
         public async Task deleteSongAsync(SongVersioned songVersioned)
         {
-            Song? song = SongsManager.findSong(songVersioned.Title);
-            if (song != null)
-                await SongsManager.deleteSongAsync(song);
+            Song song = SongsManager.findSong(songVersioned.Title);
+            await SongsManager.deleteSongAsync(song);
             SongsVersioned.Remove(songVersioned);
         }
 
         public async Task<string> updateSongAsync(SongVersioned songVersioned)
         {
-            Song? song = SongsManager.findSong(songVersioned.Title);
-            string errorMessage = string.Empty;
-            if (song != null)
-            {
-                errorMessage = await SongsManager.updateSongAsync(song);
-                refreshSongVersioned(songVersioned,song);
-            }  
-            else
-            {
-                errorMessage =  "Error: Song not found";
-            }
+            Song song = SongsManager.findSong(songVersioned.Title);
+            string errorMessage = await SongsManager.updateSongAsync(song);
+            refreshSongVersioned(songVersioned,song);
             return errorMessage;
         }
 
         public async Task<(bool, string)> openSongAsync(SongVersioned songVersioned)
         {
-            Song? song = SongsManager.findSong(songVersioned.Title);
-            (bool, string) errorMessage;
-            if (song != null)
-            {
-                errorMessage = await SongsManager.openSongAsync(song);
-                refreshSongVersioned(songVersioned,song);
-            }
-            else
-            {
-                errorMessage = (false,"Error : Song not Found");
-            }
+            Song song = SongsManager.findSong(songVersioned.Title);
+            (bool, string) errorMessage = await SongsManager.openSongAsync(song);
+            refreshSongVersioned(songVersioned,song);
             return errorMessage;
         }
 
         public async Task<string> revertSongAsync(SongVersioned songVersioned)
         {
-            Song? song = SongsManager.findSong(songVersioned.Title);
+            Song song = SongsManager.findSong(songVersioned.Title);
             string errorMessage = await SongsManager.revertSongAsync(song);
-            if (song != null)
-            {
-                refreshSongVersioned(songVersioned,song);
-            }
+            refreshSongVersioned(songVersioned,song);
             return errorMessage;
         }
 
         public async Task<string> uploadNewSongVersion(SongVersioned songVersioned, string changeTitle, string changeDescription)
         {
-            Song? song = SongsManager.findSong(songVersioned.Title);
-            string errorMessage = String.Empty;
-            if (song != null)
-            {
-                errorMessage = await SongsManager.uploadNewSongVersion(song, changeTitle, changeDescription);
-                refreshSongVersioned(songVersioned,song);
-            }
-            else
-            {
-                errorMessage = "Error : Song not Found";
-            }
+            Song song = SongsManager.findSong(songVersioned.Title);
+            string errorMessage = await SongsManager.uploadNewSongVersion(song, changeTitle, changeDescription);
+            refreshSongVersioned(songVersioned,song);
             return errorMessage;
         }
 
