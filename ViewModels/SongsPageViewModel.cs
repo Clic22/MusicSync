@@ -114,16 +114,13 @@ namespace App1.ViewModels
             return errorMessage;
         }
 
-        private Task intializeSongsVersioned()
+        private void intializeSongsVersioned()
         {
-            return Task.Run(() =>
+            foreach (Song song in SongsManager.SongList)
             {
-                foreach (Song song in SongsManager.SongList)
-                {
-                    SongVersioned songVersioned = new SongVersioned(song.Title);
-                    SongsVersioned.Add(songVersioned);
-                }
-            });
+                SongVersioned songVersioned = new SongVersioned(song.Title);
+                SongsVersioned.Add(songVersioned);
+            }
         }
 
         private void refreshSongVersioned(SongVersioned songVersioned, Song song)
