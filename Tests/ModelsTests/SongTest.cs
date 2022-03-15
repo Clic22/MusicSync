@@ -11,9 +11,9 @@ namespace ModelsTests.SongTest
         {
             Song song = new Song();
             Assert.NotNull(song);
-            Assert.Null(song.Title);
-            Assert.Null(song.LocalPath);
-            Assert.Null(song.File);
+            Assert.Equal(string.Empty, song.Title);
+            Assert.Equal(string.Empty, song.LocalPath);
+            Assert.Equal(string.Empty, song.File);
             Assert.Equal(Song.SongStatus.upToDate, song.Status);
         }
 
@@ -30,14 +30,6 @@ namespace ModelsTests.SongTest
             Assert.Equal(expected_localPath, song.LocalPath);
             Assert.Equal(expected_file, song.File);
             Assert.Equal(Song.SongStatus.upToDate, song.Status);
-        }
-
-        [Fact]
-        public void SetStatusTriggerPropertyChanged()
-        {
-            Song song = new Song();
-            Action action = () => song.Status = Song.SongStatus.locked;
-            Assert.PropertyChanged(song, "Status", action);
         }
 
         [Fact]

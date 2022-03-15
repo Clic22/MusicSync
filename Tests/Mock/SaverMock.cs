@@ -37,7 +37,7 @@ namespace App1Tests.Mock
             return Songs;
         }
 
-        List<Song> Songs;
+        readonly List<Song> Songs;
         User User;
 
     }

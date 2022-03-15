@@ -36,7 +36,7 @@
 # For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
 # refer to https://github.com/microsoft/github-actions-for-desktop-apps
 
-name: Quality
+name: CI/CD
 
 on:
   push:
@@ -45,12 +45,10 @@ on:
     branches: [ master ]
 
 jobs:
-
-  quality:
-
+  ci:
     strategy:
       matrix:
-        configuration: [Debug, Release]
+        configuration: [Release]
         platform: [x64, x86] 
 
     runs-on: windows-latest  # For a list of available runner types, refer to
@@ -117,7 +115,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        .\.sonar\scanner\dotnet-sonarscanner begin /k:"Clic22_MusicSync" /o:"clic22" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vstest.reportsPaths="TestResults/**/*.trx" /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/**/*.xml"
+        .\.sonar\scanner\dotnet-sonarscanner begin /k:"Clic22_MusicSync" /o:"clic22" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vstest.reportsPaths="TestResults/**/*.trx" /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/**/*.xml" /d:sonar.exclusions=**\*.xaml,**\*.xaml.cs
         
     - name: Build and analyze
       env:
@@ -127,11 +125,10 @@ jobs:
       run: |
         msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:Platform=$env:Platform
 
-
     - name: Test and coverage
       shell: powershell
       run: |
-        vstest.console.exe D:\a\MusicSync\MusicSync\ModelsTests\bin\$env:Platform\$env:Configuration\net6.0\ModelsTests.dll /EnableCodeCoverage /logger:"trx" /collect:"Code Coverage;Format=Xml"
+        vstest.console.exe D:\a\MusicSync\MusicSync\Tests\ModelsTests\bin\$env:Platform\$env:Configuration\net6.0\ModelsTests.dll D:\a\MusicSync\MusicSync\Tests\ViewModelsTests\bin\$env:Platform\$env:Configuration\net6.0\ViewModelsTests.dll /EnableCodeCoverage /logger:"trx" /collect:"Code Coverage;Format=Xml"
       env:
         Configuration: ${{ matrix.configuration }}
         Platform: ${{ matrix.platform }}
@@ -143,5 +140,72 @@ jobs:
       shell: powershell
       run: |
         .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+
+  cd:
+    needs: ci
+    strategy:
+      matrix:
+        configuration: [Release]
+        platform: [x64, x86]
+
+    runs-on: windows-latest  # For a list of available runner types, refer to
+                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
+    env:
+      Solution_Name: App1/App1.sln                         # Replace with your solution name, i.e. App1.sln.
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    - name: Setup MSBuild.exe
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    # Restore the application to populate the obj folder with RuntimeIdentifiers
+    - name: Restore the application
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration /p:Platform=$env:Platform
+      env:
+        Configuration: ${{ matrix.configuration }}
+        Platform: ${{ matrix.platform }}
+
+    # Decode the base 64 encoded pfx and save the Signing_Certificate
+    - name: Decode the pfx
+      run: |
+        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.BASE64_ENCODED_PFX }}")
+        $certificatePath = Join-Path -Path App1/ -ChildPath GitHubActionsWorkflow.pfx
+        [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
+
+    # Create the app package by building and packaging the project
+    - name: Create the app package
+      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:AppxBundle=$env:Appx_Bundle /p:PackageCertificateKeyFile=GitHubActionsWorkflow.pfx /p:AppxPackageDir="$env:Appx_Package_Dir" /p:GenerateAppxPackageOnBuild=true
+      env:
+        Appx_Bundle: Never
+        Appx_Package_Build_Mode: SideloadOnly
+        Appx_Package_Dir: Packages\
+        Configuration: ${{ matrix.configuration }}
+        Platform: ${{ matrix.platform }}
+
+    # Remove the pfx
+    - name: Remove the pfx
+      run: Remove-Item -path App1/GitHubActionsWorkflow.pfx
+
+    # Upload the MSIX package: https://github.com/marketplace/actions/upload-a-build-artifact
+    - name: Upload MSIX package
+      uses: actions/upload-artifact@v3
+      with:
+        name: MSIX Package
+        path: D:\a\MusicSync\MusicSync\App1\**\Packages
+
+
 
 

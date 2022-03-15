@@ -1,9 +1,6 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-
-namespace App1.Models
+﻿namespace App1.Models
 {
-    public class Song : INotifyPropertyChanged
+    public class Song
     {
         public enum SongStatus
         {
@@ -13,6 +10,9 @@ namespace App1.Models
 
         public Song()
         {
+            Title = string.Empty;
+            File = string.Empty;
+            LocalPath = string.Empty;
             Status = SongStatus.upToDate;
         }
 
@@ -24,42 +24,18 @@ namespace App1.Models
             Status = SongStatus.upToDate;
         }
 
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public string? Title { get; set; }
-        public string? File { get; set; }
-        public string? LocalPath { get; set; }
-        private SongStatus status_;
-        public SongStatus Status
-        {
-            get
-            {
-                return status_;
-            }
-            set
-            {
-                status_ = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
         public override bool Equals(object? obj)
         {
             var song = obj as Song;
             if (song == null)
                 return false;
-            if(this.Title != song.Title ||
+            if (this.Title != song.Title ||
                this.LocalPath != song.LocalPath ||
                this.File != song.File)
             {
                 return false;
             }
-            return true;    
+            return true;
         }
 
         public override int GetHashCode()
@@ -67,5 +43,9 @@ namespace App1.Models
             return HashCode.Combine(this.Title, this.LocalPath, this.File);
         }
 
+        public string Title { get; set; }
+        public string File { get; set; }
+        public string LocalPath { get; set; }
+        public SongStatus Status;
     }
 }

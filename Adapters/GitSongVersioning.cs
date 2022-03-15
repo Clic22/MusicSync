@@ -111,8 +111,7 @@ namespace App1.Adapters
         {
             using (var repo = new Repository(song.LocalPath))
             {
-                repo.Index.Add(file);
-                repo.Index.Write();
+                Commands.Stage(repo, file);
             }
         }
 
@@ -125,7 +124,14 @@ namespace App1.Adapters
                 var signature = new Signature(
                     new Identity(user.GitUsername, user.GitEmail), DateTimeOffset.Now);
                 Signature committer = signature;
-                repo.Commit($"{title}\n\n{description.ReplaceLineEndings()}", signature, committer);
+                if (string.IsNullOrEmpty(description))
+                {
+                    repo.Commit($"{title}", signature, committer);
+                }
+                else
+                {
+                    repo.Commit($"{title}\n\n{description.ReplaceLineEndings()}", signature, committer);
+                }
             }
         }
 

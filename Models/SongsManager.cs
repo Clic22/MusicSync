@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace App1.Models
 {
-    public class SongsManager
+    public class SongsManager : ISongsManager
     {
         public SongsManager(IVersionTool NewVersionTool, ISaver NewSaver)
         {
@@ -48,9 +48,10 @@ namespace App1.Models
         {
             Song song = new Song(songTitle, songFile, songLocalPath);
             SongList.addNewSong(song);
+            Locker.updateSongStatus(song);
         }
 
-        public async Task deleteSong(Song song)
+        public async Task deleteSongAsync(Song song)
         {
             await Locker.unlockSongAsync(song, Saver.savedUser());
             SongList.deleteSong(song);
@@ -94,6 +95,19 @@ namespace App1.Models
                 UseShellExecute = true
             };
             p.Start();
+        }
+
+        public Song findSong(string songTitle)
+        {
+            Song? song = SongList.Find(song => song.Title == songTitle);
+            if (song != null)
+            {
+                return song;
+            }
+            else
+            {
+                throw new InvalidOperationException("Song not Found in SongList");
+            }
         }
 
         public SongsStorage SongList { get; private set; }

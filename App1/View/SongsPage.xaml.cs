@@ -1,12 +1,13 @@
-﻿using App1.Adapters;
-using App1.Models;
-using App1.Models.Ports;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Threading.Tasks;
+using App1.ViewModels;
 using Windows.Storage.Pickers;
+using App1.Models.Ports;
+using App1.Models;
+using App1.Adapters;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -18,14 +19,15 @@ namespace App1
         public SongsPage()
         {
             this.InitializeComponent();
-            Saver = new LocalSettingsSaver();
-            VersionTool = new GitSongVersioning();
-            SongsManager = new SongsManager(VersionTool, Saver);
+            ISaver saver = new LocalSettingsSaver();
+            IVersionTool versionTool = new GitSongVersioning();
+            ISongsManager songsManager = new SongsManager(versionTool, saver);
+            SongsPageViewModel = new SongsPageViewModel(songsManager);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            string errorMessage =  await SongsManager.updateAllSongsAsync();
+            string errorMessage =  await SongsPageViewModel.updateAllSongsAsync();
             if (errorMessage != string.Empty)
             {
                 await displayContentDialog(errorMessage);
@@ -34,7 +36,7 @@ namespace App1
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)
         {
-            string errorMessage = await SongsManager.updateAllSongsAsync();
+            string errorMessage = await SongsPageViewModel.updateAllSongsAsync();
             if (errorMessage != string.Empty)
             {
                 await displayContentDialog(errorMessage);
@@ -51,7 +53,7 @@ namespace App1
             ContentDialogResult result = await addNewSongContentDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                SongsManager.addSong(songTitle.Text, songFile.Text, songLocalPath.Text);
+                SongsPageViewModel.addSong(songTitle.Text, songFile.Text, songLocalPath.Text);
             }
             songTitle.Text = String.Empty;
             songFile.Text = String.Empty;
@@ -80,14 +82,14 @@ namespace App1
 
         private async void deleteSongClick(object sender, RoutedEventArgs e)
         {
-            Song song = (sender as Button).DataContext as Song;
-            await SongsManager.deleteSong(song);
+            SongVersioned song = (sender as Button).DataContext as SongVersioned;
+            await SongsPageViewModel.deleteSongAsync(song);
         }
 
         private async void updateSongClick(object sender, RoutedEventArgs e)
         {
-            Song song = (sender as Button).DataContext as Song;
-            string errorMessage = await SongsManager.updateSongAsync(song);
+            SongVersioned song = (sender as Button).DataContext as SongVersioned;
+            string errorMessage = await SongsPageViewModel.updateSongAsync(song);
             if (errorMessage != string.Empty)
             {
                 await displayContentDialog(errorMessage);
@@ -104,8 +106,8 @@ namespace App1
             ContentDialogResult result = await uploadNewSongVersionContentDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                Song song = (sender as Button).DataContext as Song;
-                string errorMessage = await SongsManager.uploadNewSongVersion(song, title.Text, description.Text);
+                SongVersioned song = (sender as Button).DataContext as SongVersioned;
+                string errorMessage = await SongsPageViewModel.uploadNewSongVersion(song, title.Text, description.Text);
                 if (errorMessage != string.Empty)
                 {
                     await displayContentDialog(errorMessage);
@@ -118,13 +120,12 @@ namespace App1
             }
             title.Text = String.Empty;
             description.Text = String.Empty;
-
         }
 
         private async void openSongClick(object sender, RoutedEventArgs e)
         {
-            Song song = (sender as Button).DataContext as Song;
-            (bool, string) opened = await SongsManager.openSongAsync(song);
+            SongVersioned song = (sender as Button).DataContext as SongVersioned;
+            (bool, string) opened = await SongsPageViewModel.openSongAsync(song);
             if (!opened.Item1)
             {
                 await displayContentDialog(opened.Item2);
@@ -133,8 +134,8 @@ namespace App1
 
         private async void revertSongClick(object sender, RoutedEventArgs e)
         {
-            Song song = (sender as Button).DataContext as Song;
-            string errorMessage = await SongsManager.revertSongAsync(song);
+            SongVersioned song = (sender as Button).DataContext as SongVersioned;
+            string errorMessage = await SongsPageViewModel.revertSongAsync(song);
             if (errorMessage != string.Empty)
             {
                 await displayContentDialog(errorMessage);
@@ -155,8 +156,6 @@ namespace App1
             await dialog.ShowAsync();
         }
 
-        private SongsManager SongsManager;
-        private ISaver Saver;
-        private IVersionTool VersionTool;
+        private SongsPageViewModel SongsPageViewModel;
     }
 }

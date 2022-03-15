@@ -5,7 +5,7 @@
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>App1</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <Platforms>x86;x64;AnyCPU</Platforms>
+    <Platforms>x86;x64</Platforms>
     <RuntimeIdentifiers>win10-x86;win10-x64</RuntimeIdentifiers>
     <PublishProfile>win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
@@ -24,8 +24,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="AddNewSong.xaml" />
-    <None Remove="View - ModelView\SettingsPage.xaml" />
-    <None Remove="View - ModelView\SongsPage.xaml" />
+    <None Remove="View\SettingsPage.xaml" />
+    <None Remove="View\SongsPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Adapters\Adapters.csproj" />
-    <ProjectReference Include="..\Models\Models.csproj" />
+    <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Page Update="View - ModelView\SongsPage.xaml">

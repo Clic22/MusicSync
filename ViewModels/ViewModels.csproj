@@ -3,8 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
     <Nullable>enable</Nullable>
     <Platforms>x64;x86</Platforms>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Models\Models.csproj" />
+  </ItemGroup>
 
 </Project>

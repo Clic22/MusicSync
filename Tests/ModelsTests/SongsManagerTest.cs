@@ -61,12 +61,18 @@ namespace ModelsTests.SongsManagerTest
     public class SongsManagerTest : TestsBase
     {
         [Fact]
-        public void addSongTest()
+        public void addAndFindSongTest()
         {
-            songsManager.addSong(title,file,localPath);
-
-            Assert.Contains(expectedSong, songsManager.SongList);
+            songsManager.addSong(title, file, localPath);
+            Song song = songsManager.findSong(title);
+            Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
+        }
+
+        [Fact]
+        public void tryFindNullSongTest()
+        {
+            Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
         }
 
         [Fact]
@@ -74,9 +80,8 @@ namespace ModelsTests.SongsManagerTest
         {
             songsManager.addSong(title, file, localPath);
 
-            await songsManager.deleteSong(expectedSong);
-
-            Assert.DoesNotContain(expectedSong, songsManager.SongList);
+            await songsManager.deleteSongAsync(expectedSong);
+            Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             Assert.True(File.Exists(expectedSong.LocalPath + expectedSong.File));
         }
@@ -88,7 +93,8 @@ namespace ModelsTests.SongsManagerTest
             //A song added to the songsManager, we expect the song being added to the songstorage and
             //be saved. Then we lock the song by another user, we expect to have lock file in local and version workspace.
             songsManager.addSong(title, file, localPath);
-            Assert.Contains(expectedSong, songsManager.SongList);
+            Song? song = songsManager.findSong(title);
+            Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
             string GitUsername = "Second User";
             string GitLabPassword = "12df546@";
@@ -100,11 +106,11 @@ namespace ModelsTests.SongsManagerTest
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
 
             //WHEN we want to delete the song
-            await songsManager.deleteSong(expectedSong);
+            await songsManager.deleteSongAsync(expectedSong);
 
             //THEN we expect the song being removed from song storage and save. We expect the song to be
             //unlocked, lock file not being removed from local and version workspace.
-            Assert.DoesNotContain(expectedSong, songsManager.SongList);
+            Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             Assert.True(File.Exists(expectedSong.LocalPath + expectedSong.File));
             Assert.True(File.Exists(expectedSong.LocalPath + @"\.lock"));
@@ -118,18 +124,19 @@ namespace ModelsTests.SongsManagerTest
             //A song added to the songsManager, we expect the song being added to the songstorage and
             //be saved. Then we lock the song, we expect to have lock file in local and version workspace.
             songsManager.addSong(title, file, localPath);
-            Assert.Contains(expectedSong, songsManager.SongList);
+            Song? song = songsManager.findSong(title);
+            Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
             await locker.lockSongAsync(expectedSong, user);
             Assert.True(File.Exists(expectedSong.LocalPath + @"\.lock"));
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
 
             //WHEN we want to delete the song
-            await songsManager.deleteSong(expectedSong);
+            await songsManager.deleteSongAsync(expectedSong);
 
             //THEN we expect the song being removed from song storage and save. We expect the song to be
             //locked, lock file removed from local and version workspace.
-            Assert.DoesNotContain(expectedSong, songsManager.SongList);
+            Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             Assert.True(File.Exists(expectedSong.LocalPath + expectedSong.File));
             Assert.False(File.Exists(expectedSong.LocalPath + @"\.lock"));
@@ -306,7 +313,7 @@ namespace ModelsTests.SongsManagerTest
             fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio3.wav");
             fileStream.Close();
 
-            string errorMessage = await songsManager.uploadNewSongVersion(expectedSong,"New Version","No description");
+            string errorMessage = await songsManager.uploadNewSongVersion(expectedSong, "New Version", "No description");
 
             Assert.False(File.Exists(version.versionPath + expectedSong.LocalPath + "audio3.wav"));
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio1.wav"));
@@ -346,6 +353,7 @@ namespace ModelsTests.SongsManagerTest
             Assert.False(errorMessage.Item1);
             Assert.Equal("Already Locked", errorMessage.Item2);
         }
-    }
 
+
+    }
 }
