@@ -99,6 +99,19 @@ namespace App1.Adapters
             }
         }
 
+        public async Task<string> versionDescriptionAsync(Song song)
+        {
+            string songVersionDescription = string.Empty;
+            await Task.Run(() =>
+            {
+                using (var repo = new Repository(song.LocalPath))
+                {
+                    songVersionDescription = repo.Commits.Take(1).First<Commit>().Message;
+                }
+            });
+            return songVersionDescription;
+        }
+
         private void addAllChanges(Song song)
         {
             using (var repo = new Repository(song.LocalPath))
@@ -147,19 +160,6 @@ namespace App1.Adapters
                     new UsernamePasswordCredentials { Username = user.GitLabUsername, Password = user.GitLabPassword, };
                 repo.Network.Push(remote, @"refs/heads/master", options);
             }
-        }
-
-        public async Task<string> versionDescriptionAsync(Song song)
-        {
-            string songVersionDescription = string.Empty;
-            await Task.Run(() =>
-            {
-                using (var repo = new Repository(song.LocalPath))
-                {
-                    songVersionDescription = repo.Commits.Take(1).First<Commit>().Message;
-                }
-            });
-            return songVersionDescription;
         }
     }
 }

@@ -86,6 +86,14 @@ namespace App1Tests.Mock
             return errorMessage;
         }
 
+        public async Task<string> versionDescriptionAsync(Song song)
+        {
+            return await Task.Run(() =>
+            {
+                return versionDescription[song];
+            });
+        }
+
         private async Task<(bool,string)> UserErrorAsync()
         {
             return await Task.Run(() =>
@@ -118,16 +126,9 @@ namespace App1Tests.Mock
 
         }
 
-        public async Task<string> versionDescriptionAsync(Song song)
-        {
-            return await Task.Run(() =>
-            {
-                return versionDescription[song];
-            });
-        }
-
         public User user { get; set; }
         public string versionPath;
+
         private readonly User user1;
         private readonly User user2;
         private readonly Dictionary<Song, string> versionDescription;
