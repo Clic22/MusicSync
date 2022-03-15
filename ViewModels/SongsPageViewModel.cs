@@ -21,7 +21,7 @@ namespace App1.ViewModels
                 if (song != null)
                 {
                     errorMessage = await SongsManager.updateSongAsync(song);
-                    refreshSongVersioned(song);
+                    refreshSongVersioned(songVersioned,song);
                     if (errorMessage != string.Empty)
                     {
                         return errorMessage;
@@ -39,10 +39,11 @@ namespace App1.ViewModels
         {
             SongsManager.addSong(songTitle, songFile, songLocalPath);
             SongsVersioned.Add(new SongVersioned(songTitle));
+            SongVersioned songVersioned = SongsVersioned.First(songVersioned => songVersioned.Title == songTitle);
             Song? song = SongsManager.findSong(songTitle);
             if (song != null)
             {
-                refreshSongVersioned(song);
+                refreshSongVersioned(songVersioned,song);
             }
         }
 
@@ -61,7 +62,7 @@ namespace App1.ViewModels
             if (song != null)
             {
                 errorMessage = await SongsManager.updateSongAsync(song);
-                refreshSongVersioned(song);
+                refreshSongVersioned(songVersioned,song);
             }  
             else
             {
@@ -77,7 +78,7 @@ namespace App1.ViewModels
             if (song != null)
             {
                 errorMessage = await SongsManager.openSongAsync(song);
-                refreshSongVersioned(song);
+                refreshSongVersioned(songVersioned,song);
             }
             else
             {
@@ -92,7 +93,7 @@ namespace App1.ViewModels
             string errorMessage = await SongsManager.revertSongAsync(song);
             if (song != null)
             {
-                refreshSongVersioned(song);
+                refreshSongVersioned(songVersioned,song);
             }
             return errorMessage;
         }
@@ -104,7 +105,7 @@ namespace App1.ViewModels
             if (song != null)
             {
                 errorMessage = await SongsManager.uploadNewSongVersion(song, changeTitle, changeDescription);
-                refreshSongVersioned(song);
+                refreshSongVersioned(songVersioned,song);
             }
             else
             {
@@ -125,9 +126,8 @@ namespace App1.ViewModels
             });
         }
 
-        private void refreshSongVersioned(Song song)
+        private void refreshSongVersioned(SongVersioned songVersioned, Song song)
         {
-            SongVersioned songVersioned = SongsVersioned.First(songVersioned => songVersioned.Title == song.Title);
             refreshSongStatus(songVersioned, song);
         }
 
