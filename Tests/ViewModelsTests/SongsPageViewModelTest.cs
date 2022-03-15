@@ -16,7 +16,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
     {
 
         [Fact]
-        public async Task initializedSongsVersionedWithExistingSongsTest()
+        public void initializedSongsVersionedWithExistingSongsTest()
         {
             //Setup
             string title = "title";
