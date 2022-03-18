@@ -28,7 +28,8 @@ namespace App1.ViewModels
             return errorMessage;
         }
 
-        public async Task addSongAsync(string songTitle, string songFile, string songLocalPath)
+        public async Task addSongAsync
+            (string songTitle, string songFile, string songLocalPath)
         {
             SongsManager.addSong(songTitle, songFile, songLocalPath);
             SongsVersioned.Add(new SongVersioned(songTitle));
@@ -68,10 +69,10 @@ namespace App1.ViewModels
             return errorMessage;
         }
 
-        public async Task<string> uploadNewSongVersionAsync(SongVersioned songVersioned, string changeTitle, string changeDescription)
+        public async Task<string> uploadNewSongVersionAsync(SongVersioned songVersioned, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
         {
             Song song = SongsManager.findSong(songVersioned.Title);
-            string errorMessage = await SongsManager.uploadNewSongVersionAsync(song, changeTitle, changeDescription);
+            string errorMessage = await SongsManager.uploadNewSongVersionAsync(song, changeTitle, changeDescription, compo, mix, mastering);
             await refreshSongVersionedAsync(songVersioned,song);
             return errorMessage;
         }
@@ -92,11 +93,17 @@ namespace App1.ViewModels
         {
             refreshSongStatus(songVersioned, song);
             await refreshSongVersionDescriptionAsync(songVersioned, song);
+            await refreshSongVersionNumberAsync(songVersioned, song);
         }
 
         private async Task refreshSongVersionDescriptionAsync(SongVersioned songVersioned, Song song)
         {
             songVersioned.VersionDescription = await SongsManager.versionDescriptionAsync(song);
+        }
+
+        private async Task refreshSongVersionNumberAsync(SongVersioned songVersioned, Song song)
+        {
+            songVersioned.VersionNumber = await SongsManager.versionNumberAsync(song);
         }
 
         private void refreshSongStatus(SongVersioned songVersioned, Song song)

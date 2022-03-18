@@ -107,7 +107,7 @@ namespace App1
             if (result == ContentDialogResult.Primary)
             {
                 SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                string errorMessage = await SongsPageViewModel.uploadNewSongVersionAsync(song, title.Text, description.Text);
+                string errorMessage = await SongsPageViewModel.uploadNewSongVersionAsync(song, title.Text, description.Text, compo, mix, mix);
                 if (errorMessage != string.Empty)
                 {
                     await displayContentDialog(errorMessage);
@@ -156,6 +156,39 @@ namespace App1
             await dialog.ShowAsync();
         }
 
+        private void Compo_Checked(object sender, RoutedEventArgs e)
+        {
+            compo = true;
+        }
+
+        private void Compo_Unchecked(object sender, RoutedEventArgs e)
+        {
+            compo = false;
+        }
+
+        private void Mix_Checked(object sender, RoutedEventArgs e)
+        {
+            mix = true;
+        }
+
+        private void Mix_Unchecked(object sender, RoutedEventArgs e)
+        {
+            mix = false;
+        }
+
+        private void Mastering_Checked(object sender, RoutedEventArgs e)
+        {
+            mastering = true;
+        }
+
+        private void Mastering_Unchecked(object sender, RoutedEventArgs e)
+        {
+            mastering = false;
+        }
+
         private SongsPageViewModel SongsPageViewModel;
+        private bool compo;
+        private bool mix;
+        private bool mastering; 
     }
 }
