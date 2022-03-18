@@ -159,36 +159,56 @@ namespace App1
         private void Compo_Checked(object sender, RoutedEventArgs e)
         {
             compo = true;
+            enableUploadButton();
         }
 
         private void Compo_Unchecked(object sender, RoutedEventArgs e)
         {
             compo = false;
+            enableUploadButton();
         }
 
         private void Mix_Checked(object sender, RoutedEventArgs e)
         {
             mix = true;
+            enableUploadButton();
         }
 
         private void Mix_Unchecked(object sender, RoutedEventArgs e)
         {
             mix = false;
+            enableUploadButton();
         }
 
         private void Mastering_Checked(object sender, RoutedEventArgs e)
         {
             mastering = true;
+            enableUploadButton();
         }
 
         private void Mastering_Unchecked(object sender, RoutedEventArgs e)
         {
             mastering = false;
+            enableUploadButton();
+        }
+
+        private void title_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            enableUploadButton();
+        }
+
+        private void enableUploadButton()
+        {
+            uploadNewSongVersionContentDialog.IsPrimaryButtonEnabled = false;
+            if ((compo || mix || mastering) && !string.IsNullOrEmpty(title.Text))
+                uploadNewSongVersionContentDialog.IsPrimaryButtonEnabled = true;
         }
 
         private SongsPageViewModel SongsPageViewModel;
         private bool compo;
         private bool mix;
-        private bool mastering; 
+        private bool mastering;
+
+
     }
 }

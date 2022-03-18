@@ -91,10 +91,11 @@
         Title="Upload New Version"
         PrimaryButtonText="Upload"  
         CloseButtonText="Cancel"
-        DefaultButton="Primary">
+        DefaultButton="Primary"
+        IsPrimaryButtonEnabled="False">
             <StackPanel>
                 <TextBlock x:Name="titleLabel" Text="Title" Height="20" Margin="12"/>
-                <TextBox x:Name="title" AutomationProperties.Name="simple text editor" Margin="12"/>
+                <TextBox x:Name="title" AutomationProperties.Name="simple text editor" Margin="12" TextChanged="title_TextChanged"/>
                 <TextBlock x:Name="descriptionLabel" Text="Description" Height="20" Margin="12"/>
                 <TextBox x:Name="description" AutomationProperties.Name="simple text editor" TextWrapping="Wrap" AcceptsReturn="True" Height="200" Margin="12"/>
                 <StackPanel Orientation="Horizontal">
