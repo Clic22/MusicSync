@@ -313,7 +313,7 @@ namespace ModelsTests.SongsManagerTest
             fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio3.wav");
             fileStream.Close();
 
-            string errorMessage = await songsManager.uploadNewSongVersion(expectedSong, "New Version", "No description");
+            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, "New Version", "No description");
 
             Assert.False(File.Exists(version.versionPath + expectedSong.LocalPath + "audio3.wav"));
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio1.wav"));
@@ -354,6 +354,19 @@ namespace ModelsTests.SongsManagerTest
             Assert.Equal("Already Locked", errorMessage.Item2);
         }
 
+        [Fact]
+        public async Task versionDescriptionTest()
+        {
+            songsManager.addSong(title, file, localPath);
+            string titleChange = "New Version";
+            string descriptionChange = "No description";
+            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange);
+            
+            string versionDescription = await songsManager.versionDescriptionAsync(expectedSong);
+
+            string expectedVersionDescription = titleChange + "\n\n" + descriptionChange;
+            Assert.Equal(expectedVersionDescription, versionDescription);
+        }
 
     }
 }

@@ -8,5 +8,6 @@ namespace App1.Models.Ports
         public Task<string> uploadSongAsync(Song song, string file, string title, string description);
         public Task<string> updateSongAsync(Song song);
         public Task<string> revertSongAsync(Song song);
+        public Task<string> versionDescriptionAsync(Song song);
     }
 }

@@ -34,7 +34,7 @@ namespace App1.Models
             return errorMessage;
         }
 
-        public async Task<string> uploadNewSongVersion(Song song, string changeTitle, string changeDescription)
+        public async Task<string> uploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription)
         {
             string errorMessage = string.Empty;
             if (await Locker.unlockSongAsync(song, Saver.savedUser()))
@@ -108,6 +108,11 @@ namespace App1.Models
             {
                 throw new InvalidOperationException("Song not Found in SongList");
             }
+        }
+
+        public async Task<string> versionDescriptionAsync(Song song)
+        {
+            return await VersionTool.versionDescriptionAsync(song);
         }
 
         public SongsStorage SongList { get; private set; }

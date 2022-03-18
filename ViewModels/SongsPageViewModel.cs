@@ -23,18 +23,18 @@ namespace App1.ViewModels
                 {
                     return errorMessage;
                 }
-                refreshSongVersioned(songVersioned, song);
+                await refreshSongVersionedAsync(songVersioned, song);
             }
             return errorMessage;
         }
 
-        public void addSong(string songTitle, string songFile, string songLocalPath)
+        public async Task addSongAsync(string songTitle, string songFile, string songLocalPath)
         {
             SongsManager.addSong(songTitle, songFile, songLocalPath);
             SongsVersioned.Add(new SongVersioned(songTitle));
             SongVersioned songVersioned = SongsVersioned.First(songVersioned => songVersioned.Title == songTitle);
             Song song = SongsManager.findSong(songTitle);
-            refreshSongVersioned(songVersioned,song);
+            await refreshSongVersionedAsync(songVersioned,song);
         }
 
         public async Task deleteSongAsync(SongVersioned songVersioned)
@@ -48,7 +48,7 @@ namespace App1.ViewModels
         {
             Song song = SongsManager.findSong(songVersioned.Title);
             string errorMessage = await SongsManager.updateSongAsync(song);
-            refreshSongVersioned(songVersioned,song);
+            await refreshSongVersionedAsync(songVersioned,song);
             return errorMessage;
         }
 
@@ -56,7 +56,7 @@ namespace App1.ViewModels
         {
             Song song = SongsManager.findSong(songVersioned.Title);
             (bool, string) errorMessage = await SongsManager.openSongAsync(song);
-            refreshSongVersioned(songVersioned,song);
+            await refreshSongVersionedAsync(songVersioned,song);
             return errorMessage;
         }
 
@@ -64,15 +64,15 @@ namespace App1.ViewModels
         {
             Song song = SongsManager.findSong(songVersioned.Title);
             string errorMessage = await SongsManager.revertSongAsync(song);
-            refreshSongVersioned(songVersioned,song);
+            await refreshSongVersionedAsync(songVersioned,song);
             return errorMessage;
         }
 
-        public async Task<string> uploadNewSongVersion(SongVersioned songVersioned, string changeTitle, string changeDescription)
+        public async Task<string> uploadNewSongVersionAsync(SongVersioned songVersioned, string changeTitle, string changeDescription)
         {
             Song song = SongsManager.findSong(songVersioned.Title);
-            string errorMessage = await SongsManager.uploadNewSongVersion(song, changeTitle, changeDescription);
-            refreshSongVersioned(songVersioned,song);
+            string errorMessage = await SongsManager.uploadNewSongVersionAsync(song, changeTitle, changeDescription);
+            await refreshSongVersionedAsync(songVersioned,song);
             return errorMessage;
         }
 
@@ -88,9 +88,15 @@ namespace App1.ViewModels
             }
         }
 
-        private void refreshSongVersioned(SongVersioned songVersioned, Song song)
+        private async Task refreshSongVersionedAsync(SongVersioned songVersioned, Song song)
         {
             refreshSongStatus(songVersioned, song);
+            await refreshSongVersionDescriptionAsync(songVersioned, song);
+        }
+
+        private async Task refreshSongVersionDescriptionAsync(SongVersioned songVersioned, Song song)
+        {
+            songVersioned.VersionDescription = await SongsManager.versionDescriptionAsync(song);
         }
 
         private void refreshSongStatus(SongVersioned songVersioned, Song song)

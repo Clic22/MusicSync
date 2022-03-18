@@ -14,6 +14,7 @@ namespace App1.ViewModels
         {
             title_ = title;
             status_ = string.Empty;
+            versionDescritpion_ = string.Empty;
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
@@ -40,6 +41,20 @@ namespace App1.ViewModels
             set
             {
                 status_ = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private string versionDescritpion_;
+        public string VersionDescription
+        {
+            get
+            {
+                return versionDescritpion_;
+            }
+            set
+            {
+                versionDescritpion_ = value;
                 NotifyPropertyChanged();
             }
         }
