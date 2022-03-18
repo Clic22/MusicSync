@@ -15,6 +15,7 @@ namespace App1.ViewModels
             title_ = title;
             status_ = string.Empty;
             versionDescritpion_ = string.Empty;
+            versionNumber_ = string.Empty;
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
