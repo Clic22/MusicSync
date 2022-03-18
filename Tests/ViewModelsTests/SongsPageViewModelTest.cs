@@ -201,12 +201,9 @@ namespace ViewModelsTests.SongsPageViewModelTest
         }
 
         [Theory]
-        [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road/", "", true, false, false, "v1.0.0")]
-        [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road/", "v3.3.3", true, false, false, "v4.0.0")]
-        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", "v3.3.3", false, true, false, "v3.4.0")]
-        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", "v3.3.3", false, false, true, "v3.3.4")]
-        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", "v3.3.3", true, true, true, "v4.1.1")]
-        public async Task uploadNewSongVersionAsyncTest(string title, string file, string localPath, string initialVersionNumber, bool compo, bool mix, bool mastering, string expectedVersionNumber)
+        [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road/")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/")]
+        public async Task uploadNewSongVersionAsyncTest(string title, string file, string localPath)
         {
             //Setup
             Song song = new Song(title, file, localPath);
@@ -218,11 +215,10 @@ namespace ViewModelsTests.SongsPageViewModelTest
             string changeTitle = "New Title";
             string changeDescritpion = "No Description";
 
-            await viewModel.uploadNewSongVersionAsync(expectedSongToBeUploaded, changeTitle, changeDescritpion, compo, mix, mastering);
+            await viewModel.uploadNewSongVersionAsync(expectedSongToBeUploaded, changeTitle, changeDescritpion, true, false, false);
 
-            //Assert.Equal(expectedVersionNumber, expectedSongToBeUploaded.VersionNumber);
-            songsManagerMock.Verify(m => m.uploadNewSongVersionAsync(song, changeTitle, changeDescritpion, compo, mix, mastering), Times.Once());
-            Action action = () => viewModel.uploadNewSongVersionAsync(expectedSongToBeUploaded, changeTitle, changeDescritpion, compo, mix, mastering);
+            songsManagerMock.Verify(m => m.uploadNewSongVersionAsync(song, changeTitle, changeDescritpion, true, false, false), Times.Once());
+            Action action = () => viewModel.uploadNewSongVersionAsync(expectedSongToBeUploaded, changeTitle, changeDescritpion, true, false, false);
             Assert.PropertyChanged(expectedSongToBeUploaded, "Status", action);
         }
     }
