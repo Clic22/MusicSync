@@ -107,7 +107,8 @@ namespace App1.Adapters
             {
                 using (var repo = new Repository(song.LocalPath))
                 {
-                    songVersionDescription = repo.Commits.Take(1).First<Commit>().Message;
+                    Commit commitTagged = (Commit)repo.Tags.Last().Target;
+                    songVersionDescription = commitTagged.Message;
                 }
             });
             return songVersionDescription;
