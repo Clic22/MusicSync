@@ -373,13 +373,29 @@ namespace ModelsTests.SongsManagerTest
         [InlineData("End of the Road", "test.song", "User/test/End of the Road/", false, true, false, "0.1.0")]
         [InlineData("End of the Road", "test.song", "User/test/End of the Road/", false, false, true, "0.0.1")]
         [InlineData("End of the Road", "test.song", "User/test/End of the Road/", true, true, true, "1.1.1")]
-        public async Task versionNumberTest(string title, string file, string localPath, bool compo, bool mix, bool mastering, string expectedVersionNumber)
+        public async Task initialVersionNumberTest(string title, string file, string localPath, bool compo, bool mix, bool mastering, string expectedVersionNumber)
         {
             songsManager.addSong(title, file, localPath);
             string titleChange = "New Version";
             string descriptionChange = "No description";
 
             string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
+
+            string versionNumber = await songsManager.versionNumberAsync(expectedSong);
+            Assert.Equal(expectedVersionNumber, versionNumber);
+        }
+
+        [Theory]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", true, true, true, "2.1.1")]
+        public async Task versionNumberTest(string title, string file, string localPath, bool compo, bool mix, bool mastering, string expectedVersionNumber)
+        {
+            songsManager.addSong(title, file, localPath);
+            string titleChange = "New Version";
+            string descriptionChange = "No description";
+            //Simulate first upload by another user
+            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
+
+            errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
 
             string versionNumber = await songsManager.versionNumberAsync(expectedSong);
             Assert.Equal(expectedVersionNumber, versionNumber);
