@@ -59,6 +59,20 @@ namespace App1.ViewModels
             }
         }
 
+        private string versionNumber_;
+        public string VersionNumber
+        {
+            get
+            {
+                return versionNumber_;
+            }
+            set
+            {
+                versionNumber_ = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         public override bool Equals(object? obj)
         {
             var song = obj as SongVersioned;

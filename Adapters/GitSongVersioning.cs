@@ -9,7 +9,7 @@ namespace App1.Adapters
     {
         public GitSongVersioning() { }
 
-        public async Task<string> uploadSongAsync(Song song, string title, string description)
+        public async Task<string> uploadSongAsync(Song song, string title, string description, string versionNumber)
         {
             try
             {
@@ -18,6 +18,7 @@ namespace App1.Adapters
                     addAllChanges(song);
                     commitChanges(song, title, description);
                     pushChangesToRepo(song);
+                    tagRepo(song, versionNumber);
                 });
                 return String.Empty;
             }
@@ -27,14 +28,14 @@ namespace App1.Adapters
             }
         }
 
-        public async Task<string> uploadSongAsync(Song song, string file, string title, string description)
+        public async Task<string> uploadSongAsync(Song song, string file, string title)
         {
             try
             {
                 await Task.Run(() =>
                 {
                     addChanges(song, file);
-                    commitChanges(song, title, description);
+                    commitChanges(song, title, string.Empty);
                     pushChangesToRepo(song);
                 });
                 return String.Empty;
@@ -87,7 +88,7 @@ namespace App1.Adapters
                 {
                     using (var repo = new Repository(song.LocalPath))
                     {
-                        Branch originMaster = repo.Branches["origin/master"];
+                        Branch originMaster = repo.Branches["origin/test_version_tool"];
                         repo.Reset(ResetMode.Hard, originMaster.Tip);
                     }
                 });
@@ -110,6 +111,27 @@ namespace App1.Adapters
                 }
             });
             return songVersionDescription;
+        }
+
+        public async Task<string> versionNumberAsync(Song song)
+        {
+            string versionNumber =string.Empty;
+            await Task.Run(() =>
+            {
+                try
+                {
+                    using (var repo = new Repository(song.LocalPath))
+                    {
+                        versionNumber = repo.Tags.Last().FriendlyName;
+                    }
+                }
+                catch (Exception)
+                {
+                    versionNumber = string.Empty;
+                }
+                
+            });
+            return versionNumber;
         }
 
         private void addAllChanges(Song song)
@@ -158,7 +180,22 @@ namespace App1.Adapters
                 var options = new PushOptions();
                 options.CredentialsProvider = (_url, _user, _cred) =>
                     new UsernamePasswordCredentials { Username = user.GitLabUsername, Password = user.GitLabPassword, };
-                repo.Network.Push(remote, @"refs/heads/master", options);
+                repo.Network.Push(remote, @"refs/heads/test_version_tool", options);
+            }
+        }
+
+        private void tagRepo(Song song, string tag)
+        {
+            ISaver saver = new LocalSettingsSaver();
+            User user = saver.savedUser();
+            using (var repo = new Repository(song.LocalPath))
+            {
+                Remote remote = repo.Network.Remotes["origin"];
+                var options = new PushOptions();
+                options.CredentialsProvider = (_url, _user, _cred) =>
+                    new UsernamePasswordCredentials { Username = user.GitLabUsername, Password = user.GitLabPassword, };
+                repo.ApplyTag(tag);
+                repo.Network.Push(remote, @"refs/tags/" + tag, options);
             }
         }
     }

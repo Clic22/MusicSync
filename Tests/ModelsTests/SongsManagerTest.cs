@@ -313,7 +313,7 @@ namespace ModelsTests.SongsManagerTest
             fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio3.wav");
             fileStream.Close();
 
-            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, "New Version", "No description");
+            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, "New Version", "No description", true, false, false);
 
             Assert.False(File.Exists(version.versionPath + expectedSong.LocalPath + "audio3.wav"));
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio1.wav"));
@@ -360,12 +360,29 @@ namespace ModelsTests.SongsManagerTest
             songsManager.addSong(title, file, localPath);
             string titleChange = "New Version";
             string descriptionChange = "No description";
-            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange);
+            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, true, false,false);
             
             string versionDescription = await songsManager.versionDescriptionAsync(expectedSong);
 
             string expectedVersionDescription = titleChange + "\n\n" + descriptionChange;
             Assert.Equal(expectedVersionDescription, versionDescription);
+        }
+
+        [Theory]
+        [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road/", true, false, false, "1.0.0")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", false, true, false, "0.1.0")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", false, false, true, "0.0.1")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", true, true, true, "1.1.1")]
+        public async Task versionNumberTest(string title, string file, string localPath, bool compo, bool mix, bool mastering, string expectedVersionNumber)
+        {
+            songsManager.addSong(title, file, localPath);
+            string titleChange = "New Version";
+            string descriptionChange = "No description";
+
+            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
+
+            string versionNumber = await songsManager.versionNumberAsync(expectedSong);
+            Assert.Equal(expectedVersionNumber, versionNumber);
         }
 
     }

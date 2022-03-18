@@ -23,9 +23,10 @@ namespace App1Tests.Mock
             versionPath = @"./versionStorage/";
             Directory.CreateDirectory(versionPath);
             versionDescription = new Dictionary<Song, string>();
+            versionNumber = new Dictionary<Song, string>();
         }
 
-        public async Task<string> uploadSongAsync(Song song, string title, string description)
+        public async Task<string> uploadSongAsync(Song song, string title, string description, string versionNumber)
         {
             (bool errorBool, string errorMessage) = await UserErrorAsync();
 
@@ -37,11 +38,12 @@ namespace App1Tests.Mock
                 }
                 Copy(song.LocalPath, versionPath + song.LocalPath);
                 versionDescription[song] = title + "\n\n" + description;
+                this.versionNumber[song] = versionNumber;
             }
             return errorMessage;
         }
 
-        public async Task<string> uploadSongAsync(Song song, string file, string title, string description)
+        public async Task<string> uploadSongAsync(Song song, string file, string title)
         {
             (bool errorBool, string errorMessage) = await UserErrorAsync();
             if (!errorBool && song.LocalPath != null)
@@ -58,7 +60,7 @@ namespace App1Tests.Mock
                     }
                     File.Copy(song.LocalPath + file, versionPath + song.LocalPath + file);
                 }
-                versionDescription[song] = title + "\n\n" + description;
+                versionDescription[song] = title;
             }
             return errorMessage;
         }
@@ -91,6 +93,22 @@ namespace App1Tests.Mock
             return await Task.Run(() =>
             {
                 return versionDescription[song];
+            });
+        }
+
+        public async Task<string> versionNumberAsync(Song song)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    return versionNumber[song];
+                }
+                catch (Exception)
+                {
+                    return string.Empty;
+                }
+                
             });
         }
 
@@ -132,5 +150,6 @@ namespace App1Tests.Mock
         private readonly User user1;
         private readonly User user2;
         private readonly Dictionary<Song, string> versionDescription;
+        private readonly Dictionary<Song, string> versionNumber;
     }
 }

@@ -34,12 +34,13 @@ namespace App1.Models
             return errorMessage;
         }
 
-        public async Task<string> uploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription)
+        public async Task<string> uploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
         {
             string errorMessage = string.Empty;
             if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
-                errorMessage = await VersionTool.uploadSongAsync(song, changeTitle, changeDescription);
+                string versionNumber = await VersionTool.newVersionNumberAsync(song, compo, mix, mastering);
+                errorMessage = await VersionTool.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
             }
             return errorMessage;
         }
@@ -114,6 +115,12 @@ namespace App1.Models
         {
             return await VersionTool.versionDescriptionAsync(song);
         }
+
+        public async Task<string> versionNumberAsync(Song song)
+        {
+            return await VersionTool.versionNumberAsync(song);
+        }
+
 
         public SongsStorage SongList { get; private set; }
         private readonly IVersionTool VersionTool;
