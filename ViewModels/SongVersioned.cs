@@ -91,6 +91,7 @@ namespace App1.ViewModels
                     Status = "Updating...";
                     NotifyPropertyChanged("Status");
                 }
+                isUpdatingSong_ = value;
                 IsLoading = value;
             }
         }
@@ -109,6 +110,7 @@ namespace App1.ViewModels
                     Status = "Uploading...";
                     NotifyPropertyChanged("Status");
                 }
+                isUploadingSong_ = value;
                 IsLoading = value;
             }
         }
