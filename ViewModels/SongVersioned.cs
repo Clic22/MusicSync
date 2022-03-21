@@ -89,7 +89,7 @@ namespace App1.ViewModels
                 if (value)
                 {
                     Status = "Updating...";
-                    NotifyPropertyChanged("Status");
+                    NotifyPropertyChanged(nameof(Status));
                 }
                 isUpdatingSong_ = value;
                 IsLoading = value;
@@ -108,7 +108,7 @@ namespace App1.ViewModels
                 if (value)
                 {
                     Status = "Uploading...";
-                    NotifyPropertyChanged("Status");
+                    NotifyPropertyChanged(nameof(Status));
                 }
                 isUploadingSong_ = value;
                 IsLoading = value;
