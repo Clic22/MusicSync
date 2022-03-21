@@ -87,12 +87,13 @@ namespace ViewModelsTests.SongsPageViewModelTest
 
             string error = await viewModel.updateSongAsync(expectedSongToBeUpdated);
 
-            Assert.Equal("Up to Date", expectedSongToBeUpdated.Status);
+            Assert.Equal(string.Empty, expectedSongToBeUpdated.Status);
             Assert.Equal(expectedDescription, expectedSongToBeUpdated.VersionDescription);
             Assert.Equal(expectedVersionNumber, expectedSongToBeUpdated.VersionNumber);
             songsManagerMock.Verify(m => m.updateSongAsync(song), Times.Once());
             Action action = () => viewModel.updateSongAsync(expectedSongToBeUpdated);
             Assert.PropertyChanged(expectedSongToBeUpdated, "Status", action);
+            Assert.PropertyChanged(expectedSongToBeUpdated, "IsLoading", action);
             Assert.PropertyChanged(expectedSongToBeUpdated, "VersionDescription", action);
             Assert.PropertyChanged(expectedSongToBeUpdated, "VersionNumber", action);
         }
@@ -116,6 +117,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Verify(m => m.updateSongAsync(song), Times.Once());
             Action action = () => viewModel.updateSongAsync(expectedSongToBeUpdated);
             Assert.PropertyChanged(expectedSongToBeUpdated, "Status", action);
+            Assert.PropertyChanged(expectedSongToBeUpdated, "IsLoading", action);
         }
 
         [Theory]
@@ -223,6 +225,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Verify(m => m.uploadNewSongVersionAsync(song, changeTitle, changeDescritpion, true, false, false), Times.Once());
             Action action = () => viewModel.uploadNewSongVersionAsync(expectedSongToBeUploaded, changeTitle, changeDescritpion, true, false, false);
             Assert.PropertyChanged(expectedSongToBeUploaded, "Status", action);
+            Assert.PropertyChanged(expectedSongToBeUploaded, "IsLoading", action);
         }
     }
 }

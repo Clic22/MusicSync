@@ -1,6 +1,8 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace App1.ViewModels
 {
@@ -17,13 +19,11 @@ namespace App1.ViewModels
             string errorMessage = string.Empty;
             foreach (SongVersioned songVersioned in SongsVersioned)
             {
-                Song song = SongsManager.findSong(songVersioned.Title);
-                errorMessage = await SongsManager.updateSongAsync(song);
+                errorMessage = await updateSongAsync(songVersioned);
                 if (errorMessage != string.Empty)
                 {
-                    return errorMessage;
+                    break;
                 }
-                await refreshSongVersionedAsync(songVersioned, song);
             }
             return errorMessage;
         }
@@ -47,9 +47,11 @@ namespace App1.ViewModels
 
         public async Task<string> updateSongAsync(SongVersioned songVersioned)
         {
+            songVersioned.IsUpdatingSong = true;
             Song song = SongsManager.findSong(songVersioned.Title);
             string errorMessage = await SongsManager.updateSongAsync(song);
             await refreshSongVersionedAsync(songVersioned,song);
+            songVersioned.IsUpdatingSong = false;
             return errorMessage;
         }
 
@@ -71,9 +73,11 @@ namespace App1.ViewModels
 
         public async Task<string> uploadNewSongVersionAsync(SongVersioned songVersioned, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
         {
+            songVersioned.IsUploadingSong = true;
             Song song = SongsManager.findSong(songVersioned.Title);
             string errorMessage = await SongsManager.uploadNewSongVersionAsync(song, changeTitle, changeDescription, compo, mix, mastering);
             await refreshSongVersionedAsync(songVersioned,song);
+            songVersioned.IsUploadingSong = false;
             return errorMessage;
         }
 
@@ -111,7 +115,7 @@ namespace App1.ViewModels
             if (song.Status == Song.SongStatus.locked)
                 songVersioned.Status = "Locked";
             else if (song.Status == Song.SongStatus.upToDate)
-                songVersioned.Status = "Up to Date";
+                songVersioned.Status = string.Empty;
         }
 
         public ObservableCollection<SongVersioned> SongsVersioned;

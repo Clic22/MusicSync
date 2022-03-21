@@ -16,6 +16,9 @@ namespace App1.ViewModels
             status_ = string.Empty;
             versionDescritpion_ = string.Empty;
             versionNumber_ = string.Empty;
+            isUpdatingSong_ = false;
+            isUploadingSong_ = false;
+            isLoading_ = false;
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
@@ -70,6 +73,56 @@ namespace App1.ViewModels
             set
             {
                 versionNumber_ = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        private bool isUpdatingSong_;
+        public bool IsUpdatingSong
+        {
+            get
+            {
+                return isUpdatingSong_;
+            }
+            set
+            {
+                if (value)
+                {
+                    Status = "Updating...";
+                    NotifyPropertyChanged("Status");
+                }
+                IsLoading = value;
+            }
+        }
+
+        private bool isUploadingSong_;
+        public bool IsUploadingSong
+        {
+            get
+            {
+                return isUploadingSong_;
+            }
+            set
+            {
+                if (value)
+                {
+                    Status = "Uploading...";
+                    NotifyPropertyChanged("Status");
+                }
+                IsLoading = value;
+            }
+        }
+
+        private bool isLoading_;
+        public bool IsLoading
+        {
+            get
+            {
+                return isLoading_;
+            }
+            set
+            {
+                isLoading_ = value;
                 NotifyPropertyChanged();
             }
         }
