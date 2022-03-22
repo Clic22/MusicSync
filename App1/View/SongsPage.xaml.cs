@@ -45,7 +45,6 @@ namespace App1
             {
                 await displayContentDialog("All Songs Updated");
             }
-            
         }
 
         private async void addSongClick(object sender, RoutedEventArgs e)
@@ -208,7 +207,5 @@ namespace App1
         private bool compo;
         private bool mix;
         private bool mastering;
-
-
     }
 }
