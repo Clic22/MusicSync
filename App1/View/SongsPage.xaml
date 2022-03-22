@@ -8,18 +8,18 @@
     mc:Ignorable="d"
     >
     <Page.Resources>
-        <DataTemplate x:Key="SongsVersionedListViewTemplate" x:DataType="local:SongVersioned">
+        <DataTemplate x:Key="SongVersionedListViewTemplate" x:DataType="local:SongVersioned">
             <Grid VerticalAlignment="Center" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{x:Bind Title}" FontSize="20" Margin="12" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
-                <Button Content="{x:Bind VersionNumber}" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0">
+                <TextBlock Text="{x:Bind Title}" x:DefaultBindMode="OneTime" FontSize="20" Margin="12" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
+                <Button Content="{x:Bind VersionNumber}" x:DefaultBindMode="OneWay" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0">
                     <Button.Flyout>
                         <Flyout Placement="Bottom">
-                            <TextBlock Text="{x:Bind VersionDescription}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock Text="{x:Bind VersionDescription}" x:DefaultBindMode="OneWay" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Flyout>
                     </Button.Flyout>
                 </Button>
@@ -53,7 +53,6 @@
             </Grid>
         </DataTemplate>
     </Page.Resources>
-
     <Grid>
         <StackPanel Orientation="Vertical" VerticalAlignment="Top">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -63,7 +62,8 @@
                     <AppBarButton Icon="Add" Label="Add" Click="addSongClick"/>
                 </CommandBar>
             </StackPanel>
-            <ListView ItemsSource="{x:Bind SongsPageViewModel.SongsVersioned}" ItemTemplate="{StaticResource SongsVersionedListViewTemplate}" x:DefaultBindMode="OneWay" SelectionMode="None" Margin="12"/>
+            <ListView ItemsSource="{x:Bind SongsPageViewModel.SongsVersioned}" ItemTemplate="{StaticResource SongVersionedListViewTemplate}" x:DefaultBindMode="OneWay" SelectionMode="None" Margin="12">
+            </ListView>
         </StackPanel>
 
         <ContentDialog
