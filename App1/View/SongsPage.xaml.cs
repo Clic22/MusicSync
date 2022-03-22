@@ -52,7 +52,8 @@ namespace App1
             ContentDialogResult result = await addNewSongContentDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                await SongsPageViewModel.addSongAsync(songTitle.Text, songFile.Text, songLocalPath.Text);
+                SongVersioned songVersioned = SongsPageViewModel.addSong(songTitle.Text, songFile.Text, songLocalPath.Text);
+                await SongsPageViewModel.updateSongAsync(songVersioned);
             }
             songTitle.Text = String.Empty;
             songFile.Text = String.Empty;
@@ -143,6 +144,21 @@ namespace App1
             {
                 await displayContentDialog($"'{song.Title}' Reverted");
             }
+        }
+
+        private async void songVersionHistoryClick(object sender, RoutedEventArgs e)
+        {
+            SongVersioned song = (sender as Button).DataContext as SongVersioned;
+            await displayContentDialog($"'{song.Title}' History");
+            /*string errorMessage = await SongsPageViewModel.songVersionHistoryAsync(song);
+            if (errorMessage != string.Empty)
+            {
+                await displayContentDialog(errorMessage);
+            }
+            else
+            {
+                await displayContentDialog($"'{song.Title}' Reverted");
+            }*/
         }
 
         private async Task displayContentDialog(string text)

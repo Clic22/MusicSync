@@ -112,6 +112,11 @@ namespace App1Tests.Mock
             });
         }
 
+        public Task<List<(string, string)>> versionsAsync(Song song)
+        {
+            throw new NotImplementedException();
+        }
+
         private async Task<(bool,string)> UserErrorAsync()
         {
             return await Task.Run(() =>
@@ -143,6 +148,8 @@ namespace App1Tests.Mock
                 File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)));
 
         }
+
+
 
         public User user { get; set; }
         public string versionPath;

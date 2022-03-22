@@ -28,14 +28,12 @@ namespace App1.ViewModels
             return errorMessage;
         }
 
-        public async Task addSongAsync
-            (string songTitle, string songFile, string songLocalPath)
+        public SongVersioned addSong(string songTitle, string songFile, string songLocalPath)
         {
             SongsManager.addSong(songTitle, songFile, songLocalPath);
-            SongsVersioned.Add(new SongVersioned(songTitle));
-            SongVersioned songVersioned = SongsVersioned.First(songVersioned => songVersioned.Title == songTitle);
-            Song song = SongsManager.findSong(songTitle);
-            await refreshSongVersionedAsync(songVersioned,song);
+            SongVersioned songVersioned = new SongVersioned(songTitle);
+            SongsVersioned.Add(songVersioned);
+            return songVersioned;
         }
 
         public async Task deleteSongAsync(SongVersioned songVersioned)
@@ -98,6 +96,7 @@ namespace App1.ViewModels
             refreshSongStatus(songVersioned, song);
             await refreshSongVersionDescriptionAsync(songVersioned, song);
             await refreshSongVersionNumberAsync(songVersioned, song);
+            await refreshSongVersionsAsync(songVersioned, song);
         }
 
         private async Task refreshSongVersionDescriptionAsync(SongVersioned songVersioned, Song song)
@@ -108,6 +107,17 @@ namespace App1.ViewModels
         private async Task refreshSongVersionNumberAsync(SongVersioned songVersioned, Song song)
         {
             songVersioned.VersionNumber = await SongsManager.versionNumberAsync(song);
+        }
+
+        private async Task refreshSongVersionsAsync(SongVersioned songVersioned, Song song)
+        {
+            List<(string, string)> versions = await SongsManager.versionsAsync(song);
+            ObservableCollection<(string, string)> versionsObservable = new ObservableCollection<(string, string)>();
+            foreach (var version in versions)
+            {
+                versionsObservable.Add(version);
+            }
+            songVersioned.Versions = versionsObservable;
         }
 
         private void refreshSongStatus(SongVersioned songVersioned, Song song)

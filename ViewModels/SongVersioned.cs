@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -14,11 +15,12 @@ namespace App1.ViewModels
         {
             title_ = title;
             status_ = string.Empty;
-            versionDescritpion_ = string.Empty;
+            versionDescription_ = string.Empty;
             versionNumber_ = string.Empty;
             isUpdatingSong_ = false;
             isUploadingSong_ = false;
             isLoading_ = false;
+            Versions = new ObservableCollection<(string, string)>();
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
@@ -35,6 +37,7 @@ namespace App1.ViewModels
                 return title_;
             }
         }
+
         private string status_;
         public string Status
         {
@@ -49,16 +52,16 @@ namespace App1.ViewModels
             }
         }
 
-        private string versionDescritpion_;
+        private string versionDescription_;
         public string VersionDescription
         {
             get
             {
-                return versionDescritpion_;
+                return versionDescription_;
             }
             set
             {
-                versionDescritpion_ = value;
+                versionDescription_ = value;
                 NotifyPropertyChanged();
             }
         }
@@ -76,6 +79,8 @@ namespace App1.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
+        public ObservableCollection<(string, string)> Versions;
 
         private bool isUpdatingSong_;
         public bool IsUpdatingSong
