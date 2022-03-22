@@ -23,6 +23,12 @@
     <AppInstallerUri>https://github.com/Clic22/MusicSync/packages</AppInstallerUri>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="View\Resource1.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="View\Resource1.resx" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="AddNewSong.xaml" />
     <None Remove="View\SettingsPage.xaml" />
     <None Remove="View\SongsPage.xaml" />

@@ -88,7 +88,7 @@ namespace App1.Adapters
                 {
                     using (var repo = new Repository(song.LocalPath))
                     {
-                        Branch originMaster = repo.Branches["origin/master"];
+                        Branch originMaster = repo.Branches["origin/test_version_tool"];
                         repo.Reset(ResetMode.Hard, originMaster.Tip);
                     }
                 });
@@ -208,7 +208,7 @@ namespace App1.Adapters
                 var options = new PushOptions();
                 options.CredentialsProvider = (_url, _user, _cred) =>
                     new UsernamePasswordCredentials { Username = user.GitLabUsername, Password = user.GitLabPassword, };
-                repo.Network.Push(remote, @"refs/heads/master", options);
+                repo.Network.Push(remote, @"refs/heads/test_version_tool", options);
             }
         }
 

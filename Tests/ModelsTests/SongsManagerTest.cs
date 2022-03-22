@@ -2,6 +2,7 @@
 using App1.Models.Ports;
 using App1Tests.Mock;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -399,6 +400,25 @@ namespace ModelsTests.SongsManagerTest
 
             string versionNumber = await songsManager.versionNumberAsync(expectedSong);
             Assert.Equal(expectedVersionNumber, versionNumber);
+        }
+
+        [Theory]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", true, true, true)]
+        public async Task versionsTest(string title, string file, string localPath, bool compo, bool mix, bool mastering)
+        {
+            songsManager.addSong(title, file, localPath);
+            string titleChange = "New Version";
+            string descriptionChange = "No description";
+            //Simulate uploads by another user
+            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
+            errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
+
+            List<(string versionNumber, string versionDescription)> versions = await songsManager.versionsAsync(expectedSong);
+
+            List<(string versionNumber, string versionDescription)> expectedVersions = new List<(string, string)>();
+            expectedVersions.Add(("1.1.1", titleChange + "\n\n" + descriptionChange));
+            expectedVersions.Add(("2.1.1", titleChange + "\n\n" + descriptionChange));
+            Assert.Equal(expectedVersions, versions);
         }
 
     }

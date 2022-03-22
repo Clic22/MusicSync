@@ -9,26 +9,19 @@ using System.Threading.Tasks;
 
 namespace App1.ViewModels
 {
-    public class SongVersioned : INotifyPropertyChanged
+    public class SongVersioned : Bindable
     {
         public SongVersioned(string title)
         {
             title_ = title;
             status_ = string.Empty;
-            versionDescription_ = string.Empty;
-            versionNumber_ = string.Empty;
             isUpdatingSong_ = false;
             isUploadingSong_ = false;
             isLoading_ = false;
-            Versions = new ObservableCollection<(string, string)>();
+            CurrentVersion = new Version();
+            Versions = new ObservableCollection<Version>();
         }
 
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
         private readonly string title_;
         public string Title
         {
@@ -47,40 +40,12 @@ namespace App1.ViewModels
             }
             set
             {
-                status_ = value;
-                NotifyPropertyChanged();
+                SetProperty(ref status_, value);
             }
         }
 
-        private string versionDescription_;
-        public string VersionDescription
-        {
-            get
-            {
-                return versionDescription_;
-            }
-            set
-            {
-                versionDescription_ = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        private string versionNumber_;
-        public string VersionNumber
-        {
-            get
-            {
-                return versionNumber_;
-            }
-            set
-            {
-                versionNumber_ = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public ObservableCollection<(string, string)> Versions;
+        public Version CurrentVersion;
+        public ObservableCollection<Version> Versions;
 
         private bool isUpdatingSong_;
         public bool IsUpdatingSong
@@ -94,7 +59,7 @@ namespace App1.ViewModels
                 if (value)
                 {
                     Status = "Updating...";
-                    NotifyPropertyChanged(nameof(Status));
+                    SetProperty(ref isUpdatingSong_, value);
                 }
                 isUpdatingSong_ = value;
                 IsLoading = value;
@@ -113,7 +78,7 @@ namespace App1.ViewModels
                 if (value)
                 {
                     Status = "Uploading...";
-                    NotifyPropertyChanged(nameof(Status));
+                    SetProperty(ref isUploadingSong_, value);
                 }
                 isUploadingSong_ = value;
                 IsLoading = value;
@@ -130,7 +95,7 @@ namespace App1.ViewModels
             set
             {
                 isLoading_ = value;
-                NotifyPropertyChanged();
+                SetProperty(ref isLoading_, value);
             }
         }
 
