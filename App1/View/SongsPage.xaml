@@ -53,6 +53,7 @@
             </Grid>
         </DataTemplate>
 
+
         <DataTemplate x:Key="SongVersionsListViewTemplate" x:DataType="local:Version">
             <StackPanel Orientation="Vertical">
                 <TextBlock Text="{x:Bind VersionNumber}" x:DefaultBindMode="OneWay" FontWeight="Bold" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4"/>
