@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
@@ -107,7 +108,7 @@ namespace App1
             if (result == ContentDialogResult.Primary)
             {
                 SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                string errorMessage = await SongsPageViewModel.uploadNewSongVersionAsync(song, title.Text, description.Text, compo, mix, mix);
+                string errorMessage = await SongsPageViewModel.uploadNewSongVersionAsync(song, title.Text, description.Text, compo, mix, mastering);
                 if (errorMessage != string.Empty)
                 {
                     await displayContentDialog(errorMessage);
