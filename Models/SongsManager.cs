@@ -101,17 +101,12 @@ namespace App1.Models
             }
         }
 
-        public async Task<string> versionDescriptionAsync(Song song)
+        public async Task<SongVersion> currentVersionAsync(Song song)
         {
-            return await VersionTool.versionDescriptionAsync(song);
+            return await VersionTool.currentVersionAsync(song);     
         }
 
-        public async Task<string> versionNumberAsync(Song song)
-        {
-            return await VersionTool.versionNumberAsync(song);
-        }
-
-        public async Task<List<(string, string, string)>> versionsAsync(Song song)
+        public async Task<List<SongVersion>> versionsAsync(Song song)
         {
             return await VersionTool.versionsAsync(song);
         }

@@ -76,23 +76,25 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
             string expectedDescription = "New Version from an User";
-            songsManagerMock.Setup(m => m.versionDescriptionAsync(song)).Returns(Task.FromResult(expectedDescription));
-            string expectedVersionNumber = "v2.3.0";
-            songsManagerMock.Setup(m => m.versionNumberAsync(song)).Returns(Task.FromResult(expectedVersionNumber));
+            string expectedNumber = "v2.3.0";
+            string expectedAuthor = "Oregano";
+            SongVersion songVersion = new SongVersion(expectedNumber, expectedDescription, expectedAuthor);
+            songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
+
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
             viewModel.addSong(title, file, localPath);
-            List<(string, string, string)> songVersions = new List<(string, string, string)>();
+            List<SongVersion> songVersions = new List<SongVersion>();
             songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songVersions));
             SongVersioned expectedSongToBeUpdated = new SongVersioned(title);
 
             string error = await viewModel.updateSongAsync(expectedSongToBeUpdated);
 
             Assert.Equal(string.Empty, expectedSongToBeUpdated.Status);
-            Assert.Equal(expectedDescription, expectedSongToBeUpdated.CurrentVersion.VersionDescription);
-            Assert.Equal(expectedVersionNumber, expectedSongToBeUpdated.CurrentVersion.VersionNumber);
+            Assert.Equal(expectedDescription, expectedSongToBeUpdated.CurrentVersion.Description);
+            Assert.Equal(expectedNumber, expectedSongToBeUpdated.CurrentVersion.Number);
+            Assert.Equal(expectedAuthor, expectedSongToBeUpdated.CurrentVersion.Author);
             songsManagerMock.Verify(m => m.updateSongAsync(song), Times.Once());
-            songsManagerMock.Verify(m => m.versionDescriptionAsync(song), Times.Once());
-            songsManagerMock.Verify(m => m.versionNumberAsync(song), Times.Once());
+            songsManagerMock.Verify(m => m.currentVersionAsync(song), Times.Once());
             Action action = () => viewModel.updateSongAsync(expectedSongToBeUpdated);
             Assert.PropertyChanged(expectedSongToBeUpdated, "Status", action);
             Assert.PropertyChanged(expectedSongToBeUpdated, "IsLoading", action);
@@ -110,7 +112,9 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
             viewModel.addSong(title, file, localPath);
-            List<(string, string, string)> songVersions = new List<(string, string, string)>();
+            SongVersion version = new SongVersion("1.0.0", "No Description", "Aymeric");
+            songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(version));
+            List<SongVersion> songVersions = new List<SongVersion>();
             songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songVersions));
             SongVersioned expectedSongToBeUpdated = new SongVersioned(title);
 
@@ -134,9 +138,12 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
             songsManagerMock.Setup(m => m.findSong("Test")).Returns(song2);
+            SongVersion version = new SongVersion("1.0.0", "No Description", "Aymeric");
+            songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(version));
+            songsManagerMock.Setup(m => m.currentVersionAsync(song2)).Returns(Task.FromResult(version));
             songsManagerMock.Setup(m => m.updateSongAsync(song)).Returns(Task.FromResult(string.Empty));
             songsManagerMock.Setup(m => m.updateSongAsync(song2)).Returns(Task.FromResult(string.Empty));
-            List<(string, string, string)> songVersions = new List<(string, string, string)>();
+            List<SongVersion> songVersions = new List<SongVersion>();
             songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songVersions));
             songsManagerMock.Setup(m => m.versionsAsync(song2)).Returns(Task.FromResult(songVersions));
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
@@ -224,10 +231,11 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
             viewModel.addSong(title, file, localPath);
-            List<(string, string, string)> songVersions = new List<(string, string, string)>();
-            (string, string, string) version = ("1.0.0", "No Description", "Oregano");
+            List<SongVersion> songVersions = new List<SongVersion>();
+            SongVersion version = new SongVersion("1.0.0", "No Description", "Oregano");
             songVersions.Add(version);
             songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songVersions));
+            songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(version));
             SongVersioned expectedSongToBeUploaded = new SongVersioned(title);
             string changeTitle = "New Title";
             string changeDescritpion = "No Description";

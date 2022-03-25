@@ -8,12 +8,12 @@ namespace App1.Models.Ports
         public Task<string> uploadSongAsync(Song song, string file, string title);
         public Task<string> updateSongAsync(Song song);
         public Task<string> revertSongAsync(Song song);
-        public Task<string> versionDescriptionAsync(Song song);
-        public Task<string> versionNumberAsync(Song song);
-        public Task<List<(string, string, string)>> versionsAsync(Song song);
+        public Task<SongVersion> currentVersionAsync(Song song);
+        public Task<List<SongVersion>> versionsAsync(Song song);
         public async Task<string> newVersionNumberAsync(Song song, bool compo, bool mix, bool mastering)
         {
-            string versionNumber = await versionNumberAsync(song);
+            SongVersion currentVersion = await currentVersionAsync(song);
+            string versionNumber = currentVersion.Number;
             int compoNumber = 0;
             int mixNumber = 0;
             int masteringNumber = 0;

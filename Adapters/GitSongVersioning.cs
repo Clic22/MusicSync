@@ -100,45 +100,35 @@ namespace App1.Adapters
             }
         }
 
-        public async Task<string> versionDescriptionAsync(Song song)
+        public async Task<SongVersion> currentVersionAsync(Song song)
         {
-            string songVersionDescription = string.Empty;
-            await Task.Run(() =>
-            {
-                using (var repo = new Repository(song.LocalPath))
-                {
-                    Commit commitTagged = (Commit)repo.Tags.Last().Target;
-                    songVersionDescription = commitTagged.Message;
-                }
-            });
-            return songVersionDescription;
-        }
-
-        public async Task<string> versionNumberAsync(Song song)
-        {
-            string versionNumber =string.Empty;
+            SongVersion currentVersion = new SongVersion();
             await Task.Run(() =>
             {
                 try
                 {
                     using (var repo = new Repository(song.LocalPath))
                     {
-                        versionNumber = repo.Tags.Last().FriendlyName;
+                        Tag lastTag = repo.Tags.Last();
+                        currentVersion.Number = lastTag.FriendlyName;
+                        Commit commitTagged = (Commit)lastTag.Target;
+                        currentVersion.Description = commitTagged.Message;
+                        currentVersion.Author = commitTagged.Author.Name;
                     }
                 }
                 catch (Exception)
                 {
-                    versionNumber = string.Empty;
+                    currentVersion = new SongVersion();
                 }
                 
             });
-            return versionNumber;
+            return currentVersion;
         }
 
-        public async Task<List<(string,string,string)>> versionsAsync(Song song)
+        public async Task<List<SongVersion>> versionsAsync(Song song)
         {
-            (string versionNumber, string versionDescription, string author) version;
-            List<(string,string,string)> versions = new List<(string,string,string)>();
+            
+            List<SongVersion> versions = new List<SongVersion>();
             await Task.Run(() =>
             {
                 try
@@ -147,17 +137,18 @@ namespace App1.Adapters
                     {
                         foreach (var tag in repo.Tags)
                         {
-                            version.versionNumber = tag.FriendlyName;
+                            SongVersion version = new SongVersion();
+                            version.Number = tag.FriendlyName;
                             Commit commitTagged = (Commit)tag.Target;
-                            version.versionDescription = commitTagged.Message;
-                            version.author = commitTagged.Author.Name;
+                            version.Description = commitTagged.Message;
+                            version.Author = commitTagged.Author.Name;
                             versions.Add(version);
                         }
                     }
                 }
                 catch (Exception)
                 {
-                    versions = new List<(string,string,string)>();
+                    versions = new List<SongVersion>();
                 }
 
             });

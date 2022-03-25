@@ -98,32 +98,29 @@ namespace App1.ViewModels
         private async Task refreshSongVersionedAsync(SongVersioned songVersioned, Song song)
         {
             refreshSongStatus(songVersioned, song);
-            await refreshSongVersionDescriptionAsync(songVersioned, song);
-            await refreshSongVersionNumberAsync(songVersioned, song);
+            await refreshSongCurrentVersionAsync(songVersioned, song);
             await refreshSongVersionsAsync(songVersioned, song);
         }
 
-        private async Task refreshSongVersionDescriptionAsync(SongVersioned songVersioned, Song song)
+        private async Task refreshSongCurrentVersionAsync(SongVersioned songVersioned, Song song)
         {
-            songVersioned.CurrentVersion.VersionDescription = await SongsManager.versionDescriptionAsync(song);
-        }
-
-        private async Task refreshSongVersionNumberAsync(SongVersioned songVersioned, Song song)
-        {
-            songVersioned.CurrentVersion.VersionNumber = await SongsManager.versionNumberAsync(song);
+            SongVersion songVersion = await SongsManager.currentVersionAsync(song);
+            songVersioned.CurrentVersion.Number = songVersion.Number;
+            songVersioned.CurrentVersion.Description = songVersion.Description;
+            songVersioned.CurrentVersion.Author = songVersion.Author;
         }
 
         private async Task refreshSongVersionsAsync(SongVersioned songVersioned, Song song)
         {
             songVersioned.Versions.Clear();
-            List<(string, string, string)> versionsStringList = await SongsManager.versionsAsync(song);
-            foreach (var versionString in versionsStringList)
+            List<Models.SongVersion> versionsModels= await SongsManager.versionsAsync(song);
+            foreach (var versionModel in versionsModels)
             {
-                Version version = new Version();
-                version.VersionNumber = versionString.Item1;
-                version.VersionDescription = versionString.Item2;
-                version.Author = versionString.Item3;
-                songVersioned.Versions.Insert(0, version);
+                ViewModels.Version versionViewModels = new ViewModels.Version();
+                versionViewModels.Number = versionModel.Number;
+                versionViewModels.Description = versionModel.Description;
+                versionViewModels.Author = versionModel.Author;
+                songVersioned.Versions.Insert(0, versionViewModels);
             }
         }
 
