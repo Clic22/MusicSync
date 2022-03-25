@@ -203,6 +203,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Verify(m => m.revertSongAsync(song), Times.Once());
             Action action = () => viewModel.revertSongAsync(expectedSongToBeReverted);
             Assert.PropertyChanged(expectedSongToBeReverted, "Status", action);
+            Assert.PropertyChanged(expectedSongToBeReverted, "IsLoading", action);
         }
 
         [Theory]
