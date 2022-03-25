@@ -156,6 +156,7 @@ namespace App1.Adapters
                 }
                 catch (Exception)
                 {
+                    versions = new List<(string,string)>();
                 }
 
             });

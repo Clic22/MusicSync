@@ -44,7 +44,19 @@ namespace App1.ViewModels
             }
         }
 
-        public Version CurrentVersion;
+        private Version currentVersion_;
+        public Version CurrentVersion
+        {
+            get
+            {
+                return currentVersion_;
+            }
+            set
+            {
+               SetProperty(ref currentVersion_, value);
+            }
+        }
+
         public ObservableCollection<Version> Versions;
 
         private bool isUpdatingSong_;
