@@ -71,9 +71,8 @@ namespace App1.ViewModels
                 if (value)
                 {
                     Status = "Updating...";
-                    SetProperty(ref isUpdatingSong_, value);
                 }
-                isUpdatingSong_ = value;
+                SetProperty(ref isUpdatingSong_, value);
                 IsLoading = value;
             }
         }
@@ -90,9 +89,8 @@ namespace App1.ViewModels
                 if (value)
                 {
                     Status = "Uploading...";
-                    SetProperty(ref isUploadingSong_, value);
                 }
-                isUploadingSong_ = value;
+                SetProperty(ref isUploadingSong_, value);
                 IsLoading = value;
             }
         }
@@ -109,9 +107,26 @@ namespace App1.ViewModels
                 if (value)
                 {
                     Status = "Reverting...";
-                    SetProperty(ref isRevertingSong_, value);
                 }
-                isRevertingSong_ = value;
+                SetProperty(ref isRevertingSong_, value);
+                IsLoading = value;
+            }
+        }
+
+        private bool isOpeningSong_;
+        public bool IsOpeningSong
+        {
+            get
+            {
+                return isOpeningSong_;
+            }
+            set
+            {
+                if (value)
+                {
+                    Status = "Opening...";
+                }
+                SetProperty(ref isOpeningSong_, value);
                 IsLoading = value;
             }
         }
