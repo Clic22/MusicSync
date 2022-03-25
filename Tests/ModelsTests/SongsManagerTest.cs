@@ -420,11 +420,11 @@ namespace ModelsTests.SongsManagerTest
             string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
             errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
 
-            List<(string versionNumber, string versionDescription)> versions = await songsManager.versionsAsync(expectedSong);
+            List<(string versionNumber, string versionDescription, string author)> versions = await songsManager.versionsAsync(expectedSong);
 
-            List<(string versionNumber, string versionDescription)> expectedVersions = new List<(string, string)>();
-            expectedVersions.Add(("1.1.1", titleChange + "\n\n" + descriptionChange));
-            expectedVersions.Add(("2.1.1", titleChange + "\n\n" + descriptionChange));
+            List<(string versionNumber, string versionDescription, string author)> expectedVersions = new List<(string, string, string)>();
+            expectedVersions.Add(("1.1.1", titleChange + "\n\n" + descriptionChange, user.GitUsername));
+            expectedVersions.Add(("2.1.1", titleChange + "\n\n" + descriptionChange, user.GitUsername));
             Assert.Equal(expectedVersions, versions);
         }
 

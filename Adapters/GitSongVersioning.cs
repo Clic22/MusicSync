@@ -135,10 +135,10 @@ namespace App1.Adapters
             return versionNumber;
         }
 
-        public async Task<List<(string,string)>> versionsAsync(Song song)
+        public async Task<List<(string,string,string)>> versionsAsync(Song song)
         {
-            (string versionNumber, string versionDescription) version;
-            List<(string,string)> versions = new List<(string,string)>();
+            (string versionNumber, string versionDescription, string author) version;
+            List<(string,string,string)> versions = new List<(string,string,string)>();
             await Task.Run(() =>
             {
                 try
@@ -150,13 +150,14 @@ namespace App1.Adapters
                             version.versionNumber = tag.FriendlyName;
                             Commit commitTagged = (Commit)tag.Target;
                             version.versionDescription = commitTagged.Message;
+                            version.author = commitTagged.Author.Name;
                             versions.Add(version);
                         }
                     }
                 }
                 catch (Exception)
                 {
-                    versions = new List<(string,string)>();
+                    versions = new List<(string,string,string)>();
                 }
 
             });

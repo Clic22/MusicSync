@@ -10,10 +10,10 @@ namespace ModelsTests.UserTest
         {
             User user = new User();
             Assert.NotNull(user);
-            Assert.Null(user.GitUsername);
-            Assert.Null(user.GitLabPassword);
-            Assert.Null(user.GitEmail);
-            Assert.Null(user.GitLabUsername);
+            Assert.Empty(user.GitUsername);
+            Assert.Empty(user.GitLabPassword);
+            Assert.Empty(user.GitEmail);
+            Assert.Empty(user.GitLabUsername);
         }
 
         [Fact]

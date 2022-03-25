@@ -24,7 +24,7 @@ namespace App1Tests.Mock
             Directory.CreateDirectory(versionPath);
             versionDescription = new Dictionary<Song, string>();
             versionNumber = new Dictionary<Song, string>();
-            versions = new List<(string,string)>();
+            versions = new List<(string,string,string)>();
         }
 
         public async Task<string> uploadSongAsync(Song song, string title, string description, string versionNumber)
@@ -40,7 +40,7 @@ namespace App1Tests.Mock
                 Copy(song.LocalPath, versionPath + song.LocalPath);
                 versionDescription[song] = title + "\n\n" + description;
                 this.versionNumber[song] = versionNumber;
-                versions.Add((this.versionNumber[song], versionDescription[song]));
+                versions.Add((this.versionNumber[song], versionDescription[song], user.GitUsername));
             }
             return errorMessage;
         }
@@ -114,7 +114,7 @@ namespace App1Tests.Mock
             });
         }
 
-        public async Task<List<(string, string)>> versionsAsync(Song song)
+        public async Task<List<(string, string, string)>> versionsAsync(Song song)
         {
             return await Task.Run(() =>
             {
@@ -163,6 +163,6 @@ namespace App1Tests.Mock
         private readonly User user2;
         private readonly Dictionary<Song, string> versionDescription;
         private readonly Dictionary<Song, string> versionNumber;
-        private readonly List<(string, string)> versions;
+        private readonly List<(string, string, string)> versions;
     }
 }
