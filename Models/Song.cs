@@ -2,18 +2,12 @@
 {
     public class Song
     {
-        public enum SongStatus
-        {
-            upToDate,
-            locked
-        }
-
         public Song()
         {
             Title = string.Empty;
             File = string.Empty;
             LocalPath = string.Empty;
-            Status = SongStatus.upToDate;
+            Status = new SongStatus();
         }
 
         public Song(string newTitle, string newFile, string newLocalPath)
@@ -21,7 +15,7 @@
             Title = newTitle;
             File = newFile;
             LocalPath = newLocalPath;
-            Status = SongStatus.upToDate;
+            Status = new SongStatus();
         }
 
         public override bool Equals(object? obj)

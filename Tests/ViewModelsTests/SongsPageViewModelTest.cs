@@ -104,7 +104,8 @@ namespace ViewModelsTests.SongsPageViewModelTest
         {
             //Setup
             Song song = new Song(title, file, localPath);
-            song.Status = Song.SongStatus.locked;
+            song.Status.state = SongStatus.State.locked;
+            song.Status.whoLocked = "Oregano";
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
@@ -115,7 +116,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
 
             string error = await viewModel.updateSongAsync(expectedSongToBeUpdated);
 
-            Assert.Equal("Locked", expectedSongToBeUpdated.Status);
+            Assert.Equal("Locked by Oregano", expectedSongToBeUpdated.Status);
             songsManagerMock.Verify(m => m.updateSongAsync(song), Times.Once());
             Action action = () => viewModel.updateSongAsync(expectedSongToBeUpdated);
             Assert.PropertyChanged(expectedSongToBeUpdated, "Status", action);
