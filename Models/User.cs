@@ -4,7 +4,13 @@ namespace App1.Models
 {
     public sealed class User
     {
-        public User() { }
+        public User()
+        {
+            this.GitLabUsername = string.Empty;
+            this.GitLabPassword = string.Empty;
+            this.GitUsername = string.Empty;
+            this.GitEmail = string.Empty;
+        }
 
         public User(string gitLabUsername, string gitLabPassword, string gitUsername, string gitEmail)
         {
@@ -14,10 +20,10 @@ namespace App1.Models
             this.GitEmail = gitEmail;
         }
 
-        public string? GitLabUsername { get; set; }
-        public string? GitLabPassword { get; set; }
-        public string? GitUsername { get; set; }
-        public string? GitEmail { get; set; }
+        public string GitLabUsername { get; set; }
+        public string GitLabPassword { get; set; }
+        public string GitUsername { get; set; }
+        public string GitEmail { get; set; }
 
         public override bool Equals(object? obj)
         {

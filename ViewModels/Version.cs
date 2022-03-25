@@ -13,6 +13,7 @@ namespace App1.ViewModels
         {
             versionNumber_ = string.Empty;
             versionDescription_ = string.Empty;
+            author_ = string.Empty;
         }
 
         private string versionNumber_;
@@ -38,6 +39,19 @@ namespace App1.ViewModels
             set
             {
                 SetProperty(ref versionDescription_, value);
+            }
+        }
+
+        private string author_;
+        public string Author
+        {
+            get
+            {
+                return author_;
+            }
+            set
+            {
+                SetProperty(ref author_, value);
             }
         }
     }

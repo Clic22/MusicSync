@@ -16,6 +16,6 @@ namespace App1.Models.Ports
         public Song findSong(string songTitle);
         public Task<string> versionDescriptionAsync(Song song);
         public Task<string> versionNumberAsync(Song song);
-        public Task<List<(string,string)>> versionsAsync(Song song);
+        public Task<List<(string,string,string)>> versionsAsync(Song song);
     }
 }

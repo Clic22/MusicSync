@@ -114,12 +114,13 @@ namespace App1.ViewModels
         private async Task refreshSongVersionsAsync(SongVersioned songVersioned, Song song)
         {
             songVersioned.Versions.Clear();
-            List<(string, string)> versionsStringList = await SongsManager.versionsAsync(song);
+            List<(string, string, string)> versionsStringList = await SongsManager.versionsAsync(song);
             foreach (var versionString in versionsStringList)
             {
                 Version version = new Version();
                 version.VersionNumber = versionString.Item1;
                 version.VersionDescription = versionString.Item2;
+                version.Author = versionString.Item3;
                 songVersioned.Versions.Insert(0, version);
             }
         }

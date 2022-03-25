@@ -88,16 +88,6 @@ namespace App1.Models
             return errorMessage;
         }
 
-        private static void openSongWithDAW(Song song)
-        {
-            var p = new Process();
-            p.StartInfo = new ProcessStartInfo(song.LocalPath + @"\" + song.File)
-            {
-                UseShellExecute = true
-            };
-            p.Start();
-        }
-
         public Song findSong(string songTitle)
         {
             Song? song = SongList.Find(song => song.Title == songTitle);
@@ -120,10 +110,20 @@ namespace App1.Models
         {
             return await VersionTool.versionNumberAsync(song);
         }
-        
-        public async Task<List<(string,string)>> versionsAsync(Song song)
+
+        public async Task<List<(string, string, string)>> versionsAsync(Song song)
         {
             return await VersionTool.versionsAsync(song);
+        }
+
+        private static void openSongWithDAW(Song song)
+        {
+            var p = new Process();
+            p.StartInfo = new ProcessStartInfo(song.LocalPath + @"\" + song.File)
+            {
+                UseShellExecute = true
+            };
+            p.Start();
         }
 
         public SongsStorage SongList { get; private set; }
