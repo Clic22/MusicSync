@@ -48,7 +48,7 @@ namespace App1.Models
 
         public bool isLockedByUser(Song song, User user)
         {
-            if (lockFileExist(song) && lockFileCreatedByUser(song, user))
+            if (lockFileExist(song) && songLockedByUser(song, user))
             {
                 return true;
             }
@@ -60,18 +60,19 @@ namespace App1.Models
         {
             if (lockFileExist(song))
             {
-                song.Status = Song.SongStatus.locked;
+                song.Status.state = SongStatus.State.locked;
+                string username = File.ReadAllText(song.LocalPath + @"\.lock");
+                song.Status.whoLocked = username;
             }
             else
             {
-                song.Status = Song.SongStatus.upToDate;
+                song.Status.state = SongStatus.State.upToDate;
             }
         }
 
-        private bool lockFileCreatedByUser(Song song, User user)
+        private bool songLockedByUser(Song song, User user)
         {
-            string username = File.ReadAllText(song.LocalPath + @"\.lock");
-            if (username == user.GitUsername)
+            if (song.Status.whoLocked == user.GitUsername)
             {
                 return true;
             }

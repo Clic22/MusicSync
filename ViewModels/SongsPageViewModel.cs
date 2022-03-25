@@ -126,10 +126,14 @@ namespace App1.ViewModels
 
         private void refreshSongStatus(SongVersioned songVersioned, Song song)
         {
-            if (song.Status == Song.SongStatus.locked)
-                songVersioned.Status = "Locked";
-            else if (song.Status == Song.SongStatus.upToDate)
+            if (song.Status.state == SongStatus.State.locked)
+            {
+                songVersioned.Status = "Locked by " + song.Status.whoLocked;
+            }
+            else if (song.Status.state == SongStatus.State.upToDate)
+            {
                 songVersioned.Status = string.Empty;
+            }    
         }
 
         public ObservableCollection<SongVersioned> SongsVersioned;

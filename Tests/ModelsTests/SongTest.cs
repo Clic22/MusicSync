@@ -14,7 +14,7 @@ namespace ModelsTests.SongTest
             Assert.Equal(string.Empty, song.Title);
             Assert.Equal(string.Empty, song.LocalPath);
             Assert.Equal(string.Empty, song.File);
-            Assert.Equal(Song.SongStatus.upToDate, song.Status);
+            Assert.Equal(SongStatus.State.upToDate, song.Status.state);
         }
 
         [Fact]
@@ -29,7 +29,7 @@ namespace ModelsTests.SongTest
             Assert.Equal(expected_title, song.Title);
             Assert.Equal(expected_localPath, song.LocalPath);
             Assert.Equal(expected_file, song.File);
-            Assert.Equal(Song.SongStatus.upToDate, song.Status);
+            Assert.Equal(SongStatus.State.upToDate, song.Status.state);
         }
 
         [Fact]
