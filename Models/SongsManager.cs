@@ -120,7 +120,11 @@ namespace App1.Models
         {
             return await VersionTool.versionNumberAsync(song);
         }
-
+        
+        public async Task<List<(string,string)>> versionsAsync(Song song)
+        {
+            return await VersionTool.versionsAsync(song);
+        }
 
         public SongsStorage SongList { get; private set; }
         private readonly IVersionTool VersionTool;

@@ -135,6 +135,34 @@ namespace App1.Adapters
             return versionNumber;
         }
 
+        public async Task<List<(string,string)>> versionsAsync(Song song)
+        {
+            (string versionNumber, string versionDescription) version;
+            List<(string,string)> versions = new List<(string,string)>();
+            await Task.Run(() =>
+            {
+                try
+                {
+                    using (var repo = new Repository(song.LocalPath))
+                    {
+                        foreach (var tag in repo.Tags)
+                        {
+                            version.versionNumber = tag.FriendlyName;
+                            Commit commitTagged = (Commit)tag.Target;
+                            version.versionDescription = commitTagged.Message;
+                            versions.Add(version);
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    versions = new List<(string,string)>();
+                }
+
+            });
+            return versions;
+        }
+
         private void addAllChanges(Song song)
         {
             using (var repo = new Repository(song.LocalPath))
