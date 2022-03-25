@@ -55,8 +55,10 @@ namespace App1.ViewModels
 
         public async Task<(bool, string)> openSongAsync(SongVersioned songVersioned)
         {
+            songVersioned.IsOpeningSong = true;
             Song song = SongsManager.findSong(songVersioned.Title);
             (bool, string) errorMessage = await SongsManager.openSongAsync(song);
+            songVersioned.IsOpeningSong = false;
             refreshSongStatus(songVersioned, song);
             return errorMessage;
         }
