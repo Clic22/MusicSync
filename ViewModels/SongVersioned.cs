@@ -18,7 +18,7 @@ namespace App1.ViewModels
             isUpdatingSong_ = false;
             isUploadingSong_ = false;
             isLoading_ = false;
-            CurrentVersion = new Version();
+            currentVersion_ = new Version();
             Versions = new ObservableCollection<Version>();
         }
 
