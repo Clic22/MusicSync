@@ -8,6 +8,7 @@ using Windows.Storage.Pickers;
 using App1.Models.Ports;
 using App1.Models;
 using App1.Adapters;
+using Microsoft.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -30,7 +31,7 @@ namespace App1
             string errorMessage =  await SongsPageViewModel.updateAllSongsAsync();
             if (errorMessage != string.Empty)
             {
-                await displayContentDialog(errorMessage);
+                await displayErrorDialog(errorMessage);
             }
         }
 
@@ -39,7 +40,7 @@ namespace App1
             string errorMessage = await SongsPageViewModel.updateAllSongsAsync();
             if (errorMessage != string.Empty)
             {
-                await displayContentDialog(errorMessage);
+                await displayErrorDialog(errorMessage);
             }
             else
             {
@@ -91,7 +92,7 @@ namespace App1
             string errorMessage = await SongsPageViewModel.updateSongAsync(song);
             if (errorMessage != string.Empty)
             {
-                await displayContentDialog(errorMessage);
+                await displayErrorDialog(errorMessage);
             }
             else
             {
@@ -109,7 +110,7 @@ namespace App1
                 string errorMessage = await SongsPageViewModel.uploadNewSongVersionAsync(song, title.Text, description.Text, compo, mix, mix);
                 if (errorMessage != string.Empty)
                 {
-                    await displayContentDialog(errorMessage);
+                    await displayErrorDialog(errorMessage);
                 }
                 else
                 {
@@ -137,7 +138,7 @@ namespace App1
             string errorMessage = await SongsPageViewModel.revertSongAsync(song);
             if (errorMessage != string.Empty)
             {
-                await displayContentDialog(errorMessage);
+                await displayErrorDialog(errorMessage);
             }
             else
             {
@@ -152,6 +153,21 @@ namespace App1
             dialog.Title = text;
             dialog.CloseButtonText = "Close";
             dialog.DefaultButton = ContentDialogButton.Close;
+            await dialog.ShowAsync();
+        }
+
+        private async Task displayErrorDialog(string text)
+        {
+            ContentDialog dialog = new ContentDialog();
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Title = "Error";
+            dialog.Content = text;
+            dialog.CloseButtonText = "Close";
+            var bst = new Style(typeof(Button));
+            bst.Setters.Add(new Setter(Button.BackgroundProperty, Colors.DarkRed));
+            bst.Setters.Add(new Setter(Button.ForegroundProperty, Colors.White));
+            bst.Setters.Add(new Setter(Button.CornerRadiusProperty, "4"));
+            dialog.CloseButtonStyle = bst;
             await dialog.ShowAsync();
         }
 

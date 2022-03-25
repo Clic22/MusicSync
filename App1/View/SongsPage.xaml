@@ -8,6 +8,13 @@
     mc:Ignorable="d"
     >
     <Page.Resources>
+        <Style x:Key="ButtonStyle" TargetType="Button"
+           BasedOn="{StaticResource BasicStyle}">
+            <Setter Property="BorderBrush" Value="Orange" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="Foreground" Value="Red" />
+        </Style>
+
         <DataTemplate x:Key="SongVersionedListViewTemplate" x:DataType="local:SongVersioned">
             <Grid VerticalAlignment="Center" >
                 <Grid.ColumnDefinitions>
