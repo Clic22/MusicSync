@@ -175,7 +175,7 @@ namespace ModelsTests.SongsManagerTest
 
             string errorMessage = await songsManager.updateSongAsync(expectedSong);
 
-            Assert.Equal(Song.SongStatus.locked, expectedSong.Status);
+            Assert.Equal(SongStatus.State.locked, expectedSong.Status.state);
             Assert.True(File.Exists(expectedSong.LocalPath + ".lock"));
             Assert.Equal(string.Empty, errorMessage);
         }
@@ -330,7 +330,7 @@ namespace ModelsTests.SongsManagerTest
 
             (bool, string) errorMessage = await songsManager.openSongAsync(expectedSong);
 
-            Assert.Equal(Song.SongStatus.locked, expectedSong.Status);
+            Assert.Equal(SongStatus.State.locked, expectedSong.Status.state);
             Assert.True(File.Exists(expectedSong.LocalPath + ".lock"));
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + ".lock"));
             Assert.True(errorMessage.Item1);
@@ -347,7 +347,7 @@ namespace ModelsTests.SongsManagerTest
 
             (bool, string) errorMessage = await songsManager.openSongAsync(expectedSong);
 
-            Assert.Equal(Song.SongStatus.locked, expectedSong.Status);
+            Assert.Equal(SongStatus.State.locked, expectedSong.Status.state);
             Assert.True(File.Exists(expectedSong.LocalPath + ".lock"));
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + ".lock"));
             Assert.False(errorMessage.Item1);

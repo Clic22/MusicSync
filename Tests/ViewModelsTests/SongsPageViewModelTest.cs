@@ -104,7 +104,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
         {
             //Setup
             Song song = new Song(title, file, localPath);
-            song.Status = Song.SongStatus.locked;
+            song.Status.state = SongStatus.State.locked;
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
