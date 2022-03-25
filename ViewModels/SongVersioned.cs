@@ -109,7 +109,7 @@ namespace App1.ViewModels
                 if (value)
                 {
                     Status = "Reverting...";
-                    NotifyPropertyChanged(nameof(Status));
+                    SetProperty(ref isRevertingSong_, value);
                 }
                 isRevertingSong_ = value;
                 IsLoading = value;
