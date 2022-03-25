@@ -189,6 +189,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Verify(m => m.openSongAsync(song), Times.Once());
             Action action = () => viewModel.openSongAsync(expectedSongToBeOpened);
             Assert.PropertyChanged(expectedSongToBeOpened, "Status", action);
+            Assert.PropertyChanged(expectedSongToBeOpened, "IsLoading", action);
         }
 
         [Theory]
