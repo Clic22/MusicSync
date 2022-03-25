@@ -2,6 +2,7 @@
 using App1.Models.Ports;
 using App1Tests.Mock;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -386,19 +387,45 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Theory]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", false, false, false, "1.1.1")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", true, false, false, "2.0.0")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", false, true, false, "1.2.0")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", false, false, true, "1.1.2")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", true, false, true, "2.0.1")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", false, true, true, "1.2.1")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", true, true, false, "2.1.0")]
         [InlineData("End of the Road", "test.song", "User/test/End of the Road/", true, true, true, "2.1.1")]
         public async Task versionNumberTest(string title, string file, string localPath, bool compo, bool mix, bool mastering, string expectedVersionNumber)
         {
             songsManager.addSong(title, file, localPath);
             string titleChange = "New Version";
             string descriptionChange = "No description";
-            //Simulate first upload by another user
-            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
+            //Simulate first upload by another user version 1.1.1
+            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, true, true, true);
 
             errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
 
             string versionNumber = await songsManager.versionNumberAsync(expectedSong);
             Assert.Equal(expectedVersionNumber, versionNumber);
+        }
+
+        [Theory]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", true, true, true)]
+        public async Task versionsTest(string title, string file, string localPath, bool compo, bool mix, bool mastering)
+        {
+            songsManager.addSong(title, file, localPath);
+            string titleChange = "New Version";
+            string descriptionChange = "No description";
+            //Simulate uploads by another user
+            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
+            errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
+
+            List<(string versionNumber, string versionDescription)> versions = await songsManager.versionsAsync(expectedSong);
+
+            List<(string versionNumber, string versionDescription)> expectedVersions = new List<(string, string)>();
+            expectedVersions.Add(("1.1.1", titleChange + "\n\n" + descriptionChange));
+            expectedVersions.Add(("2.1.1", titleChange + "\n\n" + descriptionChange));
+            Assert.Equal(expectedVersions, versions);
         }
 
     }
