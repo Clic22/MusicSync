@@ -97,6 +97,25 @@ namespace App1.ViewModels
             }
         }
 
+        private bool isRevertingSong_;
+        public bool IsRevertingSong
+        {
+            get
+            {
+                return isRevertingSong_;
+            }
+            set
+            {
+                if (value)
+                {
+                    Status = "Reverting...";
+                    NotifyPropertyChanged(nameof(Status));
+                }
+                isRevertingSong_ = value;
+                IsLoading = value;
+            }
+        }
+
         private bool isLoading_;
         public bool IsLoading
         {

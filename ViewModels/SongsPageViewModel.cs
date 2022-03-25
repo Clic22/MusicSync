@@ -63,9 +63,11 @@ namespace App1.ViewModels
 
         public async Task<string> revertSongAsync(SongVersioned songVersioned)
         {
+            songVersioned.IsRevertingSong = true;
             Song song = SongsManager.findSong(songVersioned.Title);
             string errorMessage = await SongsManager.revertSongAsync(song);
             refreshSongStatus(songVersioned, song);
+            songVersioned.IsRevertingSong = false;
             return errorMessage;
         }
 
