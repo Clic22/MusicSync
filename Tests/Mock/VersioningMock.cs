@@ -22,9 +22,8 @@ namespace App1Tests.Mock
             user2 = new User(GitLabUsername2, GitLabPassword2, GitUsername2, GitEmail2);
             versionPath = @"./versionStorage/";
             Directory.CreateDirectory(versionPath);
-            versionDescription = new Dictionary<Song, string>();
-            versionNumber = new Dictionary<Song, string>();
-            versions = new List<(string,string,string)>();
+            currentVersion = new SongVersion();
+            versions = new List<SongVersion>();
         }
 
         public async Task<string> uploadSongAsync(Song song, string title, string description, string versionNumber)
@@ -38,9 +37,11 @@ namespace App1Tests.Mock
                     Directory.Delete(versionPath + song.LocalPath, true);
                 }
                 Copy(song.LocalPath, versionPath + song.LocalPath);
-                versionDescription[song] = title + "\n\n" + description;
-                this.versionNumber[song] = versionNumber;
-                versions.Add((this.versionNumber[song], versionDescription[song], user.GitUsername));
+                currentVersion.Number = versionNumber;
+                currentVersion.Description = title + "\n\n" + description;
+                currentVersion.Author = user.GitUsername;
+                SongVersion songVersion = new SongVersion(versionNumber, title + "\n\n" + description, user.GitUsername);
+                versions.Add(songVersion);
             }
             return errorMessage;
         }
@@ -62,7 +63,6 @@ namespace App1Tests.Mock
                     }
                     File.Copy(song.LocalPath + file, versionPath + song.LocalPath + file);
                 }
-                versionDescription[song] = title;
             }
             return errorMessage;
         }
@@ -90,35 +90,19 @@ namespace App1Tests.Mock
             return errorMessage;
         }
 
-        public async Task<string> versionDescriptionAsync(Song song)
-        {
-            return await Task.Run(() =>
-            {
-                return versionDescription[song];
-            });
-        }
-
-        public async Task<string> versionNumberAsync(Song song)
-        {
-            return await Task.Run(() =>
-            {
-                try
-                {
-                    return versionNumber[song];
-                }
-                catch (Exception)
-                {
-                    return string.Empty;
-                }
-                
-            });
-        }
-
-        public async Task<List<(string, string, string)>> versionsAsync(Song song)
+        public async Task<List<SongVersion>> versionsAsync(Song song)
         {
             return await Task.Run(() =>
             {
                 return versions;
+            });
+        }
+
+        public async Task<SongVersion> currentVersionAsync(Song song)
+        {
+            return await Task.Run(() =>
+            {
+                return currentVersion;
             });
         }
 
@@ -161,8 +145,7 @@ namespace App1Tests.Mock
 
         private readonly User user1;
         private readonly User user2;
-        private readonly Dictionary<Song, string> versionDescription;
-        private readonly Dictionary<Song, string> versionNumber;
-        private readonly List<(string, string, string)> versions;
+        private readonly SongVersion currentVersion;
+        private readonly List<SongVersion> versions;
     }
 }

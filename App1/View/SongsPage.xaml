@@ -23,7 +23,7 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{x:Bind Title}" x:DefaultBindMode="OneTime" FontSize="20" Margin="12" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
-                <SplitButton Content="{x:Bind CurrentVersion.VersionNumber}" x:DefaultBindMode="OneWay" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0">
+                <SplitButton Content="{x:Bind CurrentVersion.Number}" x:DefaultBindMode="OneWay" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0">
                     <SplitButton.Flyout>
                         <Flyout Placement="Bottom">
                             <ListView ItemsSource="{x:Bind Versions}" ItemTemplate="{StaticResource SongVersionsListViewTemplate}" x:DefaultBindMode="OneWay" Margin="12" SelectionMode="None" />
@@ -64,10 +64,10 @@
         <DataTemplate x:Key="SongVersionsListViewTemplate" x:DataType="local:Version">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{x:Bind VersionNumber}" x:DefaultBindMode="OneWay" FontWeight="Bold" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4"/>
+                    <TextBlock Text="{x:Bind Number}" x:DefaultBindMode="OneWay" FontWeight="Bold" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4"/>
                     <TextBlock Text="{x:Bind Author}" x:DefaultBindMode="OneWay" FontStyle="Italic" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12"/>
                 </StackPanel>
-                <TextBlock Text="{x:Bind VersionDescription}" x:DefaultBindMode="OneWay" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12"/>
+                <TextBlock Text="{x:Bind Description}" x:DefaultBindMode="OneWay" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12"/>
             </StackPanel>
         </DataTemplate>
     </Page.Resources>

@@ -1,44 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace App1.ViewModels
+﻿namespace App1.ViewModels
 {
     public class Version : Bindable
     {
         public Version()
         {
-            versionNumber_ = string.Empty;
-            versionDescription_ = string.Empty;
+            number_ = string.Empty;
+            description_ = string.Empty;
             author_ = string.Empty;
         }
 
-        private string versionNumber_;
-        public string VersionNumber
+        private string number_;
+        public string Number
         {
             get
             {
-                return versionNumber_;
+                return number_;
             }
             set
             {
-                SetProperty(ref versionNumber_, value);
+                SetProperty(ref number_, value);
             }
         }
 
-        private string versionDescription_;
-        public string VersionDescription
+        private string description_;
+        public string Description
         {
             get
             {
-                return versionDescription_;
+                return description_;
             }
             set
             {
-                SetProperty(ref versionDescription_, value);
+                SetProperty(ref description_, value);
             }
         }
 
