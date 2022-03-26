@@ -72,7 +72,7 @@ namespace App1.Models
 
         private bool songLockedByUser(Song song, User user)
         {
-            if (song.Status.whoLocked == user.GitUsername)
+            if (song.Status.whoLocked == user.Username)
             {
                 return true;
             }
@@ -81,7 +81,7 @@ namespace App1.Models
 
         private void createLockFile(Song song, User user)
         {
-            File.WriteAllText(song.LocalPath + @"\.lock", user.GitUsername);
+            File.WriteAllText(song.LocalPath + @"\.lock", user.Username);
         }
 
         private void removeLockFile(Song song)

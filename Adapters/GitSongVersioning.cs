@@ -60,9 +60,9 @@ namespace App1.Adapters
                         options.FetchOptions = new FetchOptions();
                         options.FetchOptions.CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) =>
                                 new UsernamePasswordCredentials()
-                                {Username = user.GitLabUsername, Password = user.GitLabPassword});
+                                {Username = user.BandEmail, Password = user.BandPassword});
 
-                        var signature = new Signature(new Identity(user.GitUsername, user.GitEmail), DateTimeOffset.Now);
+                        var signature = new Signature(new Identity(user.Username, user.BandEmail), DateTimeOffset.Now);
 
                         Commands.Pull(repo, signature, options);
                     }
@@ -178,7 +178,7 @@ namespace App1.Adapters
             using (var repo = new Repository(song.LocalPath))
             {
                 var signature = new Signature(
-                    new Identity(user.GitUsername, user.GitEmail), DateTimeOffset.Now);
+                    new Identity(user.Username, user.BandEmail), DateTimeOffset.Now);
                 Signature committer = signature;
                 if (string.IsNullOrEmpty(description))
                 {
@@ -200,7 +200,7 @@ namespace App1.Adapters
                 Remote remote = repo.Network.Remotes["origin"];
                 var options = new PushOptions();
                 options.CredentialsProvider = (_url, _user, _cred) =>
-                    new UsernamePasswordCredentials { Username = user.GitLabUsername, Password = user.GitLabPassword, };
+                    new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
                 repo.Network.Push(remote, @"refs/heads/master", options);
             }
         }
@@ -214,7 +214,7 @@ namespace App1.Adapters
                 Remote remote = repo.Network.Remotes["origin"];
                 var options = new PushOptions();
                 options.CredentialsProvider = (_url, _user, _cred) =>
-                    new UsernamePasswordCredentials { Username = user.GitLabUsername, Password = user.GitLabPassword, };
+                    new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
                 repo.ApplyTag(tag);
                 repo.Network.Push(remote, @"refs/tags/" + tag, options);
             }

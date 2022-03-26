@@ -6,34 +6,29 @@ namespace App1.Models
     {
         public User()
         {
-            this.GitLabUsername = string.Empty;
-            this.GitLabPassword = string.Empty;
-            this.GitUsername = string.Empty;
-            this.GitEmail = string.Empty;
+            this.BandName = string.Empty;
+            this.BandPassword = string.Empty;
+            this.Username = string.Empty;
+            this.BandEmail = string.Empty;
         }
 
-        public User(string gitLabUsername, string gitLabPassword, string gitUsername, string gitEmail)
+        public User(string BandName, string BandPassword, string Username, string BandEmail)
         {
-            this.GitLabUsername = gitLabUsername;
-            this.GitLabPassword = gitLabPassword;
-            this.GitUsername = gitUsername;
-            this.GitEmail = gitEmail;
+            this.BandName = BandName;
+            this.BandPassword = BandPassword;
+            this.Username = Username;
+            this.BandEmail = BandEmail;
         }
-
-        public string GitLabUsername { get; set; }
-        public string GitLabPassword { get; set; }
-        public string GitUsername { get; set; }
-        public string GitEmail { get; set; }
 
         public override bool Equals(object? obj)
         {
             var song = obj as User;
             if (song == null)
                 return false;
-            if (this.GitLabUsername != song.GitLabUsername ||
-               this.GitLabPassword != song.GitLabPassword ||
-               this.GitUsername != song.GitUsername ||
-               this.GitEmail != song.GitEmail)
+            if (this.BandName != song.BandName ||
+               this.BandPassword != song.BandPassword ||
+               this.Username != song.Username ||
+               this.BandEmail != song.BandEmail)
             {
                 return false;
             }
@@ -42,8 +37,14 @@ namespace App1.Models
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(this.GitLabUsername, this.GitLabPassword, this.GitUsername, this.GitEmail);
+            return HashCode.Combine(this.BandName, this.BandPassword, this.Username, this.BandEmail);
         }
+
+        public string BandName { get; set; }
+        public string BandEmail { get; set; }
+        public string BandPassword { get; set; }
+        public string Username { get; set; }
+        
     }
 }
 
