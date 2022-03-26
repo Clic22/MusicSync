@@ -14,11 +14,11 @@ namespace ModelsTests.SongsManagerTest
         protected TestsBase()
         {
             //This is the User accepted by the versionning mock to simulate connexion problems
-            string GitUsername = "Hear@fdjskjè_";
-            string GitLabPassword = "12df546@";
-            string GitLabUsername = "Clic5456";
-            string GitEmail = "testdklsjfhg@yahoo.com";
-            user = new User(GitLabUsername, GitLabPassword, GitUsername, GitEmail);
+            string Username = "Hear@fdjskjè_";
+            string BandPassword = "12df546@";
+            string BandName = "Clic5456";
+            string BandEmail = "testdklsjfhg@yahoo.com";
+            user = new User(BandName, BandPassword, Username, BandEmail);
 
             title = "title";
             file = "file.song";
@@ -97,11 +97,11 @@ namespace ModelsTests.SongsManagerTest
             Song? song = songsManager.findSong(title);
             Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
-            string GitUsername = "Second User";
-            string GitLabPassword = "12df546@";
-            string GitLabUsername = "Clic5456";
-            string GitEmail = "testdklsjfhg@yahoo.com";
-            User user2 = new User(GitLabUsername, GitLabPassword, GitUsername, GitEmail);
+            string Username = "Second User";
+            string BandPassword = "12df546@";
+            string BandName = "Clic5456";
+            string BandEmail = "testdklsjfhg@yahoo.com";
+            User user2 = new User(BandName, BandPassword, Username, BandEmail);
             await locker.lockSongAsync(expectedSong, user2);
             Assert.True(File.Exists(expectedSong.LocalPath + @"\.lock"));
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
@@ -182,7 +182,7 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
-        public async Task TryUpdateSongWithWrongGitLabUsernameTest()
+        public async Task TryUpdateSongWithWrongBandNameTest()
         {
             //Add song for synchronization
             songsManager.addSong(title, file, localPath);
@@ -193,7 +193,7 @@ namespace ModelsTests.SongsManagerTest
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
             Assert.False(File.Exists(expectedSong.LocalPath + "audio.wav"));
 
-            user.GitLabUsername = "Wrong Username";
+            user.BandName = "Wrong Username";
 
             string errorMessage = await songsManager.updateSongAsync(expectedSong);
 
@@ -203,7 +203,7 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
-        public async Task TryUpdateSongWithWrongGitLabPasswordTest()
+        public async Task TryUpdateSongWithWrongBandPasswordTest()
         {
             //Add song for synchronization
             songsManager.addSong(title, file, localPath);
@@ -214,7 +214,7 @@ namespace ModelsTests.SongsManagerTest
             Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
             Assert.False(File.Exists(expectedSong.LocalPath + "audio.wav"));
 
-            user.GitLabPassword = "Wrong Password";
+            user.BandPassword = "Wrong Password";
 
             string errorMessage = await songsManager.updateSongAsync(expectedSong);
 
@@ -367,7 +367,7 @@ namespace ModelsTests.SongsManagerTest
 
             string expectedVersionDescription = titleChange + "\n\n" + descriptionChange;
             string expectedVersionNumber = "1.0.0";
-            string expectedVersionAuthor = user.GitUsername;
+            string expectedVersionAuthor = user.Username;
             Assert.Equal(expectedVersionDescription, currentVersion.Description);
             Assert.Equal(expectedVersionNumber, currentVersion.Number);
             Assert.Equal(expectedVersionAuthor, currentVersion.Author);
@@ -433,8 +433,8 @@ namespace ModelsTests.SongsManagerTest
 
             List<SongVersion> versions = await songsManager.versionsAsync(expectedSong);
 
-            SongVersion expectedSongVersion = new SongVersion("1.1.1", titleChange + "\n\n" + descriptionChange, user.GitUsername);
-            SongVersion expectedSongVersion2 = new SongVersion("2.1.1", titleChange + "\n\n" + descriptionChange, user.GitUsername);
+            SongVersion expectedSongVersion = new SongVersion("1.1.1", titleChange + "\n\n" + descriptionChange, user.Username);
+            SongVersion expectedSongVersion2 = new SongVersion("2.1.1", titleChange + "\n\n" + descriptionChange, user.Username);
             Assert.Contains(expectedSongVersion, versions);
             Assert.Contains(expectedSongVersion2, versions);
         }

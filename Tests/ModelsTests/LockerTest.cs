@@ -21,16 +21,16 @@ namespace ModelsTests.LockerTest
             
             song = new Song(title, file, localPath);
             //These are the Users accepted by the versionning mock to simulate connexion problems
-            string GitUsername1 = "Hear@fdjskjè_";
-            string GitLabPassword1 = "12df546@";
-            string GitLabUsername1 = "Clic5456";
-            string GitEmail1 = "testdklsjfhg@yahoo.com";
-            user1 = new User(GitLabUsername1, GitLabPassword1, GitUsername1, GitEmail1); ;
-            string GitUsername2 = "Lithorama52";
-            string GitLabPassword2 = "15@^_usnjdfb@";
-            string GitLabUsername2 = "Erratum12";
-            string GitEmail2 = "erratum12@gmail.com";
-            user2 = new User(GitLabUsername2, GitLabPassword2, GitUsername2, GitEmail2);
+            string Username1 = "Hear@fdjskjè_";
+            string BandPassword1 = "12df546@";
+            string BandName1 = "Clic5456";
+            string BandEmail1 = "testdklsjfhg@yahoo.com";
+            user1 = new User(BandName1, BandPassword1, Username1, BandEmail1); ;
+            string Username2 = "Lithorama52";
+            string BandPassword2 = "15@^_usnjdfb@";
+            string BandName2 = "Erratum12";
+            string BandEmail2 = "erratum12@gmail.com";
+            user2 = new User(BandName2, BandPassword2, Username2, BandEmail2);
 
             version = new VersioningMock(user1);
             locker = new Locker(version); 
@@ -106,7 +106,7 @@ namespace ModelsTests.LockerTest
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);
             Assert.False(locker.isLockedByUser(song, user1));
 
-            File.WriteAllText(song.LocalPath + @"\.lock", user1.GitUsername);
+            File.WriteAllText(song.LocalPath + @"\.lock", user1.Username);
 
             locker.updateSongStatus(song);
 
@@ -207,7 +207,7 @@ namespace ModelsTests.LockerTest
         }
 
         [Fact]
-        public async Task TryLockSongWithWrongGitLabUsernameCredentialTest()
+        public async Task TryLockSongWithWrongBandNameCredentialTest()
         {
             locker.updateSongStatus(song);
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);
@@ -215,7 +215,7 @@ namespace ModelsTests.LockerTest
             Assert.False(locker.isLockedByUser(song, user2));
             Assert.False(File.Exists(version.versionPath + song.LocalPath + @"\.lock"));
 
-            user1.GitLabUsername = "WrongUsername";
+            user1.BandName = "WrongUsername";
             version = new VersioningMock(user1);
             locker = new Locker(version);
 
@@ -229,7 +229,7 @@ namespace ModelsTests.LockerTest
         }
 
         [Fact]
-        public async Task TryLockSongWithWrongGitLabPasswordCredentialTest()
+        public async Task TryLockSongWithWrongBandPasswordCredentialTest()
         {
             locker.updateSongStatus(song);
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);
@@ -237,7 +237,7 @@ namespace ModelsTests.LockerTest
             Assert.False(locker.isLockedByUser(song, user2));
             Assert.False(File.Exists(version.versionPath + song.LocalPath + @"\.lock"));
 
-            user1.GitLabPassword = "WrongPassword";
+            user1.BandPassword = "WrongPassword";
             version = new VersioningMock(user1);
             locker = new Locker(version);
 

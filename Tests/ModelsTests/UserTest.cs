@@ -10,38 +10,38 @@ namespace ModelsTests.UserTest
         {
             User user = new User();
             Assert.NotNull(user);
-            Assert.Empty(user.GitUsername);
-            Assert.Empty(user.GitLabPassword);
-            Assert.Empty(user.GitEmail);
-            Assert.Empty(user.GitLabUsername);
+            Assert.Empty(user.Username);
+            Assert.Empty(user.BandPassword);
+            Assert.Empty(user.BandEmail);
+            Assert.Empty(user.BandName);
         }
 
         [Fact]
         public void UserCreationWithParametersTest()
         {
-            string expectedGitUsername = "Hear@fdjskjè_";
-            string expectedGitLabPassword = "12df546@";
-            string expectedGitLabUsername = "CLic5456";
-            string expectedGitEmail = "testdklsjfhg@yahoo.com";
+            string expectedUsername = "Hear@fdjskjè_";
+            string expectedBandPassword = "12df546@";
+            string expectedBandName = "CLic5456";
+            string expectedBandEmail = "testdklsjfhg@yahoo.com";
 
-            User user = new User(expectedGitLabUsername, expectedGitLabPassword, expectedGitUsername, expectedGitEmail); ;
+            User user = new User(expectedBandName, expectedBandPassword, expectedUsername, expectedBandEmail); ;
             Assert.NotNull(user);
-            Assert.Equal(expectedGitUsername, user.GitUsername);
-            Assert.Equal(expectedGitLabPassword, user.GitLabPassword);
-            Assert.Equal(expectedGitEmail,user.GitEmail);
-            Assert.Equal(expectedGitLabUsername,user.GitLabUsername);
+            Assert.Equal(expectedUsername, user.Username);
+            Assert.Equal(expectedBandPassword, user.BandPassword);
+            Assert.Equal(expectedBandEmail,user.BandEmail);
+            Assert.Equal(expectedBandName,user.BandName);
         }
 
         [Fact]
         public void TwoEqualUsersTest()
         {
-            string expectedGitUsername = "Hear@fdjskjè_";
-            string expectedGitLabPassword = "12df546@";
-            string expectedGitLabUsername = "CLic5456";
-            string expectedGitEmail = "testdklsjfhg@yahoo.com";
+            string expectedUsername = "Hear@fdjskjè_";
+            string expectedBandPassword = "12df546@";
+            string expectedBandName = "CLic5456";
+            string expectedBandEmail = "testdklsjfhg@yahoo.com";
 
-            User user1 = new User(expectedGitLabUsername, expectedGitLabPassword, expectedGitUsername, expectedGitEmail); ;
-            User user2 = new User(expectedGitLabUsername, expectedGitLabPassword, expectedGitUsername, expectedGitEmail); ;
+            User user1 = new User(expectedBandName, expectedBandPassword, expectedUsername, expectedBandEmail); ;
+            User user2 = new User(expectedBandName, expectedBandPassword, expectedUsername, expectedBandEmail); ;
 
             Assert.Equal(user1, user2);
         }
@@ -49,17 +49,17 @@ namespace ModelsTests.UserTest
         [Fact]
         public void TwoDifferentUsersTest()
         {
-            string expectedGitUsername = "Hear@fdjskjè_";
-            string expectedGitLabPassword = "12df546@";
-            string expectedGitLabUsername = "CLic5456";
-            string expectedGitEmail = "testdklsjfhg@yahoo.com";
+            string expectedUsername = "Hear@fdjskjè_";
+            string expectedBandPassword = "12df546@";
+            string expectedBandName = "CLic5456";
+            string expectedBandEmail = "testdklsjfhg@yahoo.com";
 
-            User user1 = new User(expectedGitLabUsername, expectedGitLabPassword, expectedGitUsername, expectedGitEmail); ;
-            expectedGitUsername = "Hear@fdjskjè_74";
-            expectedGitLabPassword = "12df54fgvh6@";
-            expectedGitLabUsername = "CLic5456sd";
-            expectedGitEmail = "testdqsdklsjfhg@yahoo.com";
-            User user2 = new User(expectedGitLabUsername, expectedGitLabPassword, expectedGitUsername, expectedGitEmail); ;
+            User user1 = new User(expectedBandName, expectedBandPassword, expectedUsername, expectedBandEmail); ;
+            expectedUsername = "Hear@fdjskjè_74";
+            expectedBandPassword = "12df54fgvh6@";
+            expectedBandName = "CLic5456sd";
+            expectedBandEmail = "testdqsdklsjfhg@yahoo.com";
+            User user2 = new User(expectedBandName, expectedBandPassword, expectedUsername, expectedBandEmail); ;
 
             Assert.NotEqual(user1, user2);
         }
@@ -67,12 +67,12 @@ namespace ModelsTests.UserTest
         [Fact]
         public void OneNullUsersTest()
         {
-            string expectedGitUsername = "Hear@fdjskjè_";
-            string expectedGitLabPassword = "12df546@";
-            string expectedGitLabUsername = "CLic5456";
-            string expectedGitEmail = "testdklsjfhg@yahoo.com";
+            string expectedUsername = "Hear@fdjskjè_";
+            string expectedBandPassword = "12df546@";
+            string expectedBandName = "CLic5456";
+            string expectedBandEmail = "testdklsjfhg@yahoo.com";
 
-            User user1 = new User(expectedGitLabUsername, expectedGitLabPassword, expectedGitUsername, expectedGitEmail); ;
+            User user1 = new User(expectedBandName, expectedBandPassword, expectedUsername, expectedBandEmail); ;
             User? user2 = null;
             Assert.False(user1.Equals(user2));
         }

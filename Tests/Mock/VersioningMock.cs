@@ -10,16 +10,16 @@ namespace App1Tests.Mock
     {
         public VersioningMock(User user) {
             this.user = user;
-            string GitUsername1 = "Hear@fdjskjè_";
-            string GitLabPassword1 = "12df546@";
-            string GitLabUsername1 = "Clic5456";
-            string GitEmail1 = "testdklsjfhg@yahoo.com";
-            user1 = new User(GitLabUsername1, GitLabPassword1, GitUsername1, GitEmail1);
-            string GitUsername2 = "Lithorama52";
-            string GitLabPassword2 = "15@^_usnjdfb@";
-            string GitLabUsername2 = "Erratum12";
-            string GitEmail2 = "erratum12@gmail.com";
-            user2 = new User(GitLabUsername2, GitLabPassword2, GitUsername2, GitEmail2);
+            string Username1 = "Hear@fdjskjè_";
+            string BandPassword1 = "12df546@";
+            string BandName1 = "Clic5456";
+            string BandEmail1 = "testdklsjfhg@yahoo.com";
+            user1 = new User(BandName1, BandPassword1, Username1, BandEmail1);
+            string Username2 = "Lithorama52";
+            string BandPassword2 = "15@^_usnjdfb@";
+            string BandName2 = "Erratum12";
+            string BandEmail2 = "erratum12@gmail.com";
+            user2 = new User(BandName2, BandPassword2, Username2, BandEmail2);
             versionPath = @"./versionStorage/";
             Directory.CreateDirectory(versionPath);
             currentVersion = new SongVersion();
@@ -39,8 +39,8 @@ namespace App1Tests.Mock
                 Copy(song.LocalPath, versionPath + song.LocalPath);
                 currentVersion.Number = versionNumber;
                 currentVersion.Description = title + "\n\n" + description;
-                currentVersion.Author = user.GitUsername;
-                SongVersion songVersion = new SongVersion(versionNumber, title + "\n\n" + description, user.GitUsername);
+                currentVersion.Author = user.Username;
+                SongVersion songVersion = new SongVersion(versionNumber, title + "\n\n" + description, user.Username);
                 versions.Add(songVersion);
             }
             return errorMessage;
@@ -121,10 +121,10 @@ namespace App1Tests.Mock
         private bool userIsDifferentFrom(User expectedUser)
         {
             if (user == null || 
-                user.GitLabUsername != expectedUser.GitLabUsername ||
-                user.GitLabPassword != expectedUser.GitLabPassword ||
-                user.GitUsername != expectedUser.GitUsername ||
-                user.GitEmail != expectedUser.GitEmail)
+                user.BandName != expectedUser.BandName ||
+                user.BandPassword != expectedUser.BandPassword ||
+                user.Username != expectedUser.Username ||
+                user.BandEmail != expectedUser.BandEmail)
                 return true;
             return false;
         }

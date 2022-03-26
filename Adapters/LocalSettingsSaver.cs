@@ -14,19 +14,19 @@ namespace App1.Adapters
 
         public void saveUser(User user)
         {
-            saveUserValue("gitLabUsername", user.GitLabUsername);
-            saveUserValue("gitLabPassword", user.GitLabPassword);
-            saveUserValue("gitUsername", user.GitUsername);
-            saveUserValue("gitEmail", user.GitEmail);
+            saveUserValue("BandName", user.BandName);
+            saveUserValue("BandPassword", user.BandPassword);
+            saveUserValue("Username", user.Username);
+            saveUserValue("BandEmail", user.BandEmail);
         }
 
         public User savedUser()
         {
             User user = new User();
-            user.GitLabUsername = UserContainer.Values["gitLabUsername"] as string;
-            user.GitLabPassword = UserContainer.Values["gitLabPassword"] as string;
-            user.GitUsername = UserContainer.Values["gitUsername"] as string;
-            user.GitEmail = UserContainer.Values["gitEmail"] as string;
+            user.BandName = UserContainer.Values["BandName"] as string;
+            user.BandPassword = UserContainer.Values["BandPassword"] as string;
+            user.Username = UserContainer.Values["Username"] as string;
+            user.BandEmail = UserContainer.Values["BandEmail"] as string;
             return user;
         }
 

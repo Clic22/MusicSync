@@ -12,11 +12,11 @@ namespace ModelsTests.SaverMockTest
         [Fact]
         public void SaveUserTest()
         {
-            string expectedGitLabUsername = "Clic22";
-            string expectedGitLabPassword = "password123";
-            string expectedGitUsername = "RNG2513";
-            string expectedGitEmail = "hello@gmail.com";
-            User expectedUser = new User(expectedGitLabUsername, expectedGitLabPassword, expectedGitUsername, expectedGitEmail);
+            string expectedBandName = "Clic22";
+            string expectedBandPassword = "password123";
+            string expectedUsername = "RNG2513";
+            string expectedBandEmail = "hello@gmail.com";
+            User expectedUser = new User(expectedBandName, expectedBandPassword, expectedUsername, expectedBandEmail);
             
             ISaver saver = new SaverMock();
             saver.saveUser(expectedUser);

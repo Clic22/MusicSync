@@ -24,7 +24,7 @@ namespace App1
 
         public async void saveSettingsClick(object sender, RoutedEventArgs e)
         {
-            User user = new User(gitLabUsername.Text, gitLabPassword.Password, gitUsername.Text, gitEmail.Text);
+            User user = new User(BandName.Text, BandPassword.Password, Username.Text, BandEmail.Text);
             Saver.saveUser(user);
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = this.XamlRoot;
@@ -42,21 +42,21 @@ namespace App1
 
         private void loadUserSettingsInUI(User user)
         {
-            gitLabUsername.Text = user.GitLabUsername;
-            gitLabPassword.Password = user.GitLabPassword;
-            gitUsername.Text = user.GitUsername;
-            gitEmail.Text = user.GitEmail;
+            BandName.Text = user.BandName;
+            BandPassword.Password = user.BandPassword;
+            Username.Text = user.Username;
+            BandEmail.Text = user.BandEmail;
         }
 
         private void RevealModeCheckbox_Changed(object sender, RoutedEventArgs e)
         {
             if (revealModeCheckBox.IsChecked == true)
             {
-                gitLabPassword.PasswordRevealMode = PasswordRevealMode.Visible;
+                BandPassword.PasswordRevealMode = PasswordRevealMode.Visible;
             }
             else
             {
-                gitLabPassword.PasswordRevealMode = PasswordRevealMode.Hidden;
+                BandPassword.PasswordRevealMode = PasswordRevealMode.Hidden;
             }
         }
 

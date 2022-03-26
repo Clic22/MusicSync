@@ -21,16 +21,16 @@ namespace AdaptersTests.LocalSettingsSaverTest
                 Song song = new Song(expectedTitle, expectedFile, expectedLocalPath);
                 songsToBeSaved.Add(song);
             }
-            string GitUsername1 = "Hear@fdjskjè_";
-            string GitLabPassword1 = "12df546@";
-            string GitLabUsername1 = "Clic5456";
-            string GitEmail1 = "testdklsjfhg@yahoo.com";
-            user1 = new User(GitLabUsername1, GitLabPassword1, GitUsername1, GitEmail1); ;
-            string GitUsername2 = "Lithorama52";
-            string GitLabPassword2 = "15@^_usnjdfb@";
-            string GitLabUsername2 = "Erratum12";
-            string GitEmail2 = "erratum12@gmail.com";
-            user2 = new User(GitLabUsername2, GitLabPassword2, GitUsername2, GitEmail2);
+            string Username1 = "Hear@fdjskjè_";
+            string BandPassword1 = "12df546@";
+            string BandName1 = "Clic5456";
+            string BandEmail1 = "testdklsjfhg@yahoo.com";
+            user1 = new User(BandName1, BandPassword1, Username1, BandEmail1); ;
+            string Username2 = "Lithorama52";
+            string BandPassword2 = "15@^_usnjdfb@";
+            string BandName2 = "Erratum12";
+            string BandEmail2 = "erratum12@gmail.com";
+            user2 = new User(BandName2, BandPassword2, Username2, BandEmail2);
            
         }
 
