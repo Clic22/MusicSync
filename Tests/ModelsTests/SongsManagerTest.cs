@@ -438,27 +438,5 @@ namespace ModelsTests.SongsManagerTest
             Assert.Contains(expectedSongVersion, versions);
             Assert.Contains(expectedSongVersion2, versions);
         }
-
-        [Theory]
-        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", true, false, false)]
-        public async Task initiateCollaborationTest(string title, string file, string localPath)
-        {
-            songsManager.addSong(title, file, localPath);
-            string titleChange = "First Upload";
-            string descriptionChange = "Initiate COllaboration";
-            bool compo = true;
-            bool mix = false;
-            bool mastering = false;
-            
-            //Simulate uploads by another user
-            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
-            
-            List<SongVersion> versions = await songsManager.versionsAsync(expectedSong);
-
-            SongVersion expectedSongVersion = new SongVersion("1.1.1", titleChange + "\n\n" + descriptionChange, user.GitUsername);
-            SongVersion expectedSongVersion2 = new SongVersion("2.1.1", titleChange + "\n\n" + descriptionChange, user.GitUsername);
-            Assert.Contains(expectedSongVersion, versions);
-            Assert.Contains(expectedSongVersion2, versions);
-        }
     }
 }
