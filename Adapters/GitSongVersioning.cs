@@ -174,7 +174,7 @@ namespace App1.Adapters
             User user = saver.savedUser();
             Repository.Init(song.LocalPath);
             var repo = new Repository(song.LocalPath);
-            string url = "https://gitlab.com/" + "instant-T" + "/" + song.Title.ToLower().Replace(" ","-").Replace("(",null).Replace(")", null) + ".git";
+            string url = "https://gitlab.com/" + user.BandName.Replace(" ", "-") + "/" + song.Title.ToLower().Replace(" ","-").Replace("(",null).Replace(")", null) + ".git";
             Remote remote = repo.Network.Remotes.Add("origin", url);
             repo.Branches.Update(repo.Head,
                 b => b.Remote = remote.Name,
@@ -233,7 +233,7 @@ namespace App1.Adapters
                 Remote remote = repo.Network.Remotes["origin"];
                 var options = new PushOptions();
                 options.CredentialsProvider = (_url, _user, _cred) =>
-                    new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.GitLabPassword, };
+                    new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
                 repo.Network.Push(remote, repo.Head.CanonicalName, options);
             }
         }
