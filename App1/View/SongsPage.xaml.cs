@@ -55,7 +55,6 @@ namespace App1
             if (result == ContentDialogResult.Primary)
             {
                 SongVersioned songVersioned = SongsPageViewModel.addSong(songTitle.Text, songFile.Text, songLocalPath.Text);
-                await SongsPageViewModel.updateSongAsync(songVersioned);
             }
             songTitle.Text = String.Empty;
             songFile.Text = String.Empty;
