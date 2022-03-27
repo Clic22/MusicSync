@@ -15,6 +15,10 @@ namespace App1.Adapters
             {
                 await Task.Run(() =>
                 {
+                    if (!repoInitiated(song))
+                    {
+                        initiateRepo(song);
+                    }
                     addAllChanges(song);
                     commitChanges(song, title, description);
                     pushChangesToRepo(song);
@@ -155,6 +159,35 @@ namespace App1.Adapters
             return versions;
         }
 
+        private bool repoInitiated(Song song)
+        {
+            if (Directory.Exists(song.LocalPath + @"\.git"))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void initiateRepo(Song song)
+        {
+            ISaver saver = new LocalSettingsSaver();
+            User user = saver.savedUser();
+            Repository.Init(song.LocalPath);
+            var repo = new Repository(song.LocalPath);
+            string url = "https://gitlab.com/" + user.BandName.Replace(" ", "-") + "/" + song.Title.ToLower().Replace(" ","-").Replace("(",null).Replace(")", null) + ".git";
+            Remote remote = repo.Network.Remotes.Add("origin", url);
+            repo.Branches.Update(repo.Head,
+                b => b.Remote = remote.Name,
+                b => b.UpstreamBranch = repo.Head.CanonicalName);
+            createGitIgnoreFile(song.LocalPath);
+        }
+
+        private void createGitIgnoreFile(string localPath)
+        {
+            string gitIgnoreContent = "Cache/\nHistory/\n_git2_*";
+            File.WriteAllText(localPath + @"\.gitignore", gitIgnoreContent);
+        }
+
         private void addAllChanges(Song song)
         {
             using (var repo = new Repository(song.LocalPath))
@@ -201,7 +234,7 @@ namespace App1.Adapters
                 var options = new PushOptions();
                 options.CredentialsProvider = (_url, _user, _cred) =>
                     new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
-                repo.Network.Push(remote, @"refs/heads/master", options);
+                repo.Network.Push(remote, repo.Head.CanonicalName, options);
             }
         }
 
