@@ -1,6 +1,7 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
 using App1Tests.Mock;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -443,13 +444,33 @@ namespace ModelsTests.SongsManagerTest
 
         [Theory]
         [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest")]
-        public async Task addSharedSongAsync(string songTitle, string sharedLink, string songLocalPath)
+        public async Task addSharedSongTest(string songTitle, string sharedLink, string downloadPath)
         {
-            await songsManager.addSharedSongAsync(songTitle, sharedLink, songLocalPath);
+            await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath);
 
             Song song = songsManager.findSong(songTitle);
             Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
+        }
+
+        [Theory]
+        [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest")]
+        public async Task addSharedSongErrorTest(string songTitle, string sharedLink, string downloadPath)
+        {
+
+            Mock<IVersionTool> versionToolMock = new Mock<IVersionTool>();
+            versionToolMock.Setup(m => m.downloadSharedSongAsync(sharedLink, downloadPath + @"/" + songTitle + @"/")).Returns(Task.FromResult("Error"));
+            SongsManager songsManagerTest = new SongsManager(versionToolMock.Object, saver, fileManager);
+
+            string errorMessage = await songsManagerTest.addSharedSongAsync(songTitle, sharedLink, downloadPath);
+
+            //We expect a songVersioned created with the title
+            Song expectedSong = new Song(songTitle,"file.song", downloadPath + @"/" + songTitle);
+            Assert.DoesNotContain(expectedSong, songsManagerTest.SongList);
+            Assert.Equal("Error", errorMessage);
+            //We expect to have called the addSharedSongAsync method in the songsManager
+            versionToolMock.Verify(m => m.downloadSharedSongAsync(sharedLink, downloadPath + @"/" + songTitle + @"/"), Times.Once());
+            Assert.DoesNotContain(expectedSong, saver.savedSongs());
         }
     }
 }
