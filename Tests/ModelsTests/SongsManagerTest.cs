@@ -448,6 +448,8 @@ namespace ModelsTests.SongsManagerTest
         {
             await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath);
 
+            //We expect a songVersioned created with the title
+            Song expectedSong = new Song(songTitle, "file.song", downloadPath + @"\" + songTitle);
             Song song = songsManager.findSong(songTitle);
             Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
@@ -459,17 +461,17 @@ namespace ModelsTests.SongsManagerTest
         {
 
             Mock<IVersionTool> versionToolMock = new Mock<IVersionTool>();
-            versionToolMock.Setup(m => m.downloadSharedSongAsync(sharedLink, downloadPath + @"/" + songTitle + @"/")).Returns(Task.FromResult("Error"));
+            versionToolMock.Setup(m => m.downloadSharedSongAsync(sharedLink, downloadPath + @"\" + songTitle)).Returns(Task.FromResult("Error"));
             SongsManager songsManagerTest = new SongsManager(versionToolMock.Object, saver, fileManager);
 
             string errorMessage = await songsManagerTest.addSharedSongAsync(songTitle, sharedLink, downloadPath);
 
             //We expect a songVersioned created with the title
-            Song expectedSong = new Song(songTitle,"file.song", downloadPath + @"/" + songTitle);
+            Song expectedSong = new Song(songTitle,"file.song", downloadPath + @"\" + songTitle);
             Assert.DoesNotContain(expectedSong, songsManagerTest.SongList);
             Assert.Equal("Error", errorMessage);
             //We expect to have called the addSharedSongAsync method in the songsManager
-            versionToolMock.Verify(m => m.downloadSharedSongAsync(sharedLink, downloadPath + @"/" + songTitle + @"/"), Times.Once());
+            versionToolMock.Verify(m => m.downloadSharedSongAsync(sharedLink, downloadPath + @"\" + songTitle), Times.Once());
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
         }
     }

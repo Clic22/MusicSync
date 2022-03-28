@@ -146,6 +146,14 @@ namespace App1Tests.Mock
             });
         }
 
+        public async Task<string> shareSongAsync(Song song)
+        {
+            return await Task.Run(() =>
+            {
+                return "http://www.gitlab.com/test.git";
+            });
+        }
+
         public User user { get; set; }
         public string versionPath;
 
