@@ -160,7 +160,7 @@ namespace App1.Adapters
         }
 
 
-        public async Task<string> downloadSharedSongAsync(string linkShared, string downloadLocalPath)
+        public async Task<string> downloadSharedSongAsync(string sharedLink, string downloadLocalPath)
         {
             try
             {
@@ -170,7 +170,7 @@ namespace App1.Adapters
                     User user = saver.savedUser();
                     var options = new CloneOptions();
                     options.CredentialsProvider = (_url, _user, _cred) => new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
-                    Repository.Clone(linkShared, downloadLocalPath, options);
+                    Repository.Clone(sharedLink, downloadLocalPath, options);
                 });
                 return string.Empty;
             }

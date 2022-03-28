@@ -9,7 +9,7 @@ namespace App1.Models.Ports
         public Task<string> updateAllSongsAsync();
         public Task<string> updateSongAsync(Song song);
         public Task<string> uploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering);
-        public Task<string> addSharedSongAsync(string songTitle, string sharedLink, string songLocalPath);
+        public Task<string> addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath);
         public void addLocalSong(string songTitle, string songFile, string songLocalPath);
         public Task deleteSongAsync(Song song);
         public Task<(bool, string)> openSongAsync(Song song);
