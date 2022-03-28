@@ -20,7 +20,7 @@ namespace App1.Adapters
                 }
                 return songFile;
             }
-            catch (Exception ex)
+            catch
             {
                 return string.Empty;
             }
