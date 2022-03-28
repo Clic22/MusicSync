@@ -1,16 +1,16 @@
 ﻿
+using App1.Adapters;
+using App1.Models;
+using App1.Models.Ports;
+using App1.ViewModels;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Threading.Tasks;
-using App1.ViewModels;
-using Windows.Storage.Pickers;
-using App1.Models.Ports;
-using App1.Models;
-using App1.Adapters;
-using Microsoft.UI;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage.Pickers;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -31,7 +31,7 @@ namespace App1
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            string errorMessage =  await SongsPageViewModel.updateAllSongsAsync();
+            string errorMessage = await SongsPageViewModel.updateAllSongsAsync();
             if (errorMessage != string.Empty)
             {
                 await displayErrorDialog(errorMessage);
@@ -145,7 +145,7 @@ namespace App1
             {
                 await displayContentDialog($"Song '{song.Title}' Updated");
             }
-            
+
         }
 
         private async void uploadNewVersionClick(object sender, RoutedEventArgs e)

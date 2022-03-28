@@ -75,12 +75,12 @@ namespace App1.Models
             SongList.deleteSong(song);
         }
 
-        public async Task<(bool,string)> openSongAsync(Song song)
+        public async Task<(bool, string)> openSongAsync(Song song)
         {
             string errorMessage = await updateSongAsync(song);
             if (string.IsNullOrEmpty(errorMessage))
             {
-                (bool, string)  locked = await Locker.lockSongAsync(song, Saver.savedUser());
+                (bool, string) locked = await Locker.lockSongAsync(song, Saver.savedUser());
                 if (Locker.isLockedByUser(song, Saver.savedUser()))
                 {
                     openSongWithDAW(song);
@@ -92,7 +92,7 @@ namespace App1.Models
             {
                 return (false, errorMessage);
             }
-            
+
         }
 
         public async Task<string> revertSongAsync(Song song)
@@ -120,7 +120,7 @@ namespace App1.Models
 
         public async Task<SongVersion> currentVersionAsync(Song song)
         {
-            return await VersionTool.currentVersionAsync(song);     
+            return await VersionTool.currentVersionAsync(song);
         }
 
         public async Task<List<SongVersion>> versionsAsync(Song song)

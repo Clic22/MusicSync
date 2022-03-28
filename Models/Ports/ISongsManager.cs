@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace App1.Models.Ports
+﻿namespace App1.Models.Ports
 {
     public interface ISongsManager
     {

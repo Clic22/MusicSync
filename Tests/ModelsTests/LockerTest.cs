@@ -1,10 +1,9 @@
 ﻿using App1.Models;
-using App1.Models.Ports;
 using App1Tests.Mock;
 using System;
 using System.IO;
-using Xunit;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace ModelsTests.LockerTest
 {
@@ -18,7 +17,7 @@ namespace ModelsTests.LockerTest
             Directory.CreateDirectory(localPath);
             FileStream fileStream = File.Create(localPath + file);
             fileStream.Close();
-            
+
             song = new Song(title, file, localPath);
             //These are the Users accepted by the versionning mock to simulate connexion problems
             string Username1 = "Hear@fdjskjè_";
@@ -33,7 +32,7 @@ namespace ModelsTests.LockerTest
             user2 = new User(BandName2, BandPassword2, Username2, BandEmail2);
 
             version = new VersioningMock(user1);
-            locker = new Locker(version); 
+            locker = new Locker(version);
         }
 
         public void Dispose()
@@ -67,7 +66,7 @@ namespace ModelsTests.LockerTest
             Assert.True(File.Exists(song.LocalPath + "audio1.wav"));
             Assert.False(File.Exists(version.versionPath + song.LocalPath + "audio1.wav"));
 
-            (bool,string) result = await locker.lockSongAsync(song,user1);
+            (bool, string) result = await locker.lockSongAsync(song, user1);
 
             Assert.True(result.Item1);
             Assert.Equal("Song Locked", result.Item2);
@@ -219,7 +218,7 @@ namespace ModelsTests.LockerTest
             version = new VersioningMock(user1);
             locker = new Locker(version);
 
-            (bool, string)  lockResult = await locker.lockSongAsync(song, user1);
+            (bool, string) lockResult = await locker.lockSongAsync(song, user1);
             Assert.False(lockResult.Item1);
             Assert.Equal("Error Bad Credentials", lockResult.Item2);
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);

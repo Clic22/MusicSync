@@ -1,14 +1,12 @@
-using System;
-using Xunit;
-using App1.ViewModels;
 using App1.Models;
 using App1.Models.Ports;
-using App1Tests.Mock;
+using App1.ViewModels;
 using Moq;
-using System.IO;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using Xunit;
 
 namespace ViewModelsTests.SongsPageViewModelTest
 {
@@ -124,7 +122,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             //Setup
             Song song = new Song(title, "file.Song", downloadPath);
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
-            songsManagerMock.Setup(m => m.addSharedSongAsync(title,link,downloadPath)).Returns(Task.FromResult("Error"));
+            songsManagerMock.Setup(m => m.addSharedSongAsync(title, link, downloadPath)).Returns(Task.FromResult("Error"));
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
 
             //Add a new song

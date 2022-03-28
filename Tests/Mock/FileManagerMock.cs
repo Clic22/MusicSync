@@ -1,5 +1,4 @@
-﻿using App1.Models;
-using App1.Models.Ports;
+﻿using App1.Models.Ports;
 
 namespace App1Tests.Mock
 {

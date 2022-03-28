@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 
 namespace App1.ViewModels
 {
@@ -53,7 +46,7 @@ namespace App1.ViewModels
             }
             set
             {
-               SetProperty(ref currentVersion_, value);
+                SetProperty(ref currentVersion_, value);
             }
         }
 

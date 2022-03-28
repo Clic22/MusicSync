@@ -31,12 +31,12 @@ namespace AdaptersTests.LocalSettingsSaverTest
             string BandName2 = "Erratum12";
             string BandEmail2 = "erratum12@gmail.com";
             user2 = new User(BandName2, BandPassword2, Username2, BandEmail2);
-           
+
         }
 
         public void Dispose()
         {
-            foreach(Song song in songsToBeSaved)
+            foreach (Song song in songsToBeSaved)
             {
                 saver.unsaveSong(song);
             }
@@ -81,7 +81,7 @@ namespace AdaptersTests.LocalSettingsSaverTest
             Song songToBeSaved = songsToBeSaved[0];
             saver.saveSong(songToBeSaved);
 
-            List<Song> savedSongs = saver.savedSongs(); 
+            List<Song> savedSongs = saver.savedSongs();
 
             CollectionAssert.Contains(savedSongs, songToBeSaved);
         }

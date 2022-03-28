@@ -1,14 +1,13 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace App1.ViewModels
 {
     public class SongsPageViewModel : Bindable
     {
-        public SongsPageViewModel(ISongsManager songsManager) { 
+        public SongsPageViewModel(ISongsManager songsManager)
+        {
             SongsVersioned = new ObservableCollection<SongVersioned>();
             SongsManager = songsManager;
             intializeSongsVersioned();
@@ -66,7 +65,7 @@ namespace App1.ViewModels
             songVersioned.IsUpdatingSong = true;
             Song song = SongsManager.findSong(songVersioned.Title);
             string errorMessage = await SongsManager.updateSongAsync(song);
-            await refreshSongVersionedAsync(songVersioned,song);
+            await refreshSongVersionedAsync(songVersioned, song);
             songVersioned.IsUpdatingSong = false;
             return errorMessage;
         }
@@ -96,7 +95,7 @@ namespace App1.ViewModels
             songVersioned.IsUploadingSong = true;
             Song song = SongsManager.findSong(songVersioned.Title);
             string errorMessage = await SongsManager.uploadNewSongVersionAsync(song, changeTitle, changeDescription, compo, mix, mastering);
-            await refreshSongVersionedAsync(songVersioned,song);
+            await refreshSongVersionedAsync(songVersioned, song);
             songVersioned.IsUploadingSong = false;
             return errorMessage;
         }
@@ -137,7 +136,7 @@ namespace App1.ViewModels
         private async Task refreshSongVersionsAsync(SongVersioned songVersioned, Song song)
         {
             songVersioned.Versions.Clear();
-            List<Models.SongVersion> versionsModels= await SongsManager.versionsAsync(song);
+            List<Models.SongVersion> versionsModels = await SongsManager.versionsAsync(song);
             foreach (var versionModel in versionsModels)
             {
                 ViewModels.Version versionViewModels = new ViewModels.Version();
@@ -157,7 +156,7 @@ namespace App1.ViewModels
             else if (song.Status.state == SongStatus.State.upToDate)
             {
                 songVersioned.Status = string.Empty;
-            }    
+            }
         }
 
         public ObservableCollection<SongVersioned> SongsVersioned;

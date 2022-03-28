@@ -24,7 +24,7 @@ namespace App1.Adapters
             {
                 return string.Empty;
             }
-            
+
         }
     }
 }

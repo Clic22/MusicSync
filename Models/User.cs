@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace App1.Models
+﻿namespace App1.Models
 {
     public sealed class User
     {
@@ -44,7 +42,7 @@ namespace App1.Models
         public string BandEmail { get; set; }
         public string BandPassword { get; set; }
         public string Username { get; set; }
-        
+
     }
 }
 

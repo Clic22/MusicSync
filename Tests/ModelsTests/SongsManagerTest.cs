@@ -27,7 +27,7 @@ namespace ModelsTests.SongsManagerTest
             Directory.CreateDirectory(localPath);
             FileStream fileStream = File.Create(localPath + file);
             fileStream.Close();
-            expectedSong = new Song(title,file,localPath);
+            expectedSong = new Song(title, file, localPath);
 
             version = new VersioningMock(user);
             saver = new SaverMock();
@@ -39,7 +39,7 @@ namespace ModelsTests.SongsManagerTest
 
         public void Dispose()
         {
-            if(expectedSong.LocalPath != null)
+            if (expectedSong.LocalPath != null)
             {
                 Directory.Delete(expectedSong.LocalPath, true);
             }
@@ -377,10 +377,10 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Theory]
-        [InlineData( true, false, false, "1.0.0")]
-        [InlineData( false, true, false, "0.1.0")]
-        [InlineData( false, false, true, "0.0.1")]
-        [InlineData( true, true, true, "1.1.1")]
+        [InlineData(true, false, false, "1.0.0")]
+        [InlineData(false, true, false, "0.1.0")]
+        [InlineData(false, false, true, "0.0.1")]
+        [InlineData(true, true, true, "1.1.1")]
         public async Task initialVersionNumberTest(bool compo, bool mix, bool mastering, string expectedVersionNumber)
         {
             title = "End of the Road";
@@ -467,7 +467,7 @@ namespace ModelsTests.SongsManagerTest
             string errorMessage = await songsManagerTest.addSharedSongAsync(songTitle, sharedLink, downloadPath);
 
             //We expect a songVersioned created with the title
-            Song expectedSong = new Song(songTitle,"file.song", downloadPath + @"\" + songTitle);
+            Song expectedSong = new Song(songTitle, "file.song", downloadPath + @"\" + songTitle);
             Assert.DoesNotContain(expectedSong, songsManagerTest.SongList);
             Assert.Equal("Error", errorMessage);
             //We expect to have called the addSharedSongAsync method in the songsManager
@@ -492,7 +492,7 @@ namespace ModelsTests.SongsManagerTest
             fileManagerMock.Verify(m => m.findSongFile(localPath), Times.Once());
             Assert.Equal("Song File not Found in " + localPath, errorMessage);
         }
-        
+
 
         [Theory]
         [InlineData("End of the Road", "test.song", "User/test/End of the Road/")]

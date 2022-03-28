@@ -26,7 +26,7 @@ namespace App1.Adapters
                 });
                 return String.Empty;
             }
-            catch(LibGit2SharpException ex)
+            catch (LibGit2SharpException ex)
             {
                 return ex.Message;
             }
@@ -64,7 +64,7 @@ namespace App1.Adapters
                         options.FetchOptions = new FetchOptions();
                         options.FetchOptions.CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) =>
                                 new UsernamePasswordCredentials()
-                                {Username = user.BandEmail, Password = user.BandPassword});
+                                { Username = user.BandEmail, Password = user.BandPassword });
 
                         var signature = new Signature(new Identity(user.Username, user.BandEmail), DateTimeOffset.Now);
 
@@ -81,7 +81,7 @@ namespace App1.Adapters
             {
                 return ex.Message;
             }
-            
+
         }
 
         public async Task<string> revertSongAsync(Song song)
@@ -98,7 +98,7 @@ namespace App1.Adapters
                 });
                 return String.Empty;
             }
-            catch(LibGit2SharpException ex)
+            catch (LibGit2SharpException ex)
             {
                 return ex.Message;
             }
@@ -124,14 +124,14 @@ namespace App1.Adapters
                 {
                     currentVersion = new SongVersion();
                 }
-                
+
             });
             return currentVersion;
         }
 
         public async Task<List<SongVersion>> versionsAsync(Song song)
         {
-            
+
             List<SongVersion> versions = new List<SongVersion>();
             await Task.Run(() =>
             {
@@ -192,7 +192,7 @@ namespace App1.Adapters
                         return remote.PushUrl;
                     }
                 });
-                
+
             }
             catch (LibGit2SharpException ex)
             {
@@ -215,7 +215,7 @@ namespace App1.Adapters
             User user = saver.savedUser();
             Repository.Init(song.LocalPath);
             var repo = new Repository(song.LocalPath);
-            string url = "https://gitlab.com/" + user.BandName.Replace(" ", "-") + "/" + song.Title.ToLower().Replace(" ","-").Replace("(",null).Replace(")", null) + ".git";
+            string url = "https://gitlab.com/" + user.BandName.Replace(" ", "-") + "/" + song.Title.ToLower().Replace(" ", "-").Replace("(", null).Replace(")", null) + ".git";
             Remote remote = repo.Network.Remotes.Add("origin", url);
             repo.Branches.Update(repo.Head,
                 b => b.Remote = remote.Name,
