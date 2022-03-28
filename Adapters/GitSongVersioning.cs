@@ -155,7 +155,28 @@ namespace App1.Adapters
             return versions;
         }
 
-        private void addAllChanges(Song song)
+        public async Task<string> downloadSharedSongAsync(string linkShared, string downloadLocalPath)
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    ISaver saver = new LocalSettingsSaver();
+                    User user = saver.savedUser();
+                    var options = new CloneOptions();
+                    options.CredentialsProvider = (_url, _user, _cred) => new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
+                    Repository.Clone(linkShared, downloadLocalPath, options);
+                });
+                return string.Empty;
+            }
+            catch (LibGit2SharpException ex)
+            {
+                return ex.Message;
+            }
+        }
+
+
+            private void addAllChanges(Song song)
         {
             using (var repo = new Repository(song.LocalPath))
             {

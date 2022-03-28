@@ -76,6 +76,7 @@
     <Grid>
         <StackPanel Orientation="Vertical" VerticalAlignment="Top">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <ProgressRing IsActive="{x:Bind SongsPageViewModel.IsAddingSong}" x:DefaultBindMode="OneWay"/>
                 <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
                     <AppBarButton Label="Update All Songs" Click="updateAllSongsClick"/>
                     <AppBarSeparator></AppBarSeparator>
@@ -91,18 +92,39 @@
         PrimaryButtonText="Add"  
         CloseButtonText="Cancel"
         DefaultButton="Primary">
-            <StackPanel Orientation="Vertical">
-                <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
-                    <AppBarSeparator></AppBarSeparator>
-                    <AppBarButton Icon="Library" Label="Browse" Click="folders_Click"/>
-                </CommandBar>
-                <TextBlock x:Name="songTitleLabel" Text="Song Title" Height="20" Margin="12,12,12,0"/>
-                <TextBox x:Name="songTitle" AutomationProperties.Name="simple text editor" Margin="12"/>
-                <TextBlock x:Name="songFileLabel" Text="Song File" Height="20" Margin="12,12,12,0"/>
-                <TextBox x:Name="songFile" AutomationProperties.Name="simple text editor" Margin="12"/>
-                <TextBlock x:Name="songLocalPathLabel" Text="Path to Your Song" Height="20" Margin="12,12,12,0"/>
-                <TextBox x:Name="songLocalPath" AutomationProperties.Name="simple text editor" Margin="12"/>
-            </StackPanel>
+            <Pivot>
+                <PivotItem Header="Local">
+                    <StackPanel Orientation="Vertical">
+                        <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
+                            <AppBarSeparator></AppBarSeparator>
+                            <AppBarButton Icon="Library" Label="Browse" Click="songFolder_Click"/>
+                        </CommandBar>
+                        <TextBlock x:Name="songTitleLabel" Text="Song Title" Height="20" Margin="12,12,12,0"/>
+                        <TextBox x:Name="songTitle" AutomationProperties.Name="simple text editor" Margin="12"/>
+                        <TextBlock x:Name="songFileLabel" Text="Song File" Height="20" Margin="12,12,12,0"/>
+                        <TextBox x:Name="songFile" AutomationProperties.Name="simple text editor" Margin="12"/>
+                        <TextBlock x:Name="songLocalPathLabel" Text="Path to Your Song" Height="20" Margin="12,12,12,0"/>
+                        <TextBox x:Name="songLocalPath" AutomationProperties.Name="simple text editor" Margin="12"/>
+                    </StackPanel>
+                </PivotItem>
+                <PivotItem Header="Shared">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock x:Name="songSharedTitleLabel" Text="Song Title" Height="20" Margin="12,12,12,0"/>
+                        <TextBox x:Name="songSharedTitle" AutomationProperties.Name="simple text editor" Margin="12"/>
+                        <TextBlock x:Name="songSharedLocalPathLabel" Text="Song Location" Height="20" Margin="12,12,12,0"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="400" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="songSharedLocalPath" AutomationProperties.Name="simple text editor" HorizontalAlignment="Stretch" Grid.Column="0" Margin="12"/>
+                            <AppBarButton Icon="Library" Label="Browse" Click="folder_Click" HorizontalAlignment="Right" Grid.Column="1"/>
+                        </Grid>
+                        <TextBlock x:Name="sharedSongLabel" Text="Shared Link" Height="20" Margin="12,12,12,0"/>
+                        <TextBox x:Name="sharedLink" AutomationProperties.Name="simple text editor" Margin="12"/>
+                    </StackPanel>
+                </PivotItem>
+            </Pivot>
         </ContentDialog>
 
         <ContentDialog
@@ -118,9 +140,9 @@
                 <TextBlock x:Name="descriptionLabel" Text="Description" Height="20" Margin="12"/>
                 <TextBox x:Name="description" AutomationProperties.Name="simple text editor" TextWrapping="Wrap" AcceptsReturn="True" Height="200" Margin="12"/>
                 <StackPanel Orientation="Horizontal">
-                    <CheckBox Content="Compo" Checked="Compo_Checked" Unchecked="Compo_Unchecked"/>
-                    <CheckBox Content="Mix" Checked="Mix_Checked" Unchecked="Mix_Unchecked"/>
-                    <CheckBox Content="Mastering" Checked="Mastering_Checked" Unchecked="Mastering_Unchecked"/>
+                    <CheckBox x:Name="Compo" Content="Compo" Checked="Compo_Checked" Unchecked="Compo_Unchecked"/>
+                    <CheckBox x:Name="Mix" Content="Mix" Checked="Mix_Checked" Unchecked="Mix_Unchecked"/>
+                    <CheckBox x:Name="Mastering" Content="Mastering" Checked="Mastering_Checked" Unchecked="Mastering_Unchecked"/>
                 </StackPanel>
             </StackPanel>
         </ContentDialog>

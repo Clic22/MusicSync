@@ -1,15 +1,15 @@
 ﻿using App1.Models.Ports;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace App1.Models
 {
     public class SongsManager : ISongsManager
     {
-        public SongsManager(IVersionTool NewVersionTool, ISaver NewSaver)
+        public SongsManager(IVersionTool NewVersionTool, ISaver NewSaver, IFileManager NewFileManager)
         {
             VersionTool = NewVersionTool;
             Saver = NewSaver;
+            FileManager = NewFileManager;
             SongList = new SongsStorage(Saver);
             Locker = new Locker(VersionTool);
         }
@@ -45,11 +45,23 @@ namespace App1.Models
             return errorMessage;
         }
 
-        public void addSong(string songTitle, string songFile, string songLocalPath)
+        public void addLocalSong(string songTitle, string songFile, string songLocalPath)
         {
             Song song = new Song(songTitle, songFile, songLocalPath);
             SongList.addNewSong(song);
             Locker.updateSongStatus(song);
+        }
+
+        public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
+        {
+            string errorMessage = await VersionTool.downloadSharedSongAsync(sharedLink, downloadLocalPath + @"/" + songTitle + @"/");
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return errorMessage;
+            }
+            string songFile = await FileManager.findSongFile(downloadLocalPath + @"/" + songTitle + @"/");
+            addLocalSong(songTitle, songFile, downloadLocalPath + @"/" + songTitle + @"/");
+            return string.Empty;
         }
 
         public async Task deleteSongAsync(Song song)
@@ -125,5 +137,6 @@ namespace App1.Models
         private readonly IVersionTool VersionTool;
         private readonly Locker Locker;
         private readonly ISaver Saver;
+        private readonly IFileManager FileManager;
     }
 }

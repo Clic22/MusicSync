@@ -23,7 +23,8 @@ namespace App1
             this.InitializeComponent();
             ISaver saver = new LocalSettingsSaver();
             IVersionTool versionTool = new GitSongVersioning();
-            ISongsManager songsManager = new SongsManager(versionTool, saver);
+            IFileManager fileManager = new FileManager();
+            ISongsManager songsManager = new SongsManager(versionTool, saver, fileManager);
             SongsPageViewModel = new SongsPageViewModel(songsManager);
         }
 
@@ -54,15 +55,33 @@ namespace App1
             ContentDialogResult result = await addNewSongContentDialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
-                SongVersioned songVersioned = SongsPageViewModel.addSong(songTitle.Text, songFile.Text, songLocalPath.Text);
-                await SongsPageViewModel.updateSongAsync(songVersioned);
+                if (songTitle.Text != string.Empty && songFile.Text != string.Empty && songLocalPath.Text != string.Empty)
+                {
+                    SongsPageViewModel.addLocalSong(songTitle.Text, songFile.Text, songLocalPath.Text);
+                }
+                else if (songSharedTitle.Text != string.Empty && sharedLink.Text != string.Empty && songSharedLocalPath.Text != string.Empty)
+                {
+                    string errorMessage = await SongsPageViewModel.addSharedSongAsync(songSharedTitle.Text, sharedLink.Text, songSharedLocalPath.Text);
+                    if (errorMessage != string.Empty)
+                    {
+                        await displayErrorDialog(errorMessage);
+                    }
+                }
+                else
+                {
+                    string errorMessage = "Please provide all needed informations.";
+                    await displayErrorDialog(errorMessage);
+                }
             }
-            songTitle.Text = String.Empty;
-            songFile.Text = String.Empty;
-            songLocalPath.Text = String.Empty;
+            songTitle.Text = string.Empty;
+            songFile.Text = string.Empty;
+            songLocalPath.Text = string.Empty;
+            sharedLink.Text = string.Empty;
+            songSharedTitle.Text = string.Empty;
+            songSharedLocalPath.Text = string.Empty;
         }
 
-        private async void folders_Click(object sender, RoutedEventArgs e)
+        private async void songFolder_Click(object sender, RoutedEventArgs e)
         {
             var folderPicker = new FolderPicker();
             WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, App.WindowHandle);
@@ -79,6 +98,17 @@ namespace App1
                         songLocalPath.Text = folderPicked.Path;
                     }
                 }
+            }
+        }
+
+        private async void folder_Click(object sender, RoutedEventArgs e)
+        {
+            var folderPicker = new FolderPicker();
+            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, App.WindowHandle);
+            var folderPicked = await folderPicker.PickSingleFolderAsync();
+            if (folderPicked != null)
+            {
+                songSharedLocalPath.Text = folderPicked.Path;
             }
         }
 
@@ -122,6 +152,9 @@ namespace App1
             }
             title.Text = String.Empty;
             description.Text = String.Empty;
+            Compo.IsChecked = false;
+            Mix.IsChecked = false;
+            Mastering.IsChecked = false;
         }
 
         private async void openSongClick(object sender, RoutedEventArgs e)
@@ -148,21 +181,6 @@ namespace App1
             }
         }
 
-        private async void songVersionHistoryClick(object sender, RoutedEventArgs e)
-        {
-            SongVersioned song = (sender as Button).DataContext as SongVersioned;
-            await displayContentDialog($"'{song.Title}' History");
-            /*string errorMessage = await SongsPageViewModel.songVersionHistoryAsync(song);
-            if (errorMessage != string.Empty)
-            {
-                await displayContentDialog(errorMessage);
-            }
-            else
-            {
-                await displayContentDialog($"'{song.Title}' Reverted");
-            }*/
-        }
-
         private async Task displayContentDialog(string text)
         {
             ContentDialog dialog = new ContentDialog();
@@ -186,6 +204,20 @@ namespace App1
             bst.Setters.Add(new Setter(Button.CornerRadiusProperty, "4"));
             dialog.CloseButtonStyle = bst;
             await dialog.ShowAsync();
+        }
+
+        private async Task<string> findSongFile(string songLocalPath)
+        {
+            var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(songLocalPath);
+            var files = await folder.GetFilesAsync();
+            foreach (var file in files)
+            {
+                if (file.Name.Contains(".song"))
+                {
+                    return file.Name;
+                }
+            }
+            return string.Empty;
         }
 
         private void Compo_Checked(object sender, RoutedEventArgs e)

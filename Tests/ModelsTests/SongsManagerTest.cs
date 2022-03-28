@@ -20,7 +20,7 @@ namespace ModelsTests.SongsManagerTest
             string BandEmail = "testdklsjfhg@yahoo.com";
             user = new User(BandName, BandPassword, Username, BandEmail);
 
-            title = "title";
+            title = "End of the Road";
             file = "file.song";
             localPath = @"./SongsManagerTest/End of the Road/";
             Directory.CreateDirectory(localPath);
@@ -31,7 +31,8 @@ namespace ModelsTests.SongsManagerTest
             version = new VersioningMock(user);
             saver = new SaverMock();
             saver.saveUser(user);
-            songsManager = new SongsManager(version, saver);
+            fileManager = new FileManagerMock();
+            songsManager = new SongsManager(version, saver, fileManager);
             locker = new Locker(version);
         }
 
@@ -51,6 +52,7 @@ namespace ModelsTests.SongsManagerTest
         public User user;
         public Song expectedSong;
         public ISaver saver;
+        public IFileManager fileManager;
         public SongsManager songsManager;
         public VersioningMock version;
         public Locker locker;
@@ -64,7 +66,7 @@ namespace ModelsTests.SongsManagerTest
         [Fact]
         public void addAndFindSongTest()
         {
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             Song song = songsManager.findSong(title);
             Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
@@ -79,7 +81,7 @@ namespace ModelsTests.SongsManagerTest
         [Fact]
         public async Task deleteSongTest()
         {
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
 
             await songsManager.deleteSongAsync(expectedSong);
             Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
@@ -93,7 +95,7 @@ namespace ModelsTests.SongsManagerTest
             //GIVEN
             //A song added to the songsManager, we expect the song being added to the songstorage and
             //be saved. Then we lock the song by another user, we expect to have lock file in local and version workspace.
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             Song? song = songsManager.findSong(title);
             Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
@@ -124,7 +126,7 @@ namespace ModelsTests.SongsManagerTest
             //GIVEN
             //A song added to the songsManager, we expect the song being added to the songstorage and
             //be saved. Then we lock the song, we expect to have lock file in local and version workspace.
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             Song? song = songsManager.findSong(title);
             Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
@@ -149,7 +151,7 @@ namespace ModelsTests.SongsManagerTest
         public async Task updateSongTest()
         {
             //Add song for synchronization
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             //Simulate a change on version workspace
             Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
             FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio.wav");
@@ -168,7 +170,7 @@ namespace ModelsTests.SongsManagerTest
         public async Task updateSongLockedTest()
         {
             //Add song for synchronization
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             //Simulate a change on version workspace
             Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
             FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + ".lock");
@@ -185,7 +187,7 @@ namespace ModelsTests.SongsManagerTest
         public async Task TryUpdateSongWithWrongBandNameTest()
         {
             //Add song for synchronization
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             //Simulate a change on version workspace
             Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
             FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio.wav");
@@ -206,7 +208,7 @@ namespace ModelsTests.SongsManagerTest
         public async Task TryUpdateSongWithWrongBandPasswordTest()
         {
             //Add song for synchronization
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             //Simulate a change on version workspace
             Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
             FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio.wav");
@@ -243,8 +245,8 @@ namespace ModelsTests.SongsManagerTest
             Song song2 = new Song(title2, file2, localPath2);
 
             //Add song for synchronization
-            songsManager.addSong(title1, file1, localPath1);
-            songsManager.addSong(title2, file2, localPath2);
+            songsManager.addLocalSong(title1, file1, localPath1);
+            songsManager.addLocalSong(title2, file2, localPath2);
             //Simulate a change on song 1 version workspace
             Directory.CreateDirectory(version.versionPath + song1.LocalPath);
             FileStream fileStream = File.Create(version.versionPath + song1.LocalPath + "audio1.wav");
@@ -280,7 +282,7 @@ namespace ModelsTests.SongsManagerTest
         public async Task revertSongTest()
         {
             //Add song for synchronization
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             //Simulate Modifications in local workspace
             FileStream fileStream = File.Create(expectedSong.LocalPath + "audio1.wav");
             fileStream.Close();
@@ -303,7 +305,7 @@ namespace ModelsTests.SongsManagerTest
         public async Task uploadSongTest()
         {
             //Add song for synchronization
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             //Simulate Modifications in local workspace
             FileStream fileStream = File.Create(expectedSong.LocalPath + "audio1.wav");
             fileStream.Close();
@@ -358,7 +360,7 @@ namespace ModelsTests.SongsManagerTest
         [Fact]
         public async Task currentVersionTest()
         {
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             string titleChange = "New Version";
             string descriptionChange = "No description";
             string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, true, false, false);
@@ -383,7 +385,7 @@ namespace ModelsTests.SongsManagerTest
             title = "End of the Road";
             file = "test.song";
             localPath = "User/test/End of the Road/";
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             string titleChange = "New Version";
             string descriptionChange = "No description";
             string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
@@ -407,7 +409,7 @@ namespace ModelsTests.SongsManagerTest
             title = "End of the Road";
             file = "test.song";
             localPath = "User/test/End of the Road/";
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             string titleChange = "New Version";
             string descriptionChange = "No description";
             //Simulate first upload by another user version 1.1.1
@@ -424,7 +426,7 @@ namespace ModelsTests.SongsManagerTest
         [InlineData("End of the Road", "test.song", "User/test/End of the Road/", true, true, true)]
         public async Task versionsTest(string title, string file, string localPath, bool compo, bool mix, bool mastering)
         {
-            songsManager.addSong(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             string titleChange = "New Version";
             string descriptionChange = "No description";
             //Simulate uploads by another user
@@ -437,6 +439,17 @@ namespace ModelsTests.SongsManagerTest
             SongVersion expectedSongVersion2 = new SongVersion("2.1.1", titleChange + "\n\n" + descriptionChange, user.Username);
             Assert.Contains(expectedSongVersion, versions);
             Assert.Contains(expectedSongVersion2, versions);
+        }
+
+        [Theory]
+        [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest")]
+        public async Task addSharedSongAsync(string songTitle, string sharedLink, string songLocalPath)
+        {
+            await songsManager.addSharedSongAsync(songTitle, sharedLink, songLocalPath);
+
+            Song song = songsManager.findSong(songTitle);
+            Assert.Equal(expectedSong, song);
+            Assert.Contains(expectedSong, saver.savedSongs());
         }
     }
 }
