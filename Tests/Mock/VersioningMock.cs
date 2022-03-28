@@ -139,18 +139,12 @@ namespace App1Tests.Mock
 
         public async Task<string> downloadSharedSongAsync(string sharedLink, string downloadLocalPath)
         {
-            return await Task.Run(() =>
-            {
-                return string.Empty;
-            });
+            return await Task.Run(() =>{return string.Empty;});
         }
 
         public async Task<string> shareSongAsync(Song song)
         {
-            return await Task.Run(() =>
-            {
-                return "https://www.gitlab.com/test.git";
-            });
+            return await Task.Run(() =>{return "https://www.gitlab.com/test.git";});
         }
 
         public User user { get; set; }
