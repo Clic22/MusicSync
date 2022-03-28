@@ -99,6 +99,25 @@ namespace ViewModelsTests.SongsPageViewModelTest
         }
 
         [Theory]
+        [InlineData("title")]
+        public async Task shareLinkSongTest(string title)
+        {
+            //Setup
+            Song song = new Song(title, "file.Song", "LocalPath");
+            SongVersioned songVersioned = new SongVersioned(title);
+            Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
+            songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
+            songsManagerMock.Setup(m => m.shareSongAsync(song)).Returns(Task.FromResult("https://www.gitlab.com"));
+            SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
+
+            //Add a new song
+            string errorMessage = await viewModel.shareSongAsync(songVersioned);
+
+            //We expect to have called the addSharedSongAsync method in the songsManager
+            songsManagerMock.Verify(m => m.shareSongAsync(song), Times.Once());
+        }
+
+        [Theory]
         [InlineData("title", "ERROR", @"./SongsManagerTest")]
         public async Task addSharedSongErrorTest(string title, string link, string downloadPath)
         {
