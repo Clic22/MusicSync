@@ -42,7 +42,7 @@ namespace App1.ViewModels
         {
             IsAddingSong = true;
             string errorMessage = await SongsManager.addSharedSongAsync(songTitle, sharedLink, songLocalPath);
-            if (errorMessage != string.Empty)
+            if (!string.IsNullOrEmpty(errorMessage))
             {
                 IsAddingSong = false;
                 return errorMessage;
