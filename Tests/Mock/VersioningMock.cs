@@ -150,7 +150,7 @@ namespace App1Tests.Mock
         {
             return await Task.Run(() =>
             {
-                return "http://www.gitlab.com/test.git";
+                return "https://www.gitlab.com/test.git";
             });
         }
 
