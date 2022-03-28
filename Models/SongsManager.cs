@@ -60,11 +60,10 @@ namespace App1.Models
             {
                 return errorMessage;
             }
-            string songFile = string.Empty;
-            errorMessage = await FileManager.findSongFile(localPath, songFile);
-            if (!string.IsNullOrEmpty(errorMessage))
+            string songFile = await FileManager.findSongFile(localPath);
+            if (string.IsNullOrEmpty(songFile))
             {
-                return errorMessage;
+                return "Song File not Found in " + localPath;
             }
             addLocalSong(songTitle, songFile, localPath);
             return string.Empty;

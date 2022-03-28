@@ -4,12 +4,13 @@ namespace App1.Adapters
 {
     public class FileManager : IFileManager
     {
-        public async Task<string> findSongFile(string songLocalPath, string songFile)
+        public async Task<string> findSongFile(string songLocalPath)
         {
             try
             {
                 var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(songLocalPath);
                 var files = await folder.GetFilesAsync();
+                string songFile = string.Empty;
                 foreach (var file in files)
                 {
                     if (file.Name.Contains(".song"))
@@ -17,11 +18,11 @@ namespace App1.Adapters
                         songFile = file.Name;
                     }
                 }
-                return string.Empty;
+                return songFile;
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                return string.Empty;
             }
             
         }
