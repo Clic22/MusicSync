@@ -14,20 +14,19 @@
             <AppBarButton Icon="Save" Label="Save" Click="saveSettingsClick"/>
         </CommandBar>
         <TextBlock Text="Band Settings" FontWeight="Bold" Margin="12"/>
-            <TextBlock Text="Band Name" Margin="12"/>
-            <TextBox x:Name="BandName" HorizontalAlignment="Left" Width="200" Margin="12"/>
-            <TextBlock Text="Band Password" Margin="12"/>
-            <StackPanel Orientation="Horizontal">
-                <PasswordBox  Width="200" x:Name="BandPassword" Margin="12" PasswordRevealMode="Hidden"/>
-                <CheckBox x:Name="revealModeCheckBox" Content="Show password" IsChecked="False"
-                Checked="RevealModeCheckbox_Changed" Unchecked="RevealModeCheckbox_Changed" Margin="12"/>
-            </StackPanel>
-            <TextBlock Text="Band Email" Margin="12"/>
-            <TextBox  x:Name="BandEmail" HorizontalAlignment="Left" Width="200" Margin="12"/>
-            <TextBlock  Margin="12"/>
+        <TextBlock Text="Band Name" Margin="12"/>
+        <TextBox x:Name="BandName" HorizontalAlignment="Left" Width="200" Margin="12"/>
+        <TextBlock Text="Band Password" Margin="12"/>
+        <StackPanel Orientation="Horizontal">
+            <PasswordBox  Width="200" x:Name="BandPassword" Margin="12" PasswordRevealMode="Hidden"/>
+            <CheckBox x:Name="revealModeCheckBox" Content="Show password" IsChecked="False"
+            Checked="RevealModeCheckbox_Changed" Unchecked="RevealModeCheckbox_Changed" Margin="12"/>
+        </StackPanel>
+        <TextBlock Text="Band Email" Margin="12"/>
+        <TextBox  x:Name="BandEmail" HorizontalAlignment="Left" Width="200" Margin="12"/>
+        <TextBlock  Margin="12"/>
         <TextBlock Text="User Settings" FontWeight="Bold" Margin="12"/>
-            <TextBlock Text="Username" Margin="12"/>
-            <TextBox  x:Name="Username" HorizontalAlignment="Left" Width="200" Margin="12"/>
-            
+        <TextBlock Text="Username" Margin="12"/>
+        <TextBox  x:Name="Username" HorizontalAlignment="Left" Width="200" Margin="12"/>
     </StackPanel>
 </Page>

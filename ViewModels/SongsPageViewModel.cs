@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace App1.ViewModels
 {
-    public class SongsPageViewModel
+    public class SongsPageViewModel : Bindable
     {
         public SongsPageViewModel(ISongsManager songsManager) { 
             SongsVersioned = new ObservableCollection<SongVersioned>();
@@ -28,12 +28,30 @@ namespace App1.ViewModels
             return errorMessage;
         }
 
-        public SongVersioned addSong(string songTitle, string songFile, string songLocalPath)
+        public SongVersioned addLocalSong(string songTitle, string songFile, string songLocalPath)
         {
-            SongsManager.addSong(songTitle, songFile, songLocalPath);
+            IsAddingSong = true;
+            SongsManager.addLocalSong(songTitle, songFile, songLocalPath);
             SongVersioned songVersioned = new SongVersioned(songTitle);
             SongsVersioned.Add(songVersioned);
+            IsAddingSong = false;
             return songVersioned;
+        }
+
+        public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string songLocalPath)
+        {
+            IsAddingSong = true;
+            string errorMessage = await SongsManager.addSharedSongAsync(songTitle, sharedLink, songLocalPath);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                IsAddingSong = false;
+                return errorMessage;
+            }
+            SongVersioned songVersioned = new SongVersioned(songTitle);
+            SongsVersioned.Add(songVersioned);
+            await updateSongAsync(songVersioned);
+            IsAddingSong = false;
+            return string.Empty;
         }
 
         public async Task deleteSongAsync(SongVersioned songVersioned)
@@ -137,6 +155,19 @@ namespace App1.ViewModels
         }
 
         public ObservableCollection<SongVersioned> SongsVersioned;
+        private bool isAddingSong_;
+        public bool IsAddingSong
+        {
+            get
+            {
+                return isAddingSong_;
+            }
+            set
+            {
+                SetProperty(ref isAddingSong_, value);
+            }
+        }
+
         private readonly ISongsManager SongsManager;
     }
 }
