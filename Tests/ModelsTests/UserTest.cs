@@ -28,8 +28,8 @@ namespace ModelsTests.UserTest
             Assert.NotNull(user);
             Assert.Equal(expectedUsername, user.Username);
             Assert.Equal(expectedBandPassword, user.BandPassword);
-            Assert.Equal(expectedBandEmail,user.BandEmail);
-            Assert.Equal(expectedBandName,user.BandName);
+            Assert.Equal(expectedBandEmail, user.BandEmail);
+            Assert.Equal(expectedBandName, user.BandName);
         }
 
         [Fact]

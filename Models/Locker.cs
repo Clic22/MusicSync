@@ -1,6 +1,4 @@
 ﻿using App1.Models.Ports;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace App1.Models
 {
@@ -11,15 +9,15 @@ namespace App1.Models
             VersionTool = NewVersionTool;
         }
 
-        public async Task<(bool,string)> lockSongAsync(Song song, User user)
+        public async Task<(bool, string)> lockSongAsync(Song song, User user)
         {
-            if (!lockFileExist(song) || isLockedByUser(song,user))
+            if (!lockFileExist(song) || isLockedByUser(song, user))
             {
                 createLockFile(song, user);
                 string errorMessage = await VersionTool.uploadSongAsync(song, @".lock", "lock");
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    return (false,errorMessage);
+                    return (false, errorMessage);
                 }
                 updateSongStatus(song);
                 return (true, "Song Locked");
@@ -29,9 +27,9 @@ namespace App1.Models
 
         public async Task<bool> unlockSongAsync(Song song, User user)
         {
-            if(lockFileExist(song))
+            if (lockFileExist(song))
             {
-                if(isLockedByUser(song,user))
+                if (isLockedByUser(song, user))
                 {
                     removeLockFile(song);
                     await VersionTool.uploadSongAsync(song, @".lock", "unlock");

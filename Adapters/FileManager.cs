@@ -6,16 +6,25 @@ namespace App1.Adapters
     {
         public async Task<string> findSongFile(string songLocalPath)
         {
-            var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(songLocalPath);
-            var files = await folder.GetFilesAsync();
-            foreach (var file in files)
+            try
             {
-                if (file.Name.Contains(".song"))
+                var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(songLocalPath);
+                var files = await folder.GetFilesAsync();
+                string songFile = string.Empty;
+                foreach (var file in files)
                 {
-                    return file.Name;
+                    if (file.Name.Contains(".song"))
+                    {
+                        songFile = file.Name;
+                    }
                 }
+                return songFile;
             }
-            return string.Empty;
+            catch
+            {
+                return string.Empty;
+            }
+
         }
     }
 }

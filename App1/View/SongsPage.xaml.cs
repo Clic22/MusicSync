@@ -1,15 +1,16 @@
 ﻿
+using App1.Adapters;
+using App1.Models;
+using App1.Models.Ports;
+using App1.ViewModels;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Threading.Tasks;
-using App1.ViewModels;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage.Pickers;
-using App1.Models.Ports;
-using App1.Models;
-using App1.Adapters;
-using Microsoft.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -30,7 +31,7 @@ namespace App1
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            string errorMessage =  await SongsPageViewModel.updateAllSongsAsync();
+            string errorMessage = await SongsPageViewModel.updateAllSongsAsync();
             if (errorMessage != string.Empty)
             {
                 await displayErrorDialog(errorMessage);
@@ -118,6 +119,20 @@ namespace App1
             await SongsPageViewModel.deleteSongAsync(song);
         }
 
+        private async void shareSongClick(object sender, RoutedEventArgs e)
+        {
+            SongVersioned song = (sender as Button).DataContext as SongVersioned;
+            string shareLink = await SongsPageViewModel.shareSongAsync(song);
+            ContentDialogResult result = await displayShareLinkDialog(shareLink);
+            if (result == ContentDialogResult.Primary)
+            {
+                DataPackage dataPackage = new DataPackage();
+                dataPackage.RequestedOperation = DataPackageOperation.Copy;
+                dataPackage.SetText(shareLink);
+                Clipboard.SetContent(dataPackage);
+            }
+        }
+
         private async void updateSongClick(object sender, RoutedEventArgs e)
         {
             SongVersioned song = (sender as Button).DataContext as SongVersioned;
@@ -130,7 +145,7 @@ namespace App1
             {
                 await displayContentDialog($"Song '{song.Title}' Updated");
             }
-            
+
         }
 
         private async void uploadNewVersionClick(object sender, RoutedEventArgs e)
@@ -189,6 +204,18 @@ namespace App1
             dialog.CloseButtonText = "Close";
             dialog.DefaultButton = ContentDialogButton.Close;
             await dialog.ShowAsync();
+        }
+
+        private async Task<ContentDialogResult> displayShareLinkDialog(string text)
+        {
+            ContentDialog dialog = new ContentDialog();
+            dialog.XamlRoot = this.XamlRoot;
+            dialog.Title = "Share Link";
+            dialog.Content = text;
+            dialog.PrimaryButtonText = "Copy";
+            dialog.CloseButtonText = "Close";
+            dialog.DefaultButton = ContentDialogButton.Primary;
+            return await dialog.ShowAsync();
         }
 
         private async Task displayErrorDialog(string text)

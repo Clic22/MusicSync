@@ -1,7 +1,6 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
 using App1Tests.Mock;
-using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -17,7 +16,7 @@ namespace ModelsTests.SaverMockTest
             string expectedUsername = "RNG2513";
             string expectedBandEmail = "hello@gmail.com";
             User expectedUser = new User(expectedBandName, expectedBandPassword, expectedUsername, expectedBandEmail);
-            
+
             ISaver saver = new SaverMock();
             saver.saveUser(expectedUser);
             User userSaved = saver.savedUser();
@@ -32,12 +31,12 @@ namespace ModelsTests.SaverMockTest
             expectedSong.Title = "White Road";
             expectedSong.File = @"White Road.song";
             expectedSong.LocalPath = @"C:\Documents\Test\White Road";
-            
+
             ISaver saver = new SaverMock();
             saver.saveSong(expectedSong);
             List<Song> Songs = saver.savedSongs();
 
-            Assert.Contains(expectedSong,Songs);
+            Assert.Contains(expectedSong, Songs);
         }
     }
 }

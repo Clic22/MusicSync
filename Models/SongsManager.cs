@@ -54,13 +54,18 @@ namespace App1.Models
 
         public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
         {
-            string errorMessage = await VersionTool.downloadSharedSongAsync(sharedLink, downloadLocalPath + @"/" + songTitle + @"/");
+            string localPath = downloadLocalPath + @"\" + songTitle;
+            string errorMessage = await VersionTool.downloadSharedSongAsync(sharedLink, localPath);
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 return errorMessage;
             }
-            string songFile = await FileManager.findSongFile(downloadLocalPath + @"/" + songTitle + @"/");
-            addLocalSong(songTitle, songFile, downloadLocalPath + @"/" + songTitle + @"/");
+            string songFile = await FileManager.findSongFile(localPath);
+            if (string.IsNullOrEmpty(songFile))
+            {
+                return "Song File not Found in " + localPath;
+            }
+            addLocalSong(songTitle, songFile, localPath);
             return string.Empty;
         }
 
@@ -70,12 +75,12 @@ namespace App1.Models
             SongList.deleteSong(song);
         }
 
-        public async Task<(bool,string)> openSongAsync(Song song)
+        public async Task<(bool, string)> openSongAsync(Song song)
         {
             string errorMessage = await updateSongAsync(song);
             if (string.IsNullOrEmpty(errorMessage))
             {
-                (bool, string)  locked = await Locker.lockSongAsync(song, Saver.savedUser());
+                (bool, string) locked = await Locker.lockSongAsync(song, Saver.savedUser());
                 if (Locker.isLockedByUser(song, Saver.savedUser()))
                 {
                     openSongWithDAW(song);
@@ -87,7 +92,7 @@ namespace App1.Models
             {
                 return (false, errorMessage);
             }
-            
+
         }
 
         public async Task<string> revertSongAsync(Song song)
@@ -115,12 +120,17 @@ namespace App1.Models
 
         public async Task<SongVersion> currentVersionAsync(Song song)
         {
-            return await VersionTool.currentVersionAsync(song);     
+            return await VersionTool.currentVersionAsync(song);
         }
 
         public async Task<List<SongVersion>> versionsAsync(Song song)
         {
             return await VersionTool.versionsAsync(song);
+        }
+
+        public async Task<string> shareSongAsync(Song song)
+        {
+            return await VersionTool.shareSongAsync(song);
         }
 
         private static void openSongWithDAW(Song song)

@@ -1,14 +1,13 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
-using System.IO;
-using System.Threading.Tasks;
 
 
 namespace App1Tests.Mock
 {
     public class VersioningMock : IVersionTool
     {
-        public VersioningMock(User user) {
+        public VersioningMock(User user)
+        {
             this.user = user;
             string Username1 = "Hear@fdjskjè_";
             string BandPassword1 = "12df546@";
@@ -32,7 +31,7 @@ namespace App1Tests.Mock
 
             if (!errorBool && song.LocalPath != null)
             {
-                if(Directory.Exists(versionPath + song.LocalPath))
+                if (Directory.Exists(versionPath + song.LocalPath))
                 {
                     Directory.Delete(versionPath + song.LocalPath, true);
                 }
@@ -106,21 +105,21 @@ namespace App1Tests.Mock
             });
         }
 
-        private async Task<(bool,string)> UserErrorAsync()
+        private async Task<(bool, string)> UserErrorAsync()
         {
             return await Task.Run(() =>
             {
-                if (userIsDifferentFrom(user1) && 
+                if (userIsDifferentFrom(user1) &&
                     userIsDifferentFrom(user2))
-                    return (true,"Error Bad Credentials");
+                    return (true, "Error Bad Credentials");
                 else
-                    return (false,string.Empty);
+                    return (false, string.Empty);
             });
         }
-        
+
         private bool userIsDifferentFrom(User expectedUser)
         {
-            if (user == null || 
+            if (user == null ||
                 user.BandName != expectedUser.BandName ||
                 user.BandPassword != expectedUser.BandPassword ||
                 user.Username != expectedUser.Username ||
@@ -140,10 +139,12 @@ namespace App1Tests.Mock
 
         public async Task<string> downloadSharedSongAsync(string sharedLink, string downloadLocalPath)
         {
-            return await Task.Run(() =>
-            {
-                return string.Empty;
-            });
+            return await Task.Run(() =>{return string.Empty;});
+        }
+
+        public async Task<string> shareSongAsync(Song song)
+        {
+            return await Task.Run(() =>{return "https://www.gitlab.com/test.git";});
         }
 
         public User user { get; set; }
