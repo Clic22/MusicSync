@@ -101,6 +101,12 @@ namespace App1.ViewModels
             return errorMessage;
         }
 
+        public async Task<string> shareSongAsync(SongVersioned songVersioned)
+        {
+            Song song = SongsManager.findSong(songVersioned.Title);
+            return await SongsManager.shareSongAsync(song);
+        }
+
         private void intializeSongsVersioned()
         {
             if (SongsManager.SongList != null)

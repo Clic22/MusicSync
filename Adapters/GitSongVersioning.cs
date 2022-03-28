@@ -180,6 +180,26 @@ namespace App1.Adapters
             }
         }
 
+        public async Task<string> shareSongAsync(Song song)
+        {
+            try
+            {
+                return await Task.Run(() =>
+                {
+                    using (var repo = new Repository(song.LocalPath))
+                    {
+                        var remote = repo.Network.Remotes["origin"];
+                        return remote.PushUrl;
+                    }
+                });
+                
+            }
+            catch (LibGit2SharpException ex)
+            {
+                return ex.Message;
+            }
+        }
+
         private bool repoInitiated(Song song)
         {
             if (Directory.Exists(song.LocalPath + @"\.git"))

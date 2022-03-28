@@ -54,13 +54,19 @@ namespace App1.Models
 
         public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
         {
-            string errorMessage = await VersionTool.downloadSharedSongAsync(sharedLink, downloadLocalPath + @"/" + songTitle + @"/");
+            string localPath = downloadLocalPath + @"\" + songTitle;
+            string errorMessage = await VersionTool.downloadSharedSongAsync(sharedLink, localPath);
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 return errorMessage;
             }
-            string songFile = await FileManager.findSongFile(downloadLocalPath + @"/" + songTitle + @"/");
-            addLocalSong(songTitle, songFile, downloadLocalPath + @"/" + songTitle + @"/");
+            string songFile = string.Empty;
+            errorMessage = await FileManager.findSongFile(localPath, songFile);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                return errorMessage;
+            }
+            addLocalSong(songTitle, songFile, localPath);
             return string.Empty;
         }
 
@@ -121,6 +127,11 @@ namespace App1.Models
         public async Task<List<SongVersion>> versionsAsync(Song song)
         {
             return await VersionTool.versionsAsync(song);
+        }
+
+        public async Task<string> shareSongAsync(Song song)
+        {
+            return await VersionTool.shareSongAsync(song);
         }
 
         private static void openSongWithDAW(Song song)
