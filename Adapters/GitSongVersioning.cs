@@ -23,7 +23,7 @@ namespace App1.Adapters
                 {
                     initiateRepo(song);
                 }
-                await zipSongAsync(song);
+                await compressSongAsync(song);
                 await Task.Run(() =>
                 {
                     addAllChanges(song);
@@ -69,7 +69,7 @@ namespace App1.Adapters
             {
                 return errorMessage;
             }
-            await unzipSongAsync(song);
+            await uncompressSongAsync(song);
             manageLockFile(song);
             return String.Empty;
         }
@@ -81,7 +81,7 @@ namespace App1.Adapters
             {
                 return errorMessage;
             }
-            await unzipSongAsync(song);
+            await uncompressSongAsync(song);
             manageLockFile(song);
             return String.Empty;
         }
@@ -149,7 +149,7 @@ namespace App1.Adapters
             {
                 return errorMessage;
             }
-            await unzipSongAsync(songFolder, downloadLocalPath, repoPath);
+            await uncompressSongAsync(songFolder, downloadLocalPath, repoPath);
             return String.Empty;
         }
 
@@ -269,7 +269,7 @@ namespace App1.Adapters
             }
         }
 
-        private async Task zipSongAsync(Song song)
+        private async Task compressSongAsync(Song song)
         {
             await Task.Run(() =>
             {
@@ -278,7 +278,8 @@ namespace App1.Adapters
                     File.Delete(getRepoPath(song) + song.Title + ".zip");
                 }
             });
-            string pathToSongWithSelectedFodlers = await selectFoldersToBeUploaded(song);
+
+            string pathToSongWithSelectedFodlers = await selectFoldersToBeCompressed(song);
 
             await Task.Run(() =>
             {
@@ -287,7 +288,7 @@ namespace App1.Adapters
             });
         }
 
-        private async Task<string> selectFoldersToBeUploaded(Song song)
+        private async Task<string> selectFoldersToBeCompressed(Song song)
         {
             string tmpDirectory = song.LocalPath + @"\tmp";
             if (Directory.Exists(tmpDirectory))
@@ -358,7 +359,7 @@ namespace App1.Adapters
             }
         }
 
-        private async Task unzipSongAsync(Song song)
+        private async Task uncompressSongAsync(Song song)
         {
             await Task.Run(() =>
             {
@@ -386,7 +387,7 @@ namespace App1.Adapters
             });
         }
 
-        private async Task unzipSongAsync(string songFolder, string downloadLocalPath, string repoPath)
+        private async Task uncompressSongAsync(string songFolder, string downloadLocalPath, string repoPath)
         {
             var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(repoPath);
             var files = await folder.GetFilesAsync();
