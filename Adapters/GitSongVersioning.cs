@@ -304,7 +304,6 @@ namespace App1.Adapters
             var folderSrc = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(song.LocalPath);
             var folderDst = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(tmpDirectory);
             var files = await folderSrc.GetFilesAsync();
-            string songFile = string.Empty;
             foreach (var file in files)
             {
                 if (file.Name.Contains(".song"))
