@@ -290,7 +290,7 @@ namespace App1.Adapters
 
         private async Task<string> selectFoldersToBeCompressed(Song song)
         {
-            string tmpDirectory = song.LocalPath + @"\tmp";
+            string tmpDirectory = song.LocalPath + @"\tmpDirectory";
             if (Directory.Exists(tmpDirectory))
             {
                 Directory.Delete(tmpDirectory, true);
