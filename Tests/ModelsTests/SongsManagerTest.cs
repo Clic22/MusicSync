@@ -31,7 +31,8 @@ namespace ModelsTests.SongsManagerTest
 
             version = new VersioningMock(user);
             saver = new SaverMock();
-            saver.saveUser(user);
+            string musicFolder = "TestFolder";
+            saver.saveSettings(user, musicFolder);
             fileManager = new FileManagerMock();
             songsManager = new SongsManager(version, saver, fileManager);
             locker = new Locker(version);
@@ -227,59 +228,6 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
-        public async Task updateAllSongsTest()
-        {
-            string title1 = "title1";
-            string file1 = "file1.song";
-            string localPath1 = @"./SongsManagerTest/song1/";
-            Directory.CreateDirectory(localPath1);
-            //FileStream fileStream1 = File.Create(localPath1 + file1);
-            //fileStream1.Close();
-            Song song1 = new Song(title1, file1, localPath1);
-
-            string title2 = "title2";
-            string file2 = "file2.song";
-            string localPath2 = @"./SongsManagerTest/song2/";
-            Directory.CreateDirectory(localPath2);
-            //FileStream fileStream2 = File.Create(localPath2 + file1);
-            //fileStream2.Close();
-            Song song2 = new Song(title2, file2, localPath2);
-
-            //Add song for synchronization
-            songsManager.addLocalSong(title1, file1, localPath1);
-            songsManager.addLocalSong(title2, file2, localPath2);
-            //Simulate a change on song 1 version workspace
-            Directory.CreateDirectory(version.versionPath + song1.LocalPath);
-            FileStream fileStream = File.Create(version.versionPath + song1.LocalPath + "audio1.wav");
-            fileStream.Close();
-            Assert.True(File.Exists(version.versionPath + song1.LocalPath + "audio1.wav"));
-            Assert.False(File.Exists(song1.LocalPath + "audio1.wav"));
-
-            //Simulate a change on song 2 version workspace
-            Directory.CreateDirectory(version.versionPath + song2.LocalPath);
-            fileStream = File.Create(version.versionPath + song2.LocalPath + "audio2.wav");
-            fileStream.Close();
-            Assert.True(File.Exists(version.versionPath + song2.LocalPath + "audio2.wav"));
-            Assert.False(File.Exists(song2.LocalPath + "audio2.wav"));
-
-            string errorMessage = await songsManager.updateAllSongsAsync();
-
-            Assert.True(File.Exists(song1.LocalPath + "audio1.wav"));
-            Assert.True(File.Exists(song2.LocalPath + "audio2.wav"));
-            Assert.Equal(string.Empty, errorMessage);
-            if (song1.LocalPath != null)
-            {
-                Directory.Delete(song1.LocalPath, true);
-            }
-            if (song2.LocalPath != null)
-            {
-                Directory.Delete(song2.LocalPath, true);
-            }
-            Directory.Delete(version.versionPath + song1.LocalPath, true);
-            Directory.Delete(version.versionPath + song2.LocalPath, true);
-        }
-
-        [Fact]
         public async Task revertSongTest()
         {
             //Add song for synchronization
@@ -461,7 +409,7 @@ namespace ModelsTests.SongsManagerTest
         {
 
             Mock<IVersionTool> versionToolMock = new Mock<IVersionTool>();
-            versionToolMock.Setup(m => m.downloadSharedSongAsync(sharedLink, downloadPath + @"\" + songTitle)).Returns(Task.FromResult("Error"));
+            versionToolMock.Setup(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath)).Returns(Task.FromResult("Error"));
             SongsManager songsManagerTest = new SongsManager(versionToolMock.Object, saver, fileManager);
 
             string errorMessage = await songsManagerTest.addSharedSongAsync(songTitle, sharedLink, downloadPath);
@@ -471,7 +419,7 @@ namespace ModelsTests.SongsManagerTest
             Assert.DoesNotContain(expectedSong, songsManagerTest.SongList);
             Assert.Equal("Error", errorMessage);
             //We expect to have called the addSharedSongAsync method in the songsManager
-            versionToolMock.Verify(m => m.downloadSharedSongAsync(sharedLink, downloadPath + @"\" + songTitle), Times.Once());
+            versionToolMock.Verify(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath), Times.Once());
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
         }
 

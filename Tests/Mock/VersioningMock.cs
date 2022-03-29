@@ -137,7 +137,7 @@ namespace App1Tests.Mock
 
         }
 
-        public async Task<string> downloadSharedSongAsync(string sharedLink, string downloadLocalPath)
+        public async Task<string> downloadSharedSongAsync(string title, string sharedLink, string downloadLocalPath)
         {
             return await Task.Run(() =>{return string.Empty;});
         }

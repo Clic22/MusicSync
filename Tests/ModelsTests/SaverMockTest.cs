@@ -9,19 +9,22 @@ namespace ModelsTests.SaverMockTest
     public class SaverMockTest
     {
         [Fact]
-        public void SaveUserTest()
+        public void SaveSettingsTest()
         {
             string expectedBandName = "Clic22";
             string expectedBandPassword = "password123";
             string expectedUsername = "RNG2513";
             string expectedBandEmail = "hello@gmail.com";
             User expectedUser = new User(expectedBandName, expectedBandPassword, expectedUsername, expectedBandEmail);
+            string expectedMusicSyncFolder = "TestFolder";
 
             ISaver saver = new SaverMock();
-            saver.saveUser(expectedUser);
+            saver.saveSettings(expectedUser, expectedMusicSyncFolder);
             User userSaved = saver.savedUser();
 
             Assert.Equal(expectedUser, userSaved);
+            string musicSyncFolderSaved = saver.savedMusicSyncFolder();
+            Assert.Equal(expectedMusicSyncFolder, musicSyncFolderSaved);
         }
 
         [Fact]

@@ -9,11 +9,7 @@ namespace App1Tests.Mock
         {
             Songs = new List<Song>();
             User = new User();
-        }
-
-        public void saveUser(User user)
-        {
-            User = user;
+            MusicSyncFolder = string.Empty;
         }
 
         public User savedUser()
@@ -36,8 +32,25 @@ namespace App1Tests.Mock
             return Songs;
         }
 
-        readonly List<Song> Songs;
-        User User;
+        public void saveSettings(User user, string musicSyncFolder)
+        {
+            saveUser(user);
+            MusicSyncFolder = musicSyncFolder;
+        }
+
+        public string savedMusicSyncFolder()
+        {
+            return MusicSyncFolder;
+        }
+
+        private void saveUser(User user)
+        {
+            User = user;
+        }
+
+        private readonly List<Song> Songs;
+        private User User;
+        private string MusicSyncFolder;
 
     }
 }

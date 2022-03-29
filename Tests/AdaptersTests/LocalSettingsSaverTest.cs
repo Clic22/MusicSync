@@ -58,21 +58,29 @@ namespace AdaptersTests.LocalSettingsSaverTest
     public class LocalSettingsSaverTest : TestsBase
     {
         [TestMethod]
-        public void SaveUser1Test()
+        public void SaveSetting1Test()
         {
-            saver.saveUser(user1);
+            string expectedMusicSyncFolder = "TestFolder";
+
+            saver.saveSettings(user1, expectedMusicSyncFolder);
 
             User userSaved = saver.savedUser();
             Assert.AreEqual(user1, userSaved);
+            string musicSyncFolderSaved = saver.savedMusicSyncFolder();
+            Assert.AreEqual(expectedMusicSyncFolder, musicSyncFolderSaved);
         }
 
         [TestMethod]
-        public void SaveUser2Test()
+        public void SaveSetting2Test()
         {
-            saver.saveUser(user2);
+            string expectedMusicSyncFolder = "TestFolder";
+
+            saver.saveSettings(user2, expectedMusicSyncFolder);
 
             User userSaved = saver.savedUser();
             Assert.AreEqual(user2, userSaved);
+            string musicSyncFolderSaved = saver.savedMusicSyncFolder();
+            Assert.AreEqual(expectedMusicSyncFolder, musicSyncFolderSaved);
         }
 
         [TestMethod]
