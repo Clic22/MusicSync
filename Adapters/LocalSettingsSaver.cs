@@ -25,7 +25,7 @@ namespace App1.Adapters
         public User savedUser()
         {
             User user = new User();
-            string? BandName = LocalSettings.Values["BandName"] as string;
+            string? BandName = UserContainer.Values["BandName"] as string;
             if (BandName != null)
             {
                 user.BandName = BandName;
@@ -34,7 +34,7 @@ namespace App1.Adapters
             {
                 user.BandName = string.Empty;
             }
-            string? BandPassword = LocalSettings.Values["BandPassword"] as string;
+            string? BandPassword = UserContainer.Values["BandPassword"] as string;
             if (BandPassword != null)
             {
                 user.BandPassword = BandPassword;
@@ -43,7 +43,7 @@ namespace App1.Adapters
             {
                 user.BandPassword = string.Empty;
             }
-            string? Username = LocalSettings.Values["Username"] as string;
+            string? Username = UserContainer.Values["Username"] as string;
             if (Username != null)
             {
                 user.Username = Username;
@@ -52,7 +52,7 @@ namespace App1.Adapters
             {
                 user.Username = string.Empty;
             }
-            string? BandEmail = LocalSettings.Values["BandEmail"] as string;
+            string? BandEmail = UserContainer.Values["BandEmail"] as string;
             if (BandEmail != null)
             {
                 user.BandEmail = BandEmail;
