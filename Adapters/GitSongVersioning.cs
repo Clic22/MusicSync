@@ -18,13 +18,14 @@ namespace App1.Adapters
         {
             try
             {
+
+                if (!repoInitiated(song))
+                {
+                    initiateRepo(song);
+                }
+                await zipSongAsync(song);
                 await Task.Run(() =>
                 {
-                    if (!repoInitiated(song))
-                    {
-                        initiateRepo(song);
-                    }
-                    zipSong(song);
                     addAllChanges(song);
                     commitChanges(song, title, description);
                     pushChangesToRepo(song);
@@ -268,13 +269,93 @@ namespace App1.Adapters
             }
         }
 
-        private void zipSong(Song song)
+        private async Task zipSongAsync(Song song)
         {
-            if (File.Exists(getRepoPath(song) + song.Title + ".zip"))
+            await Task.Run(() =>
             {
-                File.Delete(getRepoPath(song) + song.Title + ".zip");
+                if (File.Exists(getRepoPath(song) + song.Title + ".zip"))
+                {
+                    File.Delete(getRepoPath(song) + song.Title + ".zip");
+                }
+            });
+            string pathToSongWithSelectedFodlers = await selectFoldersToBeUploaded(song);
+
+            await Task.Run(() =>
+            {
+                ZipFile.CreateFromDirectory(pathToSongWithSelectedFodlers, getRepoPath(song) + song.Title + ".zip");
+                Directory.Delete(pathToSongWithSelectedFodlers, true);
+            });
+        }
+
+        private async Task<string> selectFoldersToBeUploaded(Song song)
+        {
+            string tmpDirectory = song.LocalPath + @"\tmp";
+            if (Directory.Exists(tmpDirectory))
+            {
+                Directory.Delete(tmpDirectory, true);
             }
-            ZipFile.CreateFromDirectory(song.LocalPath, getRepoPath(song) + song.Title + ".zip");
+            Directory.CreateDirectory(tmpDirectory);
+            string MediaFolderSrc = song.LocalPath + @"\Media";
+            string MediaFolderDst = tmpDirectory + @"\Media";
+            string MelodyneFolderSrc = song.LocalPath + @"\Melodyne";
+            string MelodyneFolderDst = tmpDirectory + @"\Melodyne";
+
+            var folderSrc = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(song.LocalPath);
+            var folderDst = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(tmpDirectory);
+            var files = await folderSrc.GetFilesAsync();
+            string songFile = string.Empty;
+            foreach (var file in files)
+            {
+                if (file.Name.Contains(".song"))
+                {
+                    await file.CopyAsync(folderDst);
+                }
+            }
+
+            if (Directory.Exists(MediaFolderSrc))
+            {
+                CopyDirectory(MediaFolderSrc, MediaFolderDst, true);
+            }
+
+            if (Directory.Exists(MelodyneFolderSrc))
+            {
+                CopyDirectory(MelodyneFolderSrc, MelodyneFolderDst, true);
+            }
+                
+            return tmpDirectory;
+        }
+
+        private void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
+        {
+            // Get information about the source directory
+            var dir = new DirectoryInfo(sourceDir);
+
+            // Check if the source directory exists
+            if (!dir.Exists)
+                throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+
+            // Cache directories before we start copying
+            DirectoryInfo[] dirs = dir.GetDirectories();
+
+            // Create the destination directory
+            Directory.CreateDirectory(destinationDir);
+
+            // Get the files in the source directory and copy to the destination directory
+            foreach (FileInfo file in dir.GetFiles())
+            {
+                string targetFilePath = Path.Combine(destinationDir, file.Name);
+                file.CopyTo(targetFilePath);
+            }
+
+            // If recursive and copying subdirectories, recursively call this method
+            if (recursive)
+            {
+                foreach (DirectoryInfo subDir in dirs)
+                {
+                    string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
+                    CopyDirectory(subDir.FullName, newDestinationDir, true);
+                }
+            }
         }
 
         private async Task unzipSongAsync(Song song)
