@@ -65,6 +65,11 @@ namespace App1.ViewModels
             songVersioned.IsUpdatingSong = true;
             Song song = SongsManager.findSong(songVersioned.Title);
             string errorMessage = await SongsManager.updateSongAsync(song);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                songVersioned.IsUpdatingSong = false;
+                return errorMessage;
+            }
             await refreshSongVersionedAsync(songVersioned, song);
             songVersioned.IsUpdatingSong = false;
             return errorMessage;
@@ -75,6 +80,11 @@ namespace App1.ViewModels
             songVersioned.IsOpeningSong = true;
             Song song = SongsManager.findSong(songVersioned.Title);
             (bool, string) errorMessage = await SongsManager.openSongAsync(song);
+            if (!string.IsNullOrEmpty(errorMessage.Item2))
+            {
+                songVersioned.IsOpeningSong = false;
+                return errorMessage;
+            }
             songVersioned.IsOpeningSong = false;
             refreshSongStatus(songVersioned, song);
             return errorMessage;
@@ -85,6 +95,11 @@ namespace App1.ViewModels
             songVersioned.IsRevertingSong = true;
             Song song = SongsManager.findSong(songVersioned.Title);
             string errorMessage = await SongsManager.revertSongAsync(song);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                songVersioned.IsRevertingSong = false;
+                return errorMessage;
+            }
             refreshSongStatus(songVersioned, song);
             songVersioned.IsRevertingSong = false;
             return errorMessage;
@@ -95,6 +110,11 @@ namespace App1.ViewModels
             songVersioned.IsUploadingSong = true;
             Song song = SongsManager.findSong(songVersioned.Title);
             string errorMessage = await SongsManager.uploadNewSongVersionAsync(song, changeTitle, changeDescription, compo, mix, mastering);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                songVersioned.IsUploadingSong = false;
+                return errorMessage;
+            }
             await refreshSongVersionedAsync(songVersioned, song);
             songVersioned.IsUploadingSong = false;
             return errorMessage;

@@ -23,7 +23,7 @@ namespace App1
         {
             this.InitializeComponent();
             ISaver saver = new LocalSettingsSaver();
-            IVersionTool versionTool = new GitSongVersioning();
+            IVersionTool versionTool = new GitSongVersioning(saver.savedMusicSyncFolder());
             IFileManager fileManager = new FileManager();
             ISongsManager songsManager = new SongsManager(versionTool, saver, fileManager);
             SongsPageViewModel = new SongsPageViewModel(songsManager);
@@ -31,11 +31,11 @@ namespace App1
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            string errorMessage = await SongsPageViewModel.updateAllSongsAsync();
+            /*string errorMessage = await SongsPageViewModel.updateAllSongsAsync();
             if (errorMessage != string.Empty)
             {
                 await displayErrorDialog(errorMessage);
-            }
+            }*/
         }
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)

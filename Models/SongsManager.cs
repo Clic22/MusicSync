@@ -54,12 +54,12 @@ namespace App1.Models
 
         public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
         {
-            string localPath = downloadLocalPath + @"\" + songTitle;
-            string errorMessage = await VersionTool.downloadSharedSongAsync(sharedLink, localPath);
+            string errorMessage = await VersionTool.downloadSharedSongAsync(songTitle, sharedLink, downloadLocalPath);
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 return errorMessage;
             }
+            string localPath = downloadLocalPath + @"\" + songTitle;
             string songFile = await FileManager.findSongFile(localPath);
             if (string.IsNullOrEmpty(songFile))
             {

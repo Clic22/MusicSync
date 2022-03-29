@@ -7,17 +7,19 @@ namespace App1.Adapters
     {
         public LocalSettingsSaver()
         {
-            Windows.Storage.ApplicationDataContainer LocalSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            LocalSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             SongContainer = LocalSettings.CreateContainer("songs", Windows.Storage.ApplicationDataCreateDisposition.Always);
             UserContainer = LocalSettings.CreateContainer("user", Windows.Storage.ApplicationDataCreateDisposition.Always);
         }
 
-        public void saveUser(User user)
+        public void saveSettings(User user, string musicSyncFolder)
         {
             saveUserValue("BandName", user.BandName);
             saveUserValue("BandPassword", user.BandPassword);
             saveUserValue("Username", user.Username);
             saveUserValue("BandEmail", user.BandEmail);
+
+            saveMusicSyncFolder(musicSyncFolder);
         }
 
         public User savedUser()
@@ -63,12 +65,24 @@ namespace App1.Adapters
             return savedSongs;
         }
 
+        public string savedMusicSyncFolder()
+        {
+            return LocalSettings.Values["MusicSyncFolder"] as string;
+        }
+
         private void saveUserValue(string valueName, string? value)
         {
             UserContainer.Values.Remove(valueName);
             UserContainer.Values.Add(valueName, value);
         }
 
+        private void saveMusicSyncFolder(string musicSyncFolder)
+        {
+            LocalSettings.Values.Remove("MusicSyncFolder");
+            LocalSettings.Values.Add("MusicSyncFolder", musicSyncFolder);
+        }
+
+        private readonly Windows.Storage.ApplicationDataContainer LocalSettings;
         private readonly Windows.Storage.ApplicationDataContainer SongContainer;
         private readonly Windows.Storage.ApplicationDataContainer UserContainer;
     }
