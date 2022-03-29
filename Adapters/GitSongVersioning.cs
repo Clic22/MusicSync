@@ -371,12 +371,9 @@ namespace App1.Adapters
             string songFile = string.Empty;
             await Task.Run(() =>
             {
-                foreach (var file in files)
+                foreach (var file in files.Where(x => x.Name.Contains(".zip")))
                 {
-                    if (file.Name.Contains(".zip"))
-                    {
-                        songFile = file.Name;
-                    }
+                    songFile = file.Name;
                 }
             
                 ZipFile.ExtractToDirectory(repoPath + songFile, song.LocalPath);
@@ -388,12 +385,9 @@ namespace App1.Adapters
             var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(repoPath);
             var files = await folder.GetFilesAsync();
             string songFile = string.Empty;
-            foreach (var file in files)
+            foreach (var file in files.Where(x => x.Name.Contains(".zip")))
             {
-                if (file.Name.Contains(".zip"))
-                {
-                    songFile = file.Name;
-                }
+                songFile = file.Name;
             }
             ZipFile.ExtractToDirectory(repoPath + songFile, downloadLocalPath + @"\" + songFolder);
         }
