@@ -25,10 +25,42 @@ namespace App1.Adapters
         public User savedUser()
         {
             User user = new User();
-            user.BandName = UserContainer.Values["BandName"] as string;
-            user.BandPassword = UserContainer.Values["BandPassword"] as string;
-            user.Username = UserContainer.Values["Username"] as string;
-            user.BandEmail = UserContainer.Values["BandEmail"] as string;
+            string? BandName = LocalSettings.Values["BandName"] as string;
+            if (BandName != null)
+            {
+                user.BandName = BandName;
+            }
+            else
+            {
+                user.BandName = string.Empty;
+            }
+            string? BandPassword = LocalSettings.Values["BandPassword"] as string;
+            if (BandPassword != null)
+            {
+                user.BandPassword = BandPassword;
+            }
+            else
+            {
+                user.BandPassword = string.Empty;
+            }
+            string? Username = LocalSettings.Values["Username"] as string;
+            if (Username != null)
+            {
+                user.Username = Username;
+            }
+            else
+            {
+                user.Username = string.Empty;
+            }
+            string? BandEmail = LocalSettings.Values["BandEmail"] as string;
+            if (BandEmail != null)
+            {
+                user.BandEmail = BandEmail;
+            }
+            else
+            {
+                user.BandEmail = string.Empty;
+            }
             return user;
         }
 
@@ -67,7 +99,16 @@ namespace App1.Adapters
 
         public string savedMusicSyncFolder()
         {
-            return LocalSettings.Values["MusicSyncFolder"] as string;
+            string? MusicSyncFolder = LocalSettings.Values["MusicSyncFolder"] as string;
+            if (MusicSyncFolder != null)
+            {
+                return MusicSyncFolder;
+            }
+            else
+            {
+                return string.Empty;
+            }
+            
         }
 
         private void saveUserValue(string valueName, string? value)
