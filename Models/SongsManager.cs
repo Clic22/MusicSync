@@ -14,19 +14,6 @@ namespace App1.Models
             Locker = new Locker(VersionTool);
         }
 
-        public async Task<string> updateAllSongsAsync()
-        {
-            foreach (Song song in SongList)
-            {
-                string errorMessage = await updateSongAsync(song);
-                if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    return errorMessage;
-                }
-            }
-            return string.Empty;
-        }
-
         public async Task<string> updateSongAsync(Song song)
         {
             string errorMessage = await VersionTool.updateSongAsync(song);

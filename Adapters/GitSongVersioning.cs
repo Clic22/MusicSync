@@ -279,24 +279,30 @@ namespace App1.Adapters
 
         private async Task unzipSongAsync(Song song)
         {
-            if (Directory.Exists(song.LocalPath))
+            await Task.Run(() =>
             {
-                Directory.Delete(song.LocalPath, true);
-            }
+                if (Directory.Exists(song.LocalPath))
+                {
+                    Directory.Delete(song.LocalPath, true);
+                }
+            });
 
             string repoPath = getRepoPath(song);
             var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(repoPath);
             var files = await folder.GetFilesAsync();
             string songFile = string.Empty;
-            foreach (var file in files)
+            await Task.Run(() =>
             {
-                if (file.Name.Contains(".zip"))
+                foreach (var file in files)
                 {
-                    songFile = file.Name;
+                    if (file.Name.Contains(".zip"))
+                    {
+                        songFile = file.Name;
+                    }
                 }
-            }
-
-            ZipFile.ExtractToDirectory(repoPath + songFile, song.LocalPath);
+            
+                ZipFile.ExtractToDirectory(repoPath + songFile, song.LocalPath);
+            });
         }
 
         private async Task unzipSongAsync(string songFolder, string downloadLocalPath, string repoPath)
