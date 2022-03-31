@@ -46,7 +46,7 @@ on:
 
 jobs:
   ci:
-    concurrency: ci
+    concurrency: ci-${{ github.ref }}
     strategy:
       matrix:
         configuration: [Release]
