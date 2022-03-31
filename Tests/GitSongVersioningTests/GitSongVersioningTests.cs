@@ -17,7 +17,7 @@ namespace GitSongVersioningTests
     public class GitSongVersioningTests
     {
         [Fact]
-        public async Task firstSongUpload()
+        public async Task firstSongUploadAndDownloadSong()
         {
             string testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory";
             string songTitle = "End of the Road";
@@ -42,6 +42,8 @@ namespace GitSongVersioningTests
             await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
             string shareLink = await GitVersioning.shareSongAsync(song);
+            string expectedShareLink = "https://gitlab.com/MusicSyncTool/end-of-the-road.git";
+            Assert.Equal(expectedShareLink,shareLink);
 
             string songFolder = @"SongDownloaded";
 
