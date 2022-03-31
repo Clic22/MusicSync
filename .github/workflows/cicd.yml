@@ -46,6 +46,7 @@ on:
 
 jobs:
   ci:
+    concurrency: ci
     strategy:
       matrix:
         configuration: [Release]
@@ -143,7 +144,6 @@ jobs:
 
 
   cd:
-    needs: ci
     strategy:
       matrix:
         configuration: [Release]
