@@ -21,6 +21,7 @@
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
     <AppInstallerUri>https://github.com/Clic22/MusicSync/packages</AppInstallerUri>
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="AddNewSong.xaml" />
