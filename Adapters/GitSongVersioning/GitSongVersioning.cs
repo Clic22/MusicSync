@@ -439,7 +439,7 @@ namespace GitVersionTool
         }
 
         private string musicSyncFolder;
-        private ISaver saver;
-        private IFileManager fileManager;
+        private readonly ISaver saver;
+        private readonly IFileManager fileManager;
     }
 }

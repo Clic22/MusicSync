@@ -7,13 +7,13 @@ namespace WinUIApp
 {
     public class FileManager : IFileManager
     {
-        public async Task<string> findFileNameBasedOnExtensionAsync(string directoryPath, string fileExtension)
+        public async Task<string> findFileNameBasedOnExtensionAsync(string directoryPath, string extension)
         {
             try
             {
                 var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(directoryPath);
                 var files = await folder.GetFilesAsync();
-                string fileName = files.Where(file => file.Name.Contains(fileExtension)).First().Name;
+                string fileName = files.First(file => file.Name.Contains(extension)).Name;
                 return fileName;
             }
             catch
@@ -60,7 +60,7 @@ namespace WinUIApp
             var folderSrc = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(sourceDir);
             var folderDst = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(destinationDir);
             var files = await folderSrc.GetFilesAsync();
-            await files.Where(x => x.Name.Equals(fileName)).First().CopyAsync(folderDst);
+            await files.First(x => x.Name.Equals(fileName)).CopyAsync(folderDst);
         }
 
         public async Task CompressDirectoryAsync(string DirectoryToBeCompressed, string ArchiveName, string ArchivePath)
