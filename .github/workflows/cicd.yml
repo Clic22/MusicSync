@@ -46,8 +46,6 @@ on:
 
 jobs:
   ci:
-    concurrency: 
-        group: ${{ github.ref }}
     strategy:
       matrix:
         configuration: [Release]
@@ -55,6 +53,8 @@ jobs:
 
     runs-on: windows-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    
+    concurrency: ci-MusicSync
 
     env:
       Solution_Name: App1/App1.sln                      # Replace with your solution name, i.e. MyWpfApp.sln. 
