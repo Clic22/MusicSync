@@ -96,7 +96,7 @@ jobs:
     - name: Upload Build
       uses: actions/upload-artifact@v3
       with:
-        name: build-$env:Platform
+        name: build
         path: D:\a\MusicSync\MusicSync\
 
 
@@ -107,6 +107,7 @@ jobs:
       matrix:
         configuration: [Release]
         platform: [x64, x86]
+
     runs-on: windows-latest  # For a list of available runner types, refer to
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
