@@ -118,7 +118,7 @@ jobs:
     - name: "Download build artifacts"
       uses: actions/download-artifact@v2
       with:
-        name: build-$env:Platform
+        name: build
         path: D:\a\MusicSync\MusicSync\
 
     - name: Set up JDK 11
