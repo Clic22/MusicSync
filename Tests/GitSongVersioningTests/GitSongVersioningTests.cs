@@ -113,6 +113,34 @@ namespace GitSongVersioningTests
             Assert.True(File.Exists(expectedSongFile));
         }
 
+        [Fact]
+        public async Task UploadLockFileForASong()
+        {
+
+            string changeTitle = "Test";
+            string changeDescription = "No Description";
+            string versionNumber = "1.1.1";
+            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+
+            changeTitle = "Lock";
+            string lockFile = ".lock";
+            File.CreateText(songLocalPath + @"\" + lockFile).Close();
+
+            await GitVersioning.uploadSongAsync(song, lockFile, changeTitle);
+
+            string shareLink = await GitVersioning.shareSongAsync(song);
+            string expectedShareLink = "https://gitlab.com/MusicSyncTool/end-of-the-road.git";
+            Assert.Equal(expectedShareLink, shareLink);
+
+            string songFolder = @"SongDownloaded";
+
+            string downloadDestination = testDirectory;
+            await GitVersioning.downloadSharedSongAsync(songFolder, shareLink, downloadDestination);
+
+            string expectedSongFile = downloadDestination + @"\" + songFolder + @"\" + lockFile;
+            Assert.True(File.Exists(expectedSongFile));
+        }
+
         [Theory]
         [InlineData(true, false, false, "1.0.0")]
         [InlineData(false, true, false, "0.1.0")]

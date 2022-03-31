@@ -50,7 +50,7 @@ namespace GitVersionTool
             {
                 await Task.Run(() =>
                 {
-                    manageFile(song, file);
+                    syncFile(song.LocalPath, getRepoPath(song), file);
                     addChanges(song, file);
                     commitChanges(song, title, string.Empty);
                     pushChangesToRepo(song);
@@ -71,7 +71,7 @@ namespace GitVersionTool
                 return errorMessage;
             }
             await uncompressSongAsync(song);
-            manageLockFile(song);
+            syncLockFile(song);
             return String.Empty;
         }
 
@@ -83,7 +83,7 @@ namespace GitVersionTool
                 return errorMessage;
             }
             await uncompressSongAsync(song);
-            manageLockFile(song);
+            syncLockFile(song);
             return String.Empty;
         }
 
@@ -151,6 +151,7 @@ namespace GitVersionTool
                 return errorMessage;
             }
             await uncompressSongAsync(songFolder, downloadLocalPath, repoPath);
+            syncFile(repoPath, downloadLocalPath + @"\" + songFolder, ".lock");
             return String.Empty;
         }
 
@@ -234,7 +235,6 @@ namespace GitVersionTool
             {
                 await Task.Run(() =>
                 {
-                    
                     User user = saver.savedUser();
                     var options = new CloneOptions();
                     options.CredentialsProvider = (_url, _user, _cred) => new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
@@ -323,28 +323,28 @@ namespace GitVersionTool
 
             string repoPath = getRepoPath(song);
             string zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
-            await fileManager.UncompressArchiveAsync(repoPath + zipFile, song.LocalPath);
+            await fileManager.UncompressArchiveAsync(repoPath + @"\" + zipFile, song.LocalPath);
         }
 
         private async Task uncompressSongAsync(string songFolder, string downloadLocalPath, string repoPath)
         {
             string zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
-            await fileManager.UncompressArchiveAsync(repoPath + zipFile, downloadLocalPath + @"\" + songFolder);
+            await fileManager.UncompressArchiveAsync(repoPath + @"\" + zipFile, downloadLocalPath + @"\" + songFolder );
         }
 
-        private void manageFile(Song song, string file)
+        private void syncFile(string srcPath, string dstPath, string file)
         {
-            if (File.Exists(song.LocalPath + @"\" + file))
+            if (File.Exists(srcPath + @"\"+ file))
             {
-                File.Copy(song.LocalPath + @"\" + file, getRepoPath(song) + file);
+                File.Copy(srcPath + @"\" + file, dstPath + @"\" + file);
             }
             else
             {
-                File.Delete(getRepoPath(song) + file);
+                File.Delete(dstPath + @"\" + file);
             }
         }
 
-        private void manageLockFile(Song song)
+        private void syncLockFile(Song song)
         {
             if (File.Exists(getRepoPath(song) + @"\.lock" ))
             {
