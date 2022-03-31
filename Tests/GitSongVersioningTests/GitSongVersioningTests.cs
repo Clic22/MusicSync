@@ -141,6 +141,28 @@ namespace GitSongVersioningTests
             Assert.True(File.Exists(expectedSongFile));
         }
 
+        [Fact]
+        public async Task RevertASong()
+        {
+            string changeTitle = "Test";
+            string changeDescription = "No Description";
+            string versionNumber = "1.1.1";
+            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+
+            changeTitle = "Lock";
+            string lockFile = ".lock";
+            File.CreateText(songLocalPath + @"\" + lockFile).Close();
+
+            await GitVersioning.uploadSongAsync(song, lockFile, changeTitle);
+
+            File.Delete(song.LocalPath + @"\" + song.File);
+            Assert.False(File.Exists(song.LocalPath + @"\" + song.File));
+
+            await GitVersioning.revertSongAsync(song);
+
+            Assert.True(File.Exists(song.LocalPath + @"\" + song.File));
+        }
+
         [Theory]
         [InlineData(true, false, false, "1.0.0")]
         [InlineData(false, true, false, "0.1.0")]
