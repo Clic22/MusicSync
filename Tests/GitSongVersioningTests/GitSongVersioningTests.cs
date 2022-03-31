@@ -67,7 +67,7 @@ namespace GitSongVersioningTests
                     var response = await httpClient.SendAsync(request);
                 }
             }
-            System.Threading.Thread.Sleep(1500);
+            System.Threading.Thread.Sleep(5000);
         }
 
         private static void deleteDirectory(string directoryToDelete)
