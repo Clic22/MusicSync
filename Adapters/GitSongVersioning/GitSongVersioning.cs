@@ -99,7 +99,7 @@ namespace GitVersionTool
                         Tag lastTag = repo.Tags.Last();
                         currentVersion.Number = lastTag.FriendlyName;
                         Commit commitTagged = (Commit)lastTag.Target;
-                        currentVersion.Description = commitTagged.Message;
+                        currentVersion.Description = commitTagged.Message.Remove(commitTagged.Message.Length - 1); ;
                         currentVersion.Author = commitTagged.Author.Name;
                     }
                 }
@@ -407,7 +407,6 @@ namespace GitVersionTool
 
         private void tagRepo(Song song, string tag)
         {
-            
             User user = saver.savedUser();
             using (var repo = new Repository(getRepoPath(song)))
             {

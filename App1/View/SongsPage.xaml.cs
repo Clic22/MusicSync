@@ -1,5 +1,4 @@
-﻿
-using WinUIApp;
+﻿using WinUIApp;
 using GitVersionTool;
 using App1.Models;
 using App1.Models.Ports;

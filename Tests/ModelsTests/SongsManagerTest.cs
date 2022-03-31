@@ -33,8 +33,8 @@ namespace ModelsTests.SongsManagerTest
             saver = new SaverMock();
             string musicFolder = "TestFolder";
             saver.saveSettings(user, musicFolder);
-            fileManager = new FileManagerMock();
-            songsManager = new SongsManager(version, saver, fileManager);
+            fileManager = new Mock<IFileManager>();
+            songsManager = new SongsManager(version, saver, fileManager.Object);
             locker = new Locker(version);
         }
 
@@ -54,7 +54,7 @@ namespace ModelsTests.SongsManagerTest
         public User user;
         public Song expectedSong;
         public ISaver saver;
-        public IFileManager fileManager;
+        public Mock<IFileManager> fileManager;
         public SongsManager songsManager;
         public VersioningMock version;
         public Locker locker;
@@ -394,11 +394,15 @@ namespace ModelsTests.SongsManagerTest
         [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest")]
         public async Task addSharedSongTest(string songTitle, string sharedLink, string downloadPath)
         {
-            await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath);
+            Mock<IFileManager> fileManagerMock = new Mock<IFileManager>();
+            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(downloadPath + @"\" + songTitle, ".song")).Returns(Task.FromResult("file.song"));
+            SongsManager songsManagerTest = new SongsManager(version, saver, fileManagerMock.Object);
+
+            await songsManagerTest.addSharedSongAsync(songTitle, sharedLink, downloadPath);
 
             //We expect a songVersioned created with the title
             Song expectedSong = new Song(songTitle, "file.song", downloadPath + @"\" + songTitle);
-            Song song = songsManager.findSong(songTitle);
+            Song song = songsManagerTest.findSong(songTitle);
             Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
         }
@@ -410,7 +414,7 @@ namespace ModelsTests.SongsManagerTest
 
             Mock<IVersionTool> versionToolMock = new Mock<IVersionTool>();
             versionToolMock.Setup(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath)).Returns(Task.FromResult("Error"));
-            SongsManager songsManagerTest = new SongsManager(versionToolMock.Object, saver, fileManager);
+            SongsManager songsManagerTest = new SongsManager(versionToolMock.Object, saver, fileManager.Object);
 
             string errorMessage = await songsManagerTest.addSharedSongAsync(songTitle, sharedLink, downloadPath);
 
@@ -449,7 +453,10 @@ namespace ModelsTests.SongsManagerTest
             Song song = new Song(title, file, localPath);
             Mock<IVersionTool> versionToolMock = new Mock<IVersionTool>();
             versionToolMock.Setup(m => m.shareSongAsync(song)).Returns(Task.FromResult("https://www.gitlab.com/end-of-the-road"));
-            SongsManager songsManagerTest = new SongsManager(versionToolMock.Object, saver, fileManager);
+            Mock<IFileManager> fileManagerMock = new Mock<IFileManager>();
+            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(localPath + @"\" + title, ".song")).Returns(Task.FromResult(file));
+
+            SongsManager songsManagerTest = new SongsManager(versionToolMock.Object, saver, fileManagerMock.Object);
 
             string errorMessage = await songsManagerTest.shareSongAsync(song);
 

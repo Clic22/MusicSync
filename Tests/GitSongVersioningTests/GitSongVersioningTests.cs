@@ -13,31 +13,90 @@ using System.Text;
 
 namespace GitSongVersioningTests
 {
-    [Collection("Serial")]
-    public class GitSongVersioningTests
+    public abstract class TestsBase : IAsyncLifetime
     {
-        [Fact]
-        public async Task firstSongUploadAndDownloadSong()
+        protected TestsBase()
         {
-            string testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory";
-            string songTitle = "End of the Road";
-            string songLocalPath = testDirectory + @"\" + songTitle;
-            string songFile = "file.song";
+            testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory";
+            songTitle = "End of the Road";
+            songLocalPath = testDirectory + @"\" + songTitle;
+            songFile = "file.song";
+            song = new Song(songTitle, songFile, songLocalPath);
 
             Directory.CreateDirectory(songLocalPath);
             File.CreateText(songLocalPath + @"\" + songFile).Close();
             Assert.True(File.Exists(songLocalPath + @"\" + songFile));
 
-            User user = new User("MusicSyncTool", "HelloWorld12", "Clic", "musicsynctool@gmail.com");
-            Mock<ISaver> SaverMock = new Mock<ISaver>();
+            user = new User("MusicSyncTool", "HelloWorld12", "Clic", "musicsynctool@gmail.com");
+            SaverMock = new Mock<ISaver>();
             SaverMock.Setup(m => m.savedUser()).Returns(user);
-            IFileManager FileManager = new FileManager();
-            IVersionTool GitVersioning = new GitSongVersioning(testDirectory, SaverMock.Object, FileManager);
+            FileManager = new FileManager();
+            GitVersioning = new GitSongVersioning(testDirectory, SaverMock.Object, FileManager);
+        }
 
+        public Task InitializeAsync()
+        {
+            return Task.CompletedTask; 
+        }
+
+        public async Task DisposeAsync()
+        {
+           await deleteGitlabProject();
+           deleteDirectory(testDirectory);
+        }
+
+        public string testDirectory;
+        public string songTitle;
+        public string songLocalPath;
+        public string songFile;
+
+        public User user;
+        public Song song;
+        public Mock<ISaver> SaverMock;
+        public IFileManager FileManager;
+        public IVersionTool GitVersioning;
+
+        private static async Task deleteGitlabProject()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road"))
+                {
+                    request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
+                    var response = await httpClient.SendAsync(request);
+                }
+            }
+            System.Threading.Thread.Sleep(1500);
+        }
+
+        private static void deleteDirectory(string directoryToDelete)
+        {
+            var directory = new DirectoryInfo(directoryToDelete) { Attributes = FileAttributes.Normal };
+
+            foreach (var info in directory.GetFileSystemInfos("*", SearchOption.AllDirectories))
+            {
+                info.Attributes = FileAttributes.Normal;
+            }
+
+            directory.Delete(true);
+            while (directory.Exists)
+            {
+
+            }
+        }
+
+
+    }
+
+    [Collection("Serial")]
+    public class GitSongVersioningTests : TestsBase
+    {
+        [Fact]
+        public async Task firstSongUploadAndDownloadSong()
+        {
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            Song song = new Song(songTitle, songFile, songLocalPath);
 
             await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
@@ -52,9 +111,6 @@ namespace GitSongVersioningTests
 
             string expectedSongFile = downloadDestination + @"\" + songFolder + @"\" + songFile;
             Assert.True(File.Exists(expectedSongFile));
-
-            await deleteGitlabProject();
-            deleteDirectory(testDirectory);
         }
 
         [Theory]
@@ -64,37 +120,30 @@ namespace GitSongVersioningTests
         [InlineData(true, true, true, "1.1.1")]
         public async Task initialVersionNumberTest(bool compo, bool mix, bool mastering, string expectedVersionNumber)
         {
-            string testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
-
-            Mock<ISaver> SaverMock = new Mock<ISaver>();
-            Mock<IFileManager> FileManagerMock = new Mock<IFileManager>();
-            IVersionTool GitVersioning = new GitSongVersioning(testDirectory, SaverMock.Object, FileManagerMock.Object);
-            Song song = new Song();
             string versionNumber = await GitVersioning.newVersionNumberAsync(song, compo, mix, mastering);
 
             Assert.Equal(expectedVersionNumber, versionNumber);
+        }
 
-            deleteDirectory(testDirectory);
+        [Fact]
+        public async Task currentVersionTest()
+        {
+            string changeTitle = "Test";
+            string changeDescription = "No Description";
+            string versionNumber = "1.1.1";
+            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+
+            SongVersion currentVersion = await GitVersioning.currentVersionAsync(song);
+
+            Assert.Equal(versionNumber, currentVersion.Number);
+            string expectedDescription = "Test\n\nNo Description";
+            Assert.Equal(expectedDescription, currentVersion.Description);
+            Assert.Equal(user.Username, currentVersion.Author);
         }
 
         [Fact]
         public async Task versionNumberTest()
         {
-            string testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory"; 
-            string songTitle = "End of the Road";
-            string songLocalPath = testDirectory + @"\" + songTitle;
-            string songFile = "file.song";
-
-            Directory.CreateDirectory(songLocalPath);
-            File.CreateText(songLocalPath + @"\" + songFile).Close();
-            Assert.True(File.Exists(songLocalPath + @"\" + songFile));
-
-            Song song = new Song(songTitle, songFile, songLocalPath);
-            User user = new User("MusicSyncTool", "HelloWorld12", "Clic", "musicsynctool@gmail.com");
-            Mock<ISaver> SaverMock = new Mock<ISaver>();
-            SaverMock.Setup(m => m.savedUser()).Returns(user);
-            IFileManager FileManager = new FileManager();
-            IVersionTool GitVersioning = new GitSongVersioning(testDirectory, SaverMock.Object, FileManager);
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
@@ -114,38 +163,6 @@ namespace GitSongVersioningTests
             {
                 versionNumber = await GitVersioning.newVersionNumberAsync(song, data.compo, data.mix, data.mastering);
                 Assert.Equal(data.expectedVersionNumber, versionNumber);
-            }
-
-            await deleteGitlabProject();
-            deleteDirectory(testDirectory);
-        }
-
-        private static async Task deleteGitlabProject()
-        {
-            using (var httpClient = new HttpClient())
-            {
-                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road"))
-                {
-                    request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
-                    var response = await httpClient.SendAsync(request);
-                }
-            }
-            System.Threading.Thread.Sleep(1000);
-        }
-
-        private static void deleteDirectory(string directoryToDelete)
-        {
-            var directory = new DirectoryInfo(directoryToDelete) { Attributes = FileAttributes.Normal };
-
-            foreach (var info in directory.GetFileSystemInfos("*", SearchOption.AllDirectories))
-            {
-                info.Attributes = FileAttributes.Normal;
-            }
-
-            directory.Delete(true);
-            while (directory.Exists)
-            {
-
             }
         }
     }
