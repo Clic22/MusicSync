@@ -67,7 +67,7 @@ namespace GitSongVersioningTests
                     var response = await httpClient.SendAsync(request);
                 }
             }
-            System.Threading.Thread.Sleep(5000);
+            System.Threading.Thread.Sleep(2000);
         }
 
         private static void deleteDirectory(string directoryToDelete)
@@ -85,8 +85,6 @@ namespace GitSongVersioningTests
 
             }
         }
-
-
     }
 
     [Collection("Serial")]
@@ -128,7 +126,7 @@ namespace GitSongVersioningTests
         }
 
         [Fact]
-        public async Task UploadLockFileForASong()
+        public async Task uploadLockFileForASong()
         {
 
             string changeTitle = "Test";
@@ -156,7 +154,7 @@ namespace GitSongVersioningTests
         }
 
         [Fact]
-        public async Task RevertSong()
+        public async Task revertSong()
         {
             string changeTitle = "Test";
             string changeDescription = "No Description";
@@ -178,7 +176,7 @@ namespace GitSongVersioningTests
         }
 
         [Fact]
-        public async Task UpdateSong()
+        public async Task updateSong()
         {
             string changeTitle = "Test";
             string changeDescription = "No Description";
@@ -212,16 +210,20 @@ namespace GitSongVersioningTests
             Assert.False(File.Exists(songLocalPath + @"\" + lockFile));
         }
 
-        [Theory]
-        [InlineData(true, false, false, "1.0.0")]
-        [InlineData(false, true, false, "0.1.0")]
-        [InlineData(false, false, true, "0.0.1")]
-        [InlineData(true, true, true, "1.1.1")]
-        public async Task initialVersionNumberTest(bool compo, bool mix, bool mastering, string expectedVersionNumber)
+        [Fact]
+        public async Task initialVersionNumberTest()
         {
-            string versionNumber = await GitVersioning.newVersionNumberAsync(song, compo, mix, mastering);
+            List<(bool compo, bool mix, bool mastering, string expectedVersionNumber)> dataToBeTested = new List<(bool, bool, bool, string)>();
+            dataToBeTested.Add((true, false, false, "1.0.0"));
+            dataToBeTested.Add((false, true, false, "0.1.0"));
+            dataToBeTested.Add((false, false, true, "0.0.1"));
+            dataToBeTested.Add((true, true, true, "1.1.1"));
 
-            Assert.Equal(expectedVersionNumber, versionNumber);
+            foreach (var data in dataToBeTested)
+            {
+                string versionNumber = await GitVersioning.newVersionNumberAsync(song, data.compo, data.mix, data.mastering);
+                Assert.Equal(data.expectedVersionNumber, versionNumber);
+            }
         }
 
         [Fact]
