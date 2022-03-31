@@ -71,7 +71,7 @@ namespace GitSongVersioningTests
                     }
                 }
             }
-            System.Threading.Thread.Sleep(2000);
+            System.Threading.Thread.Sleep(5000);
         }
 
         private static void deleteDirectory(string directoryToDelete)
@@ -132,7 +132,6 @@ namespace GitSongVersioningTests
         [Fact]
         public async Task uploadLockFileForASong()
         {
-
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
