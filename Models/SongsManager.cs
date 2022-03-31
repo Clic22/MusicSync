@@ -14,19 +14,6 @@ namespace App1.Models
             Locker = new Locker(VersionTool);
         }
 
-        public async Task<string> updateAllSongsAsync()
-        {
-            foreach (Song song in SongList)
-            {
-                string errorMessage = await updateSongAsync(song);
-                if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    return errorMessage;
-                }
-            }
-            return string.Empty;
-        }
-
         public async Task<string> updateSongAsync(Song song)
         {
             string errorMessage = await VersionTool.updateSongAsync(song);
@@ -54,13 +41,13 @@ namespace App1.Models
 
         public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
         {
-            string localPath = downloadLocalPath + @"\" + songTitle;
-            string errorMessage = await VersionTool.downloadSharedSongAsync(sharedLink, localPath);
+            string errorMessage = await VersionTool.downloadSharedSongAsync(songTitle, sharedLink, downloadLocalPath);
             if (!string.IsNullOrEmpty(errorMessage))
             {
                 return errorMessage;
             }
-            string songFile = await FileManager.findSongFile(localPath);
+            string localPath = downloadLocalPath + @"\" + songTitle;
+            string songFile = await FileManager.findFileNameBasedOnExtensionAsync(localPath,".song");
             if (string.IsNullOrEmpty(songFile))
             {
                 return "Song File not Found in " + localPath;

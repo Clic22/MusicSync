@@ -8,6 +8,7 @@
     mc:Ignorable="d"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     >
+    <ScrollViewer>
     <StackPanel Orientation="Vertical" Margin="12">
         <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
             <AppBarSeparator></AppBarSeparator>
@@ -28,5 +29,15 @@
         <TextBlock Text="User Settings" FontWeight="Bold" Margin="12"/>
         <TextBlock Text="Username" Margin="12"/>
         <TextBox  x:Name="Username" HorizontalAlignment="Left" Width="200" Margin="12"/>
-    </StackPanel>
+            <TextBlock Text="MusicSync Folder" Margin="12"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="400" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox  x:Name="MusicSyncFolder" HorizontalAlignment="Left" Width="200" Grid.Column="0" Margin="12" />
+                <AppBarButton Icon="Library" Label="Browse" Click="folder_Click" HorizontalAlignment="Right" Grid.Column="1"/>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
 </Page>

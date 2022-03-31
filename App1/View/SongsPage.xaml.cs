@@ -1,5 +1,5 @@
-﻿
-using App1.Adapters;
+﻿using WinUIApp;
+using GitVersionTool;
 using App1.Models;
 using App1.Models.Ports;
 using App1.ViewModels;
@@ -23,19 +23,19 @@ namespace App1
         {
             this.InitializeComponent();
             ISaver saver = new LocalSettingsSaver();
-            IVersionTool versionTool = new GitSongVersioning();
             IFileManager fileManager = new FileManager();
+            IVersionTool versionTool = new GitSongVersioning(saver.savedMusicSyncFolder(), saver, fileManager);
             ISongsManager songsManager = new SongsManager(versionTool, saver, fileManager);
             SongsPageViewModel = new SongsPageViewModel(songsManager);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            string errorMessage = await SongsPageViewModel.updateAllSongsAsync();
+            /*string errorMessage = await SongsPageViewModel.updateAllSongsAsync();
             if (errorMessage != string.Empty)
             {
                 await displayErrorDialog(errorMessage);
-            }
+            }*/
         }
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)

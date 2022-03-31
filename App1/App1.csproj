@@ -55,7 +55,8 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Adapters\Adapters.csproj" />
+    <ProjectReference Include="..\Adapters\GitSongVersioning\GitSongVersioning.csproj" />
+    <ProjectReference Include="..\Adapters\WinUIApp\WinUIApp.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using App1.Models.Ports;
+using System.Linq;
 
 namespace App1.Adapters
 {
@@ -11,6 +12,7 @@ namespace App1.Adapters
                 var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(songLocalPath);
                 var files = await folder.GetFilesAsync();
                 string songFile = string.Empty;
+                songFile = files.Where(file => file.Name.Contains(".song")).First().Name;
                 foreach (var file in files)
                 {
                     if (file.Name.Contains(".song"))
