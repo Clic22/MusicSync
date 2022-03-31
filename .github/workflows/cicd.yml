@@ -46,6 +46,7 @@ on:
 
 jobs:
   ci:
+    concurrency: ci
     strategy:
       max-parallel: 1
       matrix:

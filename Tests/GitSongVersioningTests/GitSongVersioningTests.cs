@@ -42,8 +42,8 @@ namespace GitSongVersioningTests
 
         public async Task DisposeAsync()
         {
-           await deleteGitlabProject();
-           deleteDirectory(testDirectory);
+            deleteDirectory(testDirectory);
+            await deleteGitlabProject();
         }
 
         public string testDirectory;
