@@ -45,8 +45,9 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  ci:
     strategy:
+      max-parallel: 1
       matrix:
         configuration: [Release]
         platform: [x64, x86] 
@@ -63,68 +64,8 @@ jobs:
       with:
         java-version: 1.11
 
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-
-    # Install the .NET Core workload
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
-
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.1
-
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration /p:Platform=$env:Platform
-      env:
-        Configuration: ${{ matrix.configuration }}
-        Platform: ${{ matrix.platform }}
-
-    - name: Build
-      env:
-        Configuration: ${{ matrix.configuration }}
-        Platform: ${{ matrix.platform }}
-      shell: powershell
-      run: |
-        msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:Platform=$env:Platform
-
-    - name: Upload Build
-      uses: actions/upload-artifact@v3
-      with:
-        name: build
-        path: D:\a\MusicSync\MusicSync\
-
-
-  test:
-    needs: build
-    strategy:
-      max-parallel: 1
-      matrix:
-        configuration: [Release]
-        platform: [x64, x86]
-
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
-
-    env:
-      Solution_Name: App1/App1.sln                      # Replace with your solution name, i.e. MyWpfApp.sln. 
-
-    steps:
-    - name: "Download build artifacts"
-      uses: actions/download-artifact@v2
-      with:
-        name: build
-        path: D:\a\MusicSync\MusicSync\
-
-    - name: Set up JDK 11
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.11
+    - name: Cache
+      uses: actions/cache@v3.0.1
 
     - name: Checkout
       uses: actions/checkout@v2
@@ -179,6 +120,14 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
         .\.sonar\scanner\dotnet-sonarscanner begin /k:"Clic22_MusicSync" /o:"clic22" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.vstest.reportsPaths="TestResults/**/*.trx" /d:sonar.cs.vscoveragexml.reportsPaths="TestResults/**/*.xml" /d:sonar.exclusions=**\*.xaml,**\*.xaml.cs
+        
+    - name: Build and analyze
+      env:
+        Configuration: ${{ matrix.configuration }}
+        Platform: ${{ matrix.platform }}
+      shell: powershell
+      run: |
+        msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:Platform=$env:Platform
 
     - name: Test and coverage
       shell: powershell
@@ -259,7 +208,6 @@ jobs:
       with:
         name: MSIX Package
         path: D:\a\MusicSync\MusicSync\App1\**\Packages
-
 
 
 
