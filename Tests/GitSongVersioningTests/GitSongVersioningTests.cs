@@ -99,6 +99,15 @@ namespace GitSongVersioningTests
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
 
+            string mediaFolder = song.LocalPath + @"\Media";
+            string mediaFile = "guitar.wav";
+            Directory.CreateDirectory(mediaFolder);
+            File.CreateText(mediaFolder + @"\" + mediaFile).Close();
+            string MelodyneFolder = song.LocalPath + @"\Melodyne\Transfer";
+            string MelodyneFile = "melo";
+            Directory.CreateDirectory(MelodyneFolder);
+            File.CreateText(MelodyneFolder + @"\" + MelodyneFile).Close();
+
             await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
             string shareLink = await GitVersioning.shareSongAsync(song);
@@ -112,6 +121,10 @@ namespace GitSongVersioningTests
 
             string expectedSongFile = downloadDestination + @"\" + songFolder + @"\" + songFile;
             Assert.True(File.Exists(expectedSongFile));
+            string expectedMediaFile = downloadDestination + @"\" + songFolder + @"\Media\" + mediaFile;
+            Assert.True(File.Exists(expectedMediaFile));
+            string expectedMelodyneFile = downloadDestination + @"\" + songFolder + @"\Melodyne\Transfer\" + MelodyneFile;
+            Assert.True(File.Exists(expectedMelodyneFile));
         }
 
         [Fact]
