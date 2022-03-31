@@ -50,7 +50,6 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Adapters\Adapters.csproj" />
-    <ProjectReference Include="..\..\Models\Models.csproj" />
+    <ProjectReference Include="..\..\Adapters\WinUIApp\WinUIApp.csproj" />
   </ItemGroup>
 </Project>

@@ -1,10 +1,11 @@
-﻿using App1.Adapters;
-using App1.Models;
+﻿using App1.Models;
 using App1.Models.Ports;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using Windows.Storage.Pickers;
+using WinUIApp;
+
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.

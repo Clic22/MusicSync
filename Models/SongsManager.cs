@@ -47,7 +47,7 @@ namespace App1.Models
                 return errorMessage;
             }
             string localPath = downloadLocalPath + @"\" + songTitle;
-            string songFile = await FileManager.findSongFile(localPath);
+            string songFile = await FileManager.findFileNameBasedOnExtensionAsync(localPath,".song");
             if (string.IsNullOrEmpty(songFile))
             {
                 return "Song File not Found in " + localPath;

@@ -428,7 +428,7 @@ namespace ModelsTests.SongsManagerTest
         public async Task addSharedSongErrorFileNotFoundTest(string songTitle, string sharedLink, string downloadPath)
         {
             Mock<IFileManager> fileManagerMock = new Mock<IFileManager>();
-            fileManagerMock.Setup(m => m.findSongFile(downloadPath + @"\" + songTitle)).Returns(Task.FromResult(string.Empty));
+            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(downloadPath + @"\" + songTitle, ".song")).Returns(Task.FromResult(string.Empty));
             SongsManager songsManagerTest = new SongsManager(version, saver, fileManagerMock.Object);
 
             string errorMessage = await songsManagerTest.addSharedSongAsync(songTitle, sharedLink, downloadPath);
@@ -437,7 +437,7 @@ namespace ModelsTests.SongsManagerTest
             string localPath = downloadPath + @"\" + songTitle;
             Song expectedSong = new Song(songTitle, "file.song", localPath);
             Assert.DoesNotContain(expectedSong, songsManagerTest.SongList);
-            fileManagerMock.Verify(m => m.findSongFile(localPath), Times.Once());
+            fileManagerMock.Verify(m => m.findFileNameBasedOnExtensionAsync(localPath,".song"), Times.Once());
             Assert.Equal("Song File not Found in " + localPath, errorMessage);
         }
 

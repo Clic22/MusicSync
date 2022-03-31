@@ -1,11 +1,11 @@
-﻿using App1.Adapters;
-using App1.Models;
+﻿using App1.Models;
 using App1.Models.Ports;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using WinUIApp;
 
-namespace AdaptersTests.LocalSettingsSaverTest
+namespace WinUIAppTests.LocalSettingsSaverTest
 {
     public abstract class TestsBase : IDisposable
     {
@@ -111,7 +111,7 @@ namespace AdaptersTests.LocalSettingsSaverTest
         }
 
         [TestMethod]
-        public void unSaveSongTest()
+        public void UnsaveSongTest()
         {
             foreach (Song song in songsToBeSaved)
             {
