@@ -99,7 +99,7 @@ namespace GitVersionTool
                         Tag lastTag = repo.Tags.Last();
                         currentVersion.Number = lastTag.FriendlyName;
                         Commit commitTagged = (Commit)lastTag.Target;
-                        currentVersion.Description = commitTagged.Message.Remove(commitTagged.Message.Length - 1); ;
+                        currentVersion.Description = commitTagged.Message.Remove(commitTagged.Message.Length - 1);
                         currentVersion.Author = commitTagged.Author.Name;
                     }
                 }
@@ -127,7 +127,7 @@ namespace GitVersionTool
                             SongVersion version = new SongVersion();
                             version.Number = tag.FriendlyName;
                             Commit commitTagged = (Commit)tag.Target;
-                            version.Description = commitTagged.Message;
+                            version.Description = commitTagged.Message.Remove(commitTagged.Message.Length - 1);
                             version.Author = commitTagged.Author.Name;
                             versions.Add(version);
                         }

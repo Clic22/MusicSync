@@ -251,5 +251,34 @@ namespace GitSongVersioningTests
                 Assert.Equal(data.expectedVersionNumber, versionNumber);
             }
         }
+
+        [Fact]
+        public async Task versionsTest()
+        {
+            string changeTitle = "Test";
+            string changeDescription = "No Description";
+            string versionNumber = "1.1.1";
+            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+
+            string changeTitle2 = "Test2";
+            string changeDescription2 = "No Description2";
+            string versionNumber2 = "1.2.1";
+            string mediaFolder = song.LocalPath + @"\Media";
+            string mediaFile = "guitar.wav";
+            Directory.CreateDirectory(mediaFolder);
+            File.CreateText(mediaFolder + @"\" + mediaFile).Close();
+            await GitVersioning.uploadSongAsync(song, changeTitle2, changeDescription2, versionNumber2);
+
+            List<SongVersion> versions = await GitVersioning.versionsAsync(song);
+            
+            List<SongVersion> expectedVersions = new List<SongVersion>();
+            SongVersion songVersion1 = new SongVersion(versionNumber, changeTitle + "\n\n" + changeDescription, user.Username);
+            SongVersion songVersion2 = new SongVersion(versionNumber2, changeTitle2 + "\n\n" + changeDescription2, user.Username);
+            expectedVersions.Add(songVersion1);
+            expectedVersions.Add(songVersion2);
+
+            Assert.Equal(expectedVersions, versions);
+
+        }
     }
 }
