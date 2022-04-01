@@ -329,18 +329,11 @@ namespace GitVersionTool
 
         private void syncLockFile(Song song)
         {
-            if (File.Exists(getRepoPath(song) + @"\.lock"))
+            if (File.Exists(getRepoPath(song) + @"\.lock") && !File.Exists(song.LocalPath + @"\.lock"))
             {
-                if (!File.Exists(song.LocalPath + @"\.lock"))
-                {
-                    File.Copy(getRepoPath(song) + @"\.lock", song.LocalPath + @"\.lock");
-                }
-                else
-                {
-
-                }
+                File.Copy(getRepoPath(song) + @"\.lock", song.LocalPath + @"\.lock");
             }
-            else
+            else if (!File.Exists(getRepoPath(song) + @"\.lock") && File.Exists(song.LocalPath + @"\.lock"))
             {
                 File.Delete(song.LocalPath + @"\.lock");
             }
