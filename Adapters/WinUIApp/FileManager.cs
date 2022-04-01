@@ -22,7 +22,18 @@ namespace WinUIApp
             }
         }
 
-        public void CopyDirectory(string sourceDir, string destinationDir, bool recursive)
+        public void CopyDirectories(List<string> directoriesToCopied, string directorySrc, string directoryDst)
+        {
+            foreach(var directory in directoriesToCopied)
+            {
+                if (Directory.Exists(directorySrc + @"\" + directory))
+                {
+                    CopyDirectory(directorySrc + @"\" + directory, directoryDst + @"\" + directory);
+                }
+            }
+        }
+
+        public void CopyDirectory(string sourceDir, string destinationDir)
         {
             // Get information about the source directory
             var dir = new DirectoryInfo(sourceDir);
@@ -45,13 +56,10 @@ namespace WinUIApp
             }
 
             // If recursive and copying subdirectories, recursively call this method
-            if (recursive)
+            foreach (DirectoryInfo subDir in dirs)
             {
-                foreach (DirectoryInfo subDir in dirs)
-                {
-                    string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
-                    CopyDirectory(subDir.FullName, newDestinationDir, true);
-                }
+                string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
+                CopyDirectory(subDir.FullName, newDestinationDir);
             }
         }
 
@@ -67,7 +75,7 @@ namespace WinUIApp
         {
             await Task.Run(() =>
             {
-                ZipFile.CreateFromDirectory(DirectoryToBeCompressed, ArchivePath + ArchiveName);
+                ZipFile.CreateFromDirectory(DirectoryToBeCompressed, ArchivePath + @"\" + ArchiveName);
             });
         }
 
@@ -75,7 +83,7 @@ namespace WinUIApp
         {
             await Task.Run(() =>
             {
-                ZipFile.ExtractToDirectory(ArchiveToBeUncompressed, destinationDir);
+                ZipFile.ExtractToDirectory(ArchiveToBeUncompressed, destinationDir, true);
             });
         }
     }

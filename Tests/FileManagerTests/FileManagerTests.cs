@@ -35,7 +35,7 @@ namespace WinUIAppTests.FileManagerTests
         }
 
         [Fact]
-        public void copyDirectoriesTest()
+        public void copyDirectoryTest()
         {
             string directoryPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
             string directorySrc = directoryPath + @"Src\";
@@ -52,7 +52,7 @@ namespace WinUIAppTests.FileManagerTests
             Assert.True(File.Exists(directorySrc + zipFile));
 
             IFileManager fileManager = new FileManager();
-            fileManager.CopyDirectory(directorySrc, directoryDst, false);
+            fileManager.CopyDirectory(directorySrc, directoryDst);
 
             Assert.True(File.Exists(directoryDst + songFile));
             Assert.True(File.Exists(directoryDst + zipFile));
@@ -61,7 +61,7 @@ namespace WinUIAppTests.FileManagerTests
         }
 
         [Fact]
-        public void copySubDirectoriesTest()
+        public void copySubDirectoryTest()
         {
             string directoryPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
             string directorySrc = directoryPath + @"Src\";
@@ -79,10 +79,45 @@ namespace WinUIAppTests.FileManagerTests
             Assert.True(File.Exists(directorySrcSub + zipFile));
 
             IFileManager fileManager = new FileManager();
-            fileManager.CopyDirectory(directorySrc, directoryDst, true);
+            fileManager.CopyDirectory(directorySrc, directoryDst);
 
             Assert.True(File.Exists(directoryDst + songFile));
             Assert.True(File.Exists(directoryDstSub + zipFile));
+
+            Directory.Delete(directoryPath, true);
+        }
+
+        [Fact]
+        public void copyDirectoriesTest()
+        {
+            string directoryPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory";
+            string directorySrc = directoryPath + @"\Src";
+            string directoryDst = directoryPath + @"\Dst";
+            string directorySong = @"Song";
+            string songFile = "file.song";
+            string directoryMedia = @"Media";
+            string mediaFile = "file.wav";
+
+            List<string> directoriesToCopied = new List<string>();
+            directoriesToCopied.Add(directorySong);
+            directoriesToCopied.Add(directoryMedia);
+
+            Directory.CreateDirectory(directorySrc + @"\" + directorySong);
+            Directory.CreateDirectory(directorySrc + @"\" + directoryMedia);
+            Directory.CreateDirectory(directoryDst);
+            File.CreateText(directorySrc + @"\" + directorySong + @"\" + songFile).Close();
+            File.CreateText(directorySrc + @"\" + directoryMedia + @"\" + mediaFile).Close();
+
+            Assert.True(File.Exists(directorySrc + @"\" + directorySong + @"\" + songFile));
+            Assert.True(File.Exists(directorySrc + @"\" + directoryMedia + @"\" + mediaFile));
+
+            IFileManager fileManager = new FileManager();
+            fileManager.CopyDirectories(directoriesToCopied, directorySrc, directoryDst);
+
+            Assert.True(Directory.Exists(directoryDst + @"\" + directorySong));
+            Assert.True(Directory.Exists(directoryDst + @"\" + directoryMedia ));
+            Assert.True(File.Exists(directoryDst + @"\" + directorySong + @"\" + songFile));
+            Assert.True(File.Exists(directoryDst + @"\" + directoryMedia + @"\" + mediaFile));
 
             Directory.Delete(directoryPath, true);
         }
