@@ -6,18 +6,18 @@ namespace App1.ViewModels
 {
     public class SettingsPageViewModel : Bindable
     {
-        public SettingsPageViewModel()
+        public SettingsPageViewModel(ISaver saver, IFileManager fileManager)
         {
-            saver = new LocalSettingsSaver();
-            fileManager = new FileManager();
+            this.saver = saver;
+            this.fileManager = fileManager;
             user = new UserViewModel(saver.savedUser());
             musicSyncFolder_ = saver.savedMusicSyncFolder();
         }
 
-        public void saveSettings()
+        public void saveSettings(string BandName, string BandPassword, string Username, string BandEmail, string musicSyncFolder)
         {
-            User userModel = new User(user.BandName,user.BandPassword,user.Username,user.BandEmail);
-            saver.saveSettings(userModel, musicSyncFolder_);
+            User userModel = new User(BandName,BandPassword,Username,BandEmail);
+            saver.saveSettings(userModel, musicSyncFolder);
         }
 
         public UserViewModel user;
