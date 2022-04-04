@@ -14,10 +14,10 @@ namespace App1.ViewModels
             musicSyncFolder_ = saver.savedMusicSyncFolder();
         }
 
-        public void saveSettings(string BandName, string BandPassword, string Username, string BandEmail, string musicSyncFolder)
+        public void saveSettings(string BandName, string BandPassword, string Username, string BandEmail)
         {
             User userModel = new User(BandName,BandPassword,Username,BandEmail);
-            saver.saveSettings(userModel, musicSyncFolder);
+            saver.saveSettings(userModel, MusicSyncFolder);
         }
 
         public UserViewModel User { get; set; }

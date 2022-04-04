@@ -161,6 +161,13 @@ namespace GitSongVersioningTests
             string versionNumber = "1.1.1";
             await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
+            changeTitle = "Lock";
+            string lockFile = ".lock";
+            FileManager.CreateFile(lockFile, songLocalPath);
+
+            await GitVersioning.uploadSongAsync(song, lockFile, changeTitle);
+
+            File.Delete(song.LocalPath + lockFile);
             File.Delete(song.LocalPath +  song.File);
             Assert.False(File.Exists(song.LocalPath +  song.File));
 

@@ -22,7 +22,7 @@ namespace ViewModelsTests.SettingsPageViewModelTests
             string BandPassword = "BandPassword";
             string Username = "Username";
             string BandEmail = "BandEmail@gmail.com";
-            string expectedMusicSyncFolder = @"./SongsManagerTest/End of the Road";
+            string expectedMusicSyncFolder = @"./SongsManagerTest/End of the Road/";
             User user = new User(BandName, BandPassword, Username, BandEmail);
             UserViewModel expectedUserViewModel = new UserViewModel(user);
             Mock<ISaver> saverMock = new Mock<ISaver>();
@@ -46,7 +46,7 @@ namespace ViewModelsTests.SettingsPageViewModelTests
             string BandPassword = "BandPassword";
             string Username = "Username";
             string BandEmail = "BandEmail@gmail.com";
-            string expectedMusicSyncFolder = @"./SongsManagerTest/End of the Road";
+            string expectedMusicSyncFolder = @"./SongsManagerTest/End of the Road\";
             User user = new User(BandName, BandPassword, Username, BandEmail);
             UserViewModel expectedUserViewModel = new UserViewModel(user);
             Mock<ISaver> saverMock = new Mock<ISaver>();
@@ -62,9 +62,10 @@ namespace ViewModelsTests.SettingsPageViewModelTests
             expectedMusicSyncFolder = @"./SongsManagerTest/End of the Road/Changed";
             user = new User(BandName, BandPassword, Username, BandEmail);
 
-            viewModel.saveSettings(BandName, BandPassword, Username, BandEmail, expectedMusicSyncFolder);
+            viewModel.MusicSyncFolder = expectedMusicSyncFolder;
+            viewModel.saveSettings(BandName, BandPassword, Username, BandEmail);
 
-            saverMock.Verify(m => m.saveSettings(user, expectedMusicSyncFolder), Times.Once());
+            saverMock.Verify(m => m.saveSettings(user, expectedMusicSyncFolder + '\\'), Times.Once());
         }
     }
 }

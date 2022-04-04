@@ -26,7 +26,7 @@ namespace App1
 
         public async void saveSettingsClick(object sender, RoutedEventArgs e)
         {
-            viewModel.saveSettings(BandName.Text, BandPassword.Password, BandEmail.Text, Username.Text, MusicSyncFolder.Text);
+            viewModel.saveSettings(BandName.Text, BandPassword.Password, BandEmail.Text, Username.Text);
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = this.XamlRoot;
             dialog.Title = "Settings Saved";
@@ -54,7 +54,7 @@ namespace App1
             var folderPicked = await folderPicker.PickSingleFolderAsync();
             if (folderPicked != null)
             {
-                MusicSyncFolder.Text = folderPicked.Path;
+                viewModel.MusicSyncFolder = folderPicked.Path;
             }
         }
 
