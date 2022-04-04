@@ -32,7 +32,7 @@ namespace App1.ViewModels
             return HashCode.Combine(this.BandName, this.BandPassword, this.Username, this.BandEmail);
         }
 
-        private string bandName_;
+        private readonly string bandName_;
         public string BandName
         {
             get
@@ -40,7 +40,7 @@ namespace App1.ViewModels
                 return bandName_;
             }
         }
-        private string bandEmail_;
+        private readonly string bandEmail_;
         public string BandEmail
         {
             get
@@ -48,7 +48,7 @@ namespace App1.ViewModels
                 return bandEmail_;
             }
         }
-        private string bandPassword_;
+        private readonly string bandPassword_;
         public string BandPassword
         {
             get
@@ -56,7 +56,7 @@ namespace App1.ViewModels
                 return bandPassword_;
             }
         }
-        private string username_;
+        private readonly string username_;
         public string Username
         {
             get
