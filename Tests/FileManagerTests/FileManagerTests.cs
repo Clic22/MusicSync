@@ -246,5 +246,27 @@ namespace WinUIAppTests.FileManagerTests
 
             Directory.Delete(requestedDirectory, true);
         }
+
+        [Theory]
+        [InlineData(@"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory")]
+        public void FormatPathTest(string path)
+        {
+            var savedPath = path;
+            FileManager fileManager = new FileManager();
+            fileManager.FormatPath(ref path);
+            Assert.Equal(savedPath + '\\', path);
+
+        }
+
+        [Theory]
+        [InlineData(@"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\")]
+        public void FormatPathWithBackSlashTest(string path)
+        {
+            var savedPath = path;
+            FileManager fileManager = new FileManager();
+            fileManager.FormatPath(ref path);
+            Assert.Equal(savedPath, path);
+
+        }
     }
 }
