@@ -1,6 +1,7 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
 using System.Collections.ObjectModel;
+using WinUIApp;
 
 namespace App1.ViewModels
 {
@@ -10,6 +11,7 @@ namespace App1.ViewModels
         {
             SongsVersioned = new ObservableCollection<SongVersioned>();
             SongsManager = songsManager;
+            FileManager = new FileManager();
             intializeSongsVersioned();
         }
 
@@ -30,6 +32,7 @@ namespace App1.ViewModels
         public SongVersioned addLocalSong(string songTitle, string songFile, string songLocalPath)
         {
             IsAddingSong = true;
+            FileManager.FormatPath(ref songLocalPath);
             SongsManager.addLocalSong(songTitle, songFile, songLocalPath);
             SongVersioned songVersioned = new SongVersioned(songTitle);
             SongsVersioned.Add(songVersioned);
@@ -40,6 +43,7 @@ namespace App1.ViewModels
         public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string songLocalPath)
         {
             IsAddingSong = true;
+            FileManager.FormatPath(ref songLocalPath);
             string errorMessage = await SongsManager.addSharedSongAsync(songTitle, sharedLink, songLocalPath);
             if (!string.IsNullOrEmpty(errorMessage))
             {
@@ -193,6 +197,7 @@ namespace App1.ViewModels
             }
         }
 
+        private readonly IFileManager FileManager;
         private readonly ISongsManager SongsManager;
     }
 }

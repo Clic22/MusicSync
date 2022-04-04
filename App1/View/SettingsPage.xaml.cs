@@ -1,11 +1,10 @@
-﻿using App1.Models;
-using App1.Models.Ports;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using Windows.Storage.Pickers;
+using App1.ViewModels;
+using App1.Models.Ports;
 using WinUIApp;
-
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -20,42 +19,20 @@ namespace App1
         public SettingsPage()
         {
             this.InitializeComponent();
-            Saver = new LocalSettingsSaver();
-            importSettings();
+            ISaver saver = new LocalSettingsSaver();
+            IFileManager fileManager = new FileManager();
+            viewModel = new SettingsPageViewModel(saver, fileManager);
         }
 
         public async void saveSettingsClick(object sender, RoutedEventArgs e)
         {
-            User user = new User(BandName.Text, BandPassword.Password, Username.Text, BandEmail.Text);
-            string musicSyncFolder = MusicSyncFolder.Text;
-            Saver.saveSettings(user, musicSyncFolder);
+            viewModel.saveSettings(BandName.Text, BandPassword.Password, BandEmail.Text, Username.Text);
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = this.XamlRoot;
             dialog.Title = "Settings Saved";
             dialog.CloseButtonText = "Close";
             dialog.DefaultButton = ContentDialogButton.Close;
             await dialog.ShowAsync();
-        }
-
-        private void importSettings()
-        {
-            User user = Saver.savedUser();
-            loadUserSettingsInUI(user);
-            string musicSyncFolder = Saver.savedMusicSyncFolder();
-            loadMusicSyncFolderSettingInUI(musicSyncFolder);
-        }
-
-        private void loadUserSettingsInUI(User user)
-        {
-            BandName.Text = user.BandName;
-            BandPassword.Password = user.BandPassword;
-            Username.Text = user.Username;
-            BandEmail.Text = user.BandEmail;
-        }
-
-        private void loadMusicSyncFolderSettingInUI(string musicSyncFolder)
-        {
-            MusicSyncFolder.Text = musicSyncFolder;
         }
 
         private void RevealModeCheckbox_Changed(object sender, RoutedEventArgs e)
@@ -77,10 +54,10 @@ namespace App1
             var folderPicked = await folderPicker.PickSingleFolderAsync();
             if (folderPicked != null)
             {
-                MusicSyncFolder.Text = folderPicked.Path;
+                viewModel.MusicSyncFolder = folderPicked.Path;
             }
         }
 
-        ISaver Saver;
+        private SettingsPageViewModel viewModel;
     }
 }
