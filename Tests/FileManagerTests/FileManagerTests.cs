@@ -90,34 +90,34 @@ namespace WinUIAppTests.FileManagerTests
         [Fact]
         public void copyDirectoriesTest()
         {
-            string directoryPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory";
-            string directorySrc = directoryPath + @"\Src";
-            string directoryDst = directoryPath + @"\Dst";
-            string directorySong = @"Song";
+            string directoryPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
+            string directorySrc = directoryPath + @"Src\";
+            string directoryDst = directoryPath + @"Dst\";
+            string directorySong = @"Song\";
             string songFile = "file.song";
-            string directoryMedia = @"Media";
+            string directoryMedia = @"Media\";
             string mediaFile = "file.wav";
 
             List<string> directoriesToCopied = new List<string>();
             directoriesToCopied.Add(directorySong);
             directoriesToCopied.Add(directoryMedia);
 
-            Directory.CreateDirectory(directorySrc + @"\" + directorySong);
-            Directory.CreateDirectory(directorySrc + @"\" + directoryMedia);
+            Directory.CreateDirectory(directorySrc + directorySong);
+            Directory.CreateDirectory(directorySrc + directoryMedia);
             Directory.CreateDirectory(directoryDst);
-            File.CreateText(directorySrc + @"\" + directorySong + @"\" + songFile).Close();
-            File.CreateText(directorySrc + @"\" + directoryMedia + @"\" + mediaFile).Close();
+            File.CreateText(directorySrc + directorySong + songFile).Close();
+            File.CreateText(directorySrc + directoryMedia + mediaFile).Close();
 
-            Assert.True(File.Exists(directorySrc + @"\" + directorySong + @"\" + songFile));
-            Assert.True(File.Exists(directorySrc + @"\" + directoryMedia + @"\" + mediaFile));
+            Assert.True(File.Exists(directorySrc + directorySong + songFile));
+            Assert.True(File.Exists(directorySrc + directoryMedia + mediaFile));
 
             IFileManager fileManager = new FileManager();
             fileManager.CopyDirectories(directoriesToCopied, directorySrc, directoryDst);
 
-            Assert.True(Directory.Exists(directoryDst + @"\" + directorySong));
-            Assert.True(Directory.Exists(directoryDst + @"\" + directoryMedia ));
-            Assert.True(File.Exists(directoryDst + @"\" + directorySong + @"\" + songFile));
-            Assert.True(File.Exists(directoryDst + @"\" + directoryMedia + @"\" + mediaFile));
+            Assert.True(Directory.Exists(directoryDst + directorySong));
+            Assert.True(Directory.Exists(directoryDst + directoryMedia ));
+            Assert.True(File.Exists(directoryDst + directorySong + songFile));
+            Assert.True(File.Exists(directoryDst + directoryMedia + mediaFile));
 
             Directory.Delete(directoryPath, true);
         }
@@ -196,6 +196,55 @@ namespace WinUIAppTests.FileManagerTests
             Assert.True(File.Exists(directoryDst + fileInDirectoryToBeUncompressed));
 
             Directory.Delete(directoryPath, true);
+        }
+
+        [Theory]
+        [InlineData(@"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory")]
+        public void createDirectoryTest(string requestedDirectoryToCreate)
+        {
+            string savedRequestedDirectoryToCreate = requestedDirectoryToCreate;
+            IFileManager fileManager = new FileManager();
+            fileManager.CreateDirectory(ref requestedDirectoryToCreate);
+            Assert.Equal(savedRequestedDirectoryToCreate + '\\', requestedDirectoryToCreate);
+            Assert.True(Directory.Exists(requestedDirectoryToCreate));
+
+            Directory.Delete(requestedDirectoryToCreate, true);
+        }
+
+        [Theory]
+        [InlineData(@"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\")]
+        public void createDirectoryWithBackSlashTest(string requestedDirectoryToCreate)
+        {
+            IFileManager fileManager = new FileManager();
+            fileManager.CreateDirectory(ref requestedDirectoryToCreate);
+            Assert.True(Directory.Exists(requestedDirectoryToCreate));
+
+            Directory.Delete(requestedDirectoryToCreate, true);
+        }
+
+        [Theory]
+        [InlineData("file.song", @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory")]
+        public void createFileTest(string fileToCreate, string requestedDirectory)
+        {
+            string savedRequestedDirectory = requestedDirectory;
+            IFileManager fileManager = new FileManager();
+            fileManager.CreateDirectory(ref requestedDirectory);
+            fileManager.CreateFile(fileToCreate, requestedDirectory);
+            Assert.True(File.Exists(savedRequestedDirectory + '\\' + fileToCreate));
+
+            Directory.Delete(requestedDirectory, true);
+        }
+
+        [Theory]
+        [InlineData("file.song", @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\")]
+        public void createFileWithBackSlashTest(string fileToCreate, string requestedDirectory)
+        {
+            IFileManager fileManager = new FileManager();
+            fileManager.CreateDirectory(ref requestedDirectory);
+            fileManager.CreateFile(fileToCreate, requestedDirectory);
+            Assert.True(File.Exists(requestedDirectory + fileToCreate));
+
+            Directory.Delete(requestedDirectory, true);
         }
     }
 }

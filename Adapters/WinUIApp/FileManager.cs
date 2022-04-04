@@ -24,12 +24,9 @@ namespace WinUIApp
 
         public void CopyDirectories(List<string> directoriesToCopied, string directorySrc, string directoryDst)
         {
-            foreach(var directory in directoriesToCopied)
+            foreach(var directory in directoriesToCopied.Where(x => Directory.Exists(directorySrc + x)))
             {
-                if (Directory.Exists(directorySrc + @"\" + directory))
-                {
-                    CopyDirectory(directorySrc + @"\" + directory, directoryDst + @"\" + directory);
-                }
+              CopyDirectory(directorySrc + directory, directoryDst + directory);
             }
         }
 
@@ -75,7 +72,7 @@ namespace WinUIApp
         {
             await Task.Run(() =>
             {
-                ZipFile.CreateFromDirectory(DirectoryToBeCompressed, ArchivePath + @"\" + ArchiveName);
+                ZipFile.CreateFromDirectory(DirectoryToBeCompressed, ArchivePath + ArchiveName);
             });
         }
 
@@ -85,6 +82,24 @@ namespace WinUIApp
             {
                 ZipFile.ExtractToDirectory(ArchiveToBeUncompressed, destinationDir, true);
             });
+        }
+
+        public void CreateDirectory(ref string directoryPath)
+        {
+            if (directoryPath.Last() != '\\')
+            {
+                directoryPath = directoryPath + '\\';
+            }
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        public void CreateFile(string file, string directoryPath)
+        {
+            if(directoryPath.Last() != '\\')
+            {
+                File.Create(directoryPath + '\\' + file).Close();
+            }
+            File.Create(directoryPath + file).Close();
         }
     }
 }

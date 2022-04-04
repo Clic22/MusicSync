@@ -30,6 +30,7 @@ namespace App1.ViewModels
         public SongVersioned addLocalSong(string songTitle, string songFile, string songLocalPath)
         {
             IsAddingSong = true;
+            formatPath(ref songLocalPath);
             SongsManager.addLocalSong(songTitle, songFile, songLocalPath);
             SongVersioned songVersioned = new SongVersioned(songTitle);
             SongsVersioned.Add(songVersioned);
@@ -40,6 +41,7 @@ namespace App1.ViewModels
         public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string songLocalPath)
         {
             IsAddingSong = true;
+            formatPath(ref songLocalPath);
             string errorMessage = await SongsManager.addSharedSongAsync(songTitle, sharedLink, songLocalPath);
             if (!string.IsNullOrEmpty(errorMessage))
             {
@@ -176,6 +178,14 @@ namespace App1.ViewModels
             else if (song.Status.state == SongStatus.State.upToDate)
             {
                 songVersioned.Status = string.Empty;
+            }
+        }
+
+        private void formatPath(ref string songLocalPath)
+        {
+            if (songLocalPath.Last() != '\\')
+            {
+                songLocalPath = songLocalPath + '\\';
             }
         }
 

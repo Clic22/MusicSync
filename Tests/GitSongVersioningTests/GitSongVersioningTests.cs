@@ -9,7 +9,6 @@ using WinUIApp;
 using System.Net.Http;
 using System.Collections.Generic;
 using System;
-using System.Text;
 using System.Net.Http.Headers;
 
 namespace GitSongVersioningTests
@@ -18,20 +17,20 @@ namespace GitSongVersioningTests
     {
         protected TestsBase()
         {
-            testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory";
+            testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
             songTitle = "End of the Road";
-            songLocalPath = testDirectory + @"\" + songTitle;
-            songFile = "file.song";
-            song = new Song(songTitle, songFile, songLocalPath);
+            songLocalPath = testDirectory + songTitle ;
+            songFile = "file.song";           
 
-            Directory.CreateDirectory(songLocalPath);
-            File.CreateText(songLocalPath + @"\" + songFile).Close();
-            Assert.True(File.Exists(songLocalPath + @"\" + songFile));
+            FileManager = new FileManager();
+            FileManager.CreateDirectory(ref songLocalPath);
+            FileManager.CreateFile(songFile, songLocalPath);
+
+            song = new Song(songTitle, songFile, songLocalPath);
 
             user = new User("MusicSyncTool", "HelloWorld12", "Clic", "musicsynctool@gmail.com");
             SaverMock = new Mock<ISaver>();
             SaverMock.Setup(m => m.savedUser()).Returns(user);
-            FileManager = new FileManager();
             GitVersioning = new GitSongVersioning(testDirectory, SaverMock.Object, FileManager);
         }
 
@@ -101,14 +100,14 @@ namespace GitSongVersioningTests
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
 
-            string mediaFolder = song.LocalPath + @"\Media";
+            string mediaFolder = song.LocalPath + @"Media\";
             string mediaFile = "guitar.wav";
-            Directory.CreateDirectory(mediaFolder);
-            File.CreateText(mediaFolder + @"\" + mediaFile).Close();
-            string MelodyneFolder = song.LocalPath + @"\Melodyne\Transfer";
+            FileManager.CreateDirectory(ref mediaFolder);
+            FileManager.CreateFile(mediaFile, mediaFolder);
+            string MelodyneFolder = song.LocalPath + @"Melodyne\Transfer\";
             string MelodyneFile = "melo";
-            Directory.CreateDirectory(MelodyneFolder);
-            File.CreateText(MelodyneFolder + @"\" + MelodyneFile).Close();
+            FileManager.CreateDirectory(ref MelodyneFolder);
+            FileManager.CreateFile(MelodyneFile,MelodyneFolder);
 
             await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
@@ -116,16 +115,16 @@ namespace GitSongVersioningTests
             string expectedShareLink = "https://gitlab.com/MusicSyncTool/end-of-the-road.git";
             Assert.Equal(expectedShareLink,shareLink);
 
-            string songFolder = @"SongDownloaded";
+            string songFolder = @"SongDownloaded\";
 
             string downloadDestination = testDirectory;
             await GitVersioning.downloadSharedSongAsync(songFolder, shareLink, downloadDestination);
 
-            string expectedSongFile = downloadDestination + @"\" + songFolder + @"\" + songFile;
+            string expectedSongFile = downloadDestination +  songFolder +  songFile;
             Assert.True(File.Exists(expectedSongFile));
-            string expectedMediaFile = downloadDestination + @"\" + songFolder + @"\Media\" + mediaFile;
+            string expectedMediaFile = downloadDestination +  songFolder + @"Media\" + mediaFile;
             Assert.True(File.Exists(expectedMediaFile));
-            string expectedMelodyneFile = downloadDestination + @"\" + songFolder + @"\Melodyne\Transfer\" + MelodyneFile;
+            string expectedMelodyneFile = downloadDestination +  songFolder + @"Melodyne\Transfer\" + MelodyneFile;
             Assert.True(File.Exists(expectedMelodyneFile));
         }
 
@@ -139,18 +138,18 @@ namespace GitSongVersioningTests
 
             changeTitle = "Lock";
             string lockFile = ".lock";
-            File.CreateText(songLocalPath + @"\" + lockFile).Close();
+            FileManager.CreateFile(lockFile,songLocalPath);
 
             await GitVersioning.uploadSongAsync(song, lockFile, changeTitle);
 
             string shareLink = await GitVersioning.shareSongAsync(song);
 
-            string songFolder = @"SongDownloaded";
+            string songFolder = @"SongDownloaded\";
 
             string downloadDestination = testDirectory;
             await GitVersioning.downloadSharedSongAsync(songFolder, shareLink, downloadDestination);
 
-            string expectedLockFile = downloadDestination + @"\" + songFolder + @"\" + lockFile;
+            string expectedLockFile = downloadDestination +  songFolder +  lockFile;
             Assert.True(File.Exists(expectedLockFile));
         }
 
@@ -162,12 +161,12 @@ namespace GitSongVersioningTests
             string versionNumber = "1.1.1";
             await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
-            File.Delete(song.LocalPath + @"\" + song.File);
-            Assert.False(File.Exists(song.LocalPath + @"\" + song.File));
+            File.Delete(song.LocalPath +  song.File);
+            Assert.False(File.Exists(song.LocalPath +  song.File));
 
             await GitVersioning.revertSongAsync(song);
 
-            Assert.True(File.Exists(song.LocalPath + @"\" + song.File));
+            Assert.True(File.Exists(song.LocalPath +  song.File));
         }
 
         [Fact]
@@ -180,7 +179,7 @@ namespace GitSongVersioningTests
 
             changeTitle = "Lock";
             string lockFile = ".lock";
-            File.CreateText(songLocalPath + @"\" + lockFile).Close();
+            FileManager.CreateFile(lockFile,songLocalPath);
 
             await GitVersioning.uploadSongAsync(song, lockFile, changeTitle);
 
@@ -198,11 +197,11 @@ namespace GitSongVersioningTests
 
             System.Threading.Thread.Sleep(1500);
 
-            Assert.True(File.Exists(songLocalPath + @"\" + lockFile));
+            Assert.True(File.Exists(songLocalPath +  lockFile));
 
             await GitVersioning.updateSongAsync(song);
 
-            Assert.False(File.Exists(songLocalPath + @"\" + lockFile));
+            Assert.False(File.Exists(songLocalPath +  lockFile));
         }
 
         [Fact]
@@ -215,7 +214,7 @@ namespace GitSongVersioningTests
 
             changeTitle = "Lock";
             string lockFile = ".lock";
-            File.CreateText(songLocalPath + @"\" + lockFile).Close();
+            FileManager.CreateFile(lockFile, songLocalPath);
 
             await GitVersioning.uploadSongAsync(song, lockFile, changeTitle);
 
@@ -233,21 +232,22 @@ namespace GitSongVersioningTests
 
             System.Threading.Thread.Sleep(1500);
 
-            Assert.True(File.Exists(songLocalPath + @"\" + lockFile));
+            Assert.True(File.Exists(songLocalPath +  lockFile));
 
             string randomFile = "randomFile.png";
-            File.CreateText(songLocalPath + @"\" + randomFile).Close();
+            FileManager.CreateFile(randomFile, songLocalPath);
             string CacheFolder = "Cache";
-            Directory.CreateDirectory(songLocalPath + @"\" + CacheFolder);
+            string folder = songLocalPath + CacheFolder;
+            FileManager.CreateDirectory(ref folder);
 
-            Assert.True(File.Exists(songLocalPath + @"\" + randomFile));
-            Assert.True(Directory.Exists(songLocalPath + @"\" + CacheFolder));
+            Assert.True(File.Exists(songLocalPath +  randomFile));
+            Assert.True(Directory.Exists(songLocalPath +  CacheFolder));
 
             await GitVersioning.updateSongAsync(song);
 
-            Assert.False(File.Exists(songLocalPath + @"\" + lockFile));
-            Assert.True(File.Exists(songLocalPath + @"\" + randomFile));
-            Assert.True(Directory.Exists(songLocalPath + @"\" + CacheFolder));
+            Assert.False(File.Exists(songLocalPath +  lockFile));
+            Assert.True(File.Exists(songLocalPath +  randomFile));
+            Assert.True(Directory.Exists(songLocalPath +  CacheFolder));
         }
 
         [Fact]
@@ -318,10 +318,10 @@ namespace GitSongVersioningTests
             string changeTitle2 = "Test2";
             string changeDescription2 = "No Description2";
             string versionNumber2 = "1.2.1";
-            string mediaFolder = song.LocalPath + @"\Media";
+            string mediaFolder = song.LocalPath + @"Media\";
             string mediaFile = "guitar.wav";
-            Directory.CreateDirectory(mediaFolder);
-            File.CreateText(mediaFolder + @"\" + mediaFile).Close();
+            FileManager.CreateDirectory(ref mediaFolder);
+            FileManager.CreateFile(mediaFile, mediaFolder);
             await GitVersioning.uploadSongAsync(song, changeTitle2, changeDescription2, versionNumber2);
 
             List<SongVersion> versions = await GitVersioning.versionsAsync(song);

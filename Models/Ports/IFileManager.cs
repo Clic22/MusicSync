@@ -2,6 +2,8 @@
 {
     public interface IFileManager
     {
+        public void CreateDirectory(ref string directoryPath);
+        public void CreateFile(string file, string directoryPath);
         public Task<string> findFileNameBasedOnExtensionAsync(string directoryPath, string extension);
         public void CopyDirectory(string sourceDir, string destinationDir);
         public void CopyDirectories(List<string> directoriesToCopied, string directorySrc, string directoryDst);

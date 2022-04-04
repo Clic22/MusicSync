@@ -11,9 +11,9 @@ namespace GitVersionTool
         public GitSongVersioning(string askedMusiSyncFolderLocation, ISaver newSaver, IFileManager newFileManager) 
         {
             musicSyncFolder = string.Empty;
-            createMusicSyncFolder(askedMusiSyncFolderLocation);
             saver = newSaver;
             fileManager = newFileManager;
+            createMusicSyncFolder(askedMusiSyncFolderLocation);
         }
 
         public async Task<string> uploadSongAsync(Song song, string title, string description, string versionNumber)
@@ -177,7 +177,7 @@ namespace GitVersionTool
 
         private bool repoInitiated(Song song)
         {
-            if (Directory.Exists(getRepoPath(song) + @"\.git"))
+            if (Directory.Exists(getRepoPath(song) + @".git"))
             {
                 return true;
             }
@@ -270,9 +270,9 @@ namespace GitVersionTool
 
         private async Task compressSongAsync(Song song)
         {
-            if (File.Exists(getRepoPath(song) + @"\" + song.Title + ".zip"))
+            if (File.Exists(getRepoPath(song) + song.Title + ".zip"))
             {
-                File.Delete(getRepoPath(song) + @"\" + song.Title + ".zip");
+                File.Delete(getRepoPath(song) + song.Title + ".zip");
             }
             string pathToSongWithSelectedFodlers = await selectFoldersToBeCompressed(song);
             await fileManager.CompressDirectoryAsync(pathToSongWithSelectedFodlers, song.Title + ".zip", getRepoPath(song));
@@ -281,12 +281,12 @@ namespace GitVersionTool
 
         private async Task<string> selectFoldersToBeCompressed(Song song)
         {
-            string tmpDirectory = musicSyncFolder + @"\tmpDirectory";
+            string tmpDirectory = musicSyncFolder + @"tmpDirectory\";
             if (Directory.Exists(tmpDirectory))
             {
                 Directory.Delete(tmpDirectory, true);
             }
-            Directory.CreateDirectory(tmpDirectory);
+            fileManager.CreateDirectory(ref tmpDirectory);
 
             string songFile = await fileManager.findFileNameBasedOnExtensionAsync(song.LocalPath, ".song");
             await fileManager.CopyFileAsync(songFile, song.LocalPath, tmpDirectory);
@@ -306,36 +306,36 @@ namespace GitVersionTool
         {
             string repoPath = getRepoPath(song);
             string zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
-            await fileManager.UncompressArchiveAsync(repoPath + @"\" + zipFile, song.LocalPath);
+            await fileManager.UncompressArchiveAsync(repoPath + zipFile, song.LocalPath);
         }
 
         private async Task uncompressSongAsync(string songFolder, string downloadLocalPath, string repoPath)
         {
             string zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
-            await fileManager.UncompressArchiveAsync(repoPath + @"\" + zipFile, downloadLocalPath + @"\" + songFolder );
+            await fileManager.UncompressArchiveAsync(repoPath + zipFile, downloadLocalPath + songFolder );
         }
 
         private void syncFile(string srcPath, string dstPath, string file)
         {
-            if (File.Exists(srcPath + @"\" + file))
+            if (File.Exists(srcPath + file))
             {
-                File.Copy(srcPath + @"\" + file, dstPath + @"\" + file);
+                File.Copy(srcPath + file, dstPath + file);
             }
             else
             {
-                File.Delete(dstPath + @"\" + file);
+                File.Delete(dstPath + file);
             }
         }
 
         private void syncLockFile(Song song)
         {
-            if (File.Exists(getRepoPath(song) + @"\.lock") && !File.Exists(song.LocalPath + @"\.lock"))
+            if (File.Exists(getRepoPath(song) + @".lock") && !File.Exists(song.LocalPath + @".lock"))
             {
-                File.Copy(getRepoPath(song) + @"\.lock", song.LocalPath + @"\.lock");
+                File.Copy(getRepoPath(song) + @".lock", song.LocalPath + @".lock");
             }
-            else if (!File.Exists(getRepoPath(song) + @"\.lock") && File.Exists(song.LocalPath + @"\.lock"))
+            else if (!File.Exists(getRepoPath(song) + @".lock") && File.Exists(song.LocalPath + @".lock"))
             {
-                File.Delete(song.LocalPath + @"\.lock");
+                File.Delete(song.LocalPath + @".lock");
             }
         }
 
@@ -404,20 +404,20 @@ namespace GitVersionTool
 
         private string getRepoPath(Song song)
         {
-            return musicSyncFolder + @"\" + song.Title;
+            return musicSyncFolder + song.Title + @"\";
         }
 
-        private string getRepoPath(string title)
+        private string getRepoPath(string songFolder)
         {
-            return musicSyncFolder + @"\" + title;
+            return musicSyncFolder + songFolder;
         }
 
         private void createMusicSyncFolder(string askedMusicSyncFolderLocation)
         {
             if (!string.IsNullOrEmpty(askedMusicSyncFolderLocation))
             {
-                musicSyncFolder = askedMusicSyncFolderLocation + @"\.musicsync";
-                Directory.CreateDirectory(musicSyncFolder);
+                musicSyncFolder = askedMusicSyncFolderLocation + @".musicsync\";
+                fileManager.CreateDirectory(ref musicSyncFolder);
             }
         }
 
