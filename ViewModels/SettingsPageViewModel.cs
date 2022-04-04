@@ -10,7 +10,7 @@ namespace App1.ViewModels
         {
             this.saver = saver;
             this.fileManager = fileManager;
-            user = new UserViewModel(saver.savedUser());
+            User = new UserViewModel(saver.savedUser());
             musicSyncFolder_ = saver.savedMusicSyncFolder();
         }
 
@@ -20,7 +20,7 @@ namespace App1.ViewModels
             saver.saveSettings(userModel, musicSyncFolder);
         }
 
-        public UserViewModel user;
+        public UserViewModel User { get; set; }
         private string musicSyncFolder_;
         public string MusicSyncFolder
         {
@@ -34,7 +34,7 @@ namespace App1.ViewModels
                 SetProperty(ref musicSyncFolder_, value);
             }
         }
-        private ISaver saver;
-        private IFileManager fileManager;
+        private readonly ISaver saver;
+        private readonly IFileManager fileManager;
     }
 }

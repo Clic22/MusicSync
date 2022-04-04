@@ -34,7 +34,7 @@ namespace ViewModelsTests.SettingsPageViewModelTests
 
             saverMock.Verify(m => m.savedMusicSyncFolder(), Times.Once());
             saverMock.Verify(m => m.savedUser(), Times.Once());
-            Assert.Equal(expectedUserViewModel, viewModel.user);
+            Assert.Equal(expectedUserViewModel, viewModel.User);
             Assert.Equal(expectedMusicSyncFolder, viewModel.MusicSyncFolder);
         }
 
