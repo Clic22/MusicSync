@@ -12,7 +12,7 @@ namespace App1.ViewModels
             SongsVersioned = new ObservableCollection<SongVersioned>();
             SongsManager = songsManager;
             FileManager = new FileManager();
-            intializeSongsVersioned();
+            Task.Run(() => intializeSongsVersioned()).Wait();
         }
 
         public async Task<string> updateAllSongsAsync()

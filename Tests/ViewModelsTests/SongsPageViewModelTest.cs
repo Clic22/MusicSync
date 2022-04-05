@@ -74,12 +74,12 @@ namespace ViewModelsTests.SongsPageViewModelTest
 
             Assert.Contains(expectedSong, viewModel.SongsVersioned);
             Assert.Contains(expectedSong2, viewModel.SongsVersioned);
-            Assert.Equal(expectedVersion, viewModel.SongsVersioned.First(m => m == expectedSong).CurrentVersion);
-            Assert.Equal(expectedVersion2, viewModel.SongsVersioned.First(m => m == expectedSong2).CurrentVersion);
-            Assert.Equal(expectedVersions, viewModel.SongsVersioned.First(m => m == expectedSong).Versions);
-            Assert.Equal(expectedVersions2, viewModel.SongsVersioned.First(m => m == expectedSong2).Versions);
-            Assert.Equal(expectedSong.Status, viewModel.SongsVersioned.First(m => m == expectedSong).Status);
-            Assert.Equal(expectedSong2.Status, viewModel.SongsVersioned.First(m => m == expectedSong2).Status);
+            Assert.Equal(expectedVersion, viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).CurrentVersion);
+            Assert.Equal(expectedVersion2, viewModel.SongsVersioned.First(m => m.Equals(expectedSong2)).CurrentVersion);
+            Assert.Equal(expectedVersions, viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).Versions);
+            Assert.Equal(expectedVersions2, viewModel.SongsVersioned.First(m => m.Equals(expectedSong2)).Versions);
+            Assert.Equal(expectedSong.Status, viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).Status);
+            Assert.Equal(expectedSong2.Status, viewModel.SongsVersioned.First(m => m.Equals(expectedSong2)).Status);
         }
 
         [Theory]
