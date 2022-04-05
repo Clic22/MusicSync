@@ -130,7 +130,7 @@ namespace App1.ViewModels
             return await SongsManager.shareSongAsync(song);
         }
 
-        private void intializeSongsVersioned()
+        private async Task intializeSongsVersioned()
         {
             if (SongsManager.SongList != null)
             {
@@ -138,6 +138,7 @@ namespace App1.ViewModels
                 {
                     SongVersioned songVersioned = new SongVersioned(song.Title);
                     SongsVersioned.Add(songVersioned);
+                    await refreshSongVersionedAsync(songVersioned, song);
                 }
             }
         }

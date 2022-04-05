@@ -47,5 +47,24 @@
                 SetProperty(ref author_, value);
             }
         }
+
+        public override bool Equals(object? obj)
+        {
+            var song = obj as Version;
+            if (song == null)
+                return false;
+            if (this.Number != song.Number && 
+                this.Author != song.Author &&
+                this.Description != song.Description)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.Number, this.Author, this.Description);
+        }
     }
 }

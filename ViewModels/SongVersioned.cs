@@ -138,6 +138,7 @@ namespace App1.ViewModels
             }
         }
 
+
         public override bool Equals(object? obj)
         {
             var song = obj as SongVersioned;
@@ -153,6 +154,26 @@ namespace App1.ViewModels
         public override int GetHashCode()
         {
             return HashCode.Combine(this.Title);
+        }
+
+        public static bool operator ==(SongVersioned version, SongVersioned version2)
+        {
+            if (version is null)
+            {
+                if (version2 is null)
+                {
+                    return true;
+                }
+
+                // Only the left side is null.
+                return false;
+            }
+            return version.Equals(version2);
+        }
+
+        public static bool operator !=(SongVersioned version, SongVersioned version2)
+        {
+            return !(version == version2);
         }
     }
 }
