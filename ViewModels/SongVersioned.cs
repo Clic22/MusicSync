@@ -138,6 +138,7 @@ namespace App1.ViewModels
             }
         }
 
+
         public override bool Equals(object? obj)
         {
             var song = obj as SongVersioned;
