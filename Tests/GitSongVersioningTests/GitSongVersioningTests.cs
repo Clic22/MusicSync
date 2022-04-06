@@ -212,6 +212,52 @@ namespace GitSongVersioningTests
         }
 
         [Fact]
+        public async Task fetchUpdateForSong()
+        {
+            string changeTitle = "Test";
+            string changeDescription = "No Description";
+            string versionNumber = "1.1.1";
+            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+
+            changeTitle = "Lock";
+            string lockFile = ".lock";
+            FileManager.CreateFile(lockFile, songLocalPath);
+
+            await GitVersioning.uploadSongAsync(song, lockFile, changeTitle);
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road/repository/files/.lock"))
+                {
+                    request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
+                    request.Content = new StringContent("{\"branch\": \"master\", \"author_email\": \"author@example.com\", \"author_name\": \"Firstname Lastname\",\n       \"commit_message\": \"delete file\"}");
+                    request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+
+                    var response = await httpClient.SendAsync(request);
+                }
+            }
+
+            System.Threading.Thread.Sleep(1500);
+
+            bool updatesAvailable = await GitVersioning.UpdatesAvailableForSong(song);
+
+            Assert.True(updatesAvailable);
+        }
+
+        [Fact]
+        public async Task noUpdateToFetchForSong()
+        {
+            string changeTitle = "Test";
+            string changeDescription = "No Description";
+            string versionNumber = "1.1.1";
+            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+
+            bool updatesAvailable = await GitVersioning.UpdatesAvailableForSong(song);
+
+            Assert.False(updatesAvailable);
+        }
+
+        [Fact]
         public async Task updateNoneDestructiveSong()
         {
             string changeTitle = "Test";
