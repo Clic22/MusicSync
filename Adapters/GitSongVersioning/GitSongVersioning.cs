@@ -75,6 +75,11 @@ namespace GitVersionTool
             return String.Empty;
         }
 
+        public Task<bool> updatesAvailableForSongAsync(Song song)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<string> revertSongAsync(Song song)
         {
             string errorMessage = await revertSongFromRepoAsync(song);

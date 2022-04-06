@@ -239,7 +239,7 @@ namespace GitSongVersioningTests
 
             System.Threading.Thread.Sleep(1500);
 
-            bool updatesAvailable = await GitVersioning.UpdatesAvailableForSong(song);
+            bool updatesAvailable = await GitVersioning.updatesAvailableForSongAsync(song);
 
             Assert.True(updatesAvailable);
         }
@@ -252,7 +252,7 @@ namespace GitSongVersioningTests
             string versionNumber = "1.1.1";
             await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
-            bool updatesAvailable = await GitVersioning.UpdatesAvailableForSong(song);
+            bool updatesAvailable = await GitVersioning.updatesAvailableForSongAsync(song);
 
             Assert.False(updatesAvailable);
         }
