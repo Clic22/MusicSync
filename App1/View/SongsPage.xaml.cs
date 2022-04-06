@@ -31,11 +31,7 @@ namespace App1
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            /*string errorMessage = await SongsPageViewModel.updateAllSongsAsync();
-            if (errorMessage != string.Empty)
-            {
-                await displayErrorDialog(errorMessage);
-            }*/
+            await SongsPageViewModel.refreshSongsVersionedAsync();
         }
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)
