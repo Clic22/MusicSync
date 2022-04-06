@@ -70,6 +70,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsVersion2.Add(songVersion);
             songsVersion2.Add(songVersion2);
             Song song2 = new Song(title2, file2, localPath2);
+            song2.Status.state = SongStatus.State.updatesAvailable;
             Mock<ISaver> saverMock = new Mock<ISaver>();
             List<Song> songsList = new List<Song>();
             songsList.Add(song);
@@ -79,12 +80,12 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.SongList).Returns(songs);
             songsManagerMock.Setup(m => m.findSong(song.Title)).Returns(song);
-            songsManagerMock.Setup(m => m.findSong(song2.Title)).Returns(song2);
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
             songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songsVersion));
+            songsManagerMock.Setup(m => m.findSong(song2.Title)).Returns(song2);
             songsManagerMock.Setup(m => m.currentVersionAsync(song2)).Returns(Task.FromResult(songVersion2));
             songsManagerMock.Setup(m => m.versionsAsync(song2)).Returns(Task.FromResult(songsVersion2));
-
+            
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
             await viewModel.refreshSongsVersionedAsync();
 
@@ -99,6 +100,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             expectedVersion2.Number = "2.1.0";
             expectedVersion2.Author = "Aymeric Meindre";
             expectedVersion2.Description = "Test new mix";
+            expectedSong2.Status = "Updates Available";
             List<App1.ViewModels.Version> expectedVersions = new List<App1.ViewModels.Version>();
             expectedVersions.Add(expectedVersion);
             List<App1.ViewModels.Version> expectedVersions2 = new List<App1.ViewModels.Version>();
@@ -332,6 +334,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Song song = new Song(title, file, localPath);
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
+            songsManagerMock.Setup(m => m.openSongAsync(song)).Returns(Task.FromResult(true));
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
             viewModel.addLocalSong(title, file, localPath);
             SongVersioned expectedSongToBeOpened = new SongVersioned(title);

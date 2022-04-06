@@ -9,7 +9,7 @@ namespace App1.Models
             VersionTool = NewVersionTool;
         }
 
-        public async Task<(bool, string)> lockSongAsync(Song song, User user)
+        public async Task<bool> lockSongAsync(Song song, User user)
         {
             if (!lockFileExist(song) || isLockedByUser(song, user))
             {
@@ -17,12 +17,12 @@ namespace App1.Models
                 string errorMessage = await VersionTool.uploadSongAsync(song, @".lock", "lock");
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    return (false, errorMessage);
+                    deleteLockFile(song);
+                    return false;
                 }
-                updateSongStatus(song);
-                return (true, "Song Locked");
+                return true;
             }
-            return (false, "Already Locked");
+            return false;
         }
 
         public async Task<bool> unlockSongAsync(Song song, User user)
@@ -32,12 +32,24 @@ namespace App1.Models
                 if (isLockedByUser(song, user))
                 {
                     removeLockFile(song);
-                    await VersionTool.uploadSongAsync(song, @".lock", "unlock");
-                    updateSongStatus(song);
+                    string errorMessage = await VersionTool.uploadSongAsync(song, @".lock", "unlock");
+                    if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        return false;
+                    }
                     return true;
                 }
+                return false;
             }
             else
+            {
+                return true;
+            }
+        }
+
+        public bool isLocked(Song song)
+        {
+            if (lockFileExist(song))
             {
                 return true;
             }
@@ -51,26 +63,20 @@ namespace App1.Models
                 return true;
             }
             return false;
-
         }
 
-        public void updateSongStatus(Song song)
+        public string whoLocked(Song song)
         {
             if (lockFileExist(song))
             {
-                song.Status.state = SongStatus.State.locked;
-                string username = File.ReadAllText(song.LocalPath + @"\.lock");
-                song.Status.whoLocked = username;
+                return File.ReadAllText(song.LocalPath + @"\.lock");
             }
-            else
-            {
-                song.Status.state = SongStatus.State.upToDate;
-            }
+            return String.Empty;
         }
 
         private bool songLockedByUser(Song song, User user)
         {
-            if (song.Status.whoLocked == user.Username)
+            if (whoLocked(song) == user.Username)
             {
                 return true;
             }
@@ -80,6 +86,11 @@ namespace App1.Models
         private void createLockFile(Song song, User user)
         {
             File.WriteAllText(song.LocalPath + @"\.lock", user.Username);
+        }
+
+        private void deleteLockFile(Song song)
+        {
+            File.Delete(song.LocalPath + @"\.lock");
         }
 
         private void removeLockFile(Song song)

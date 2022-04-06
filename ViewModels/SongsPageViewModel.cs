@@ -32,7 +32,7 @@ namespace App1.ViewModels
         public SongVersioned addLocalSong(string songTitle, string songFile, string songLocalPath)
         {
             IsAddingSong = true;
-            FileManager.FormatPath(ref songLocalPath);
+            songLocalPath = FileManager.FormatPath(songLocalPath);
             SongsManager.addLocalSong(songTitle, songFile, songLocalPath);
             SongVersioned songVersioned = new SongVersioned(songTitle);
             SongsVersioned.Add(songVersioned);
@@ -43,7 +43,7 @@ namespace App1.ViewModels
         public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string songLocalPath)
         {
             IsAddingSong = true;
-            FileManager.FormatPath(ref songLocalPath);
+            songLocalPath = FileManager.FormatPath(songLocalPath);
             string errorMessage = await SongsManager.addSharedSongAsync(songTitle, sharedLink, songLocalPath);
             if (!string.IsNullOrEmpty(errorMessage))
             {
@@ -79,18 +79,18 @@ namespace App1.ViewModels
             return errorMessage;
         }
 
-        public async Task<(bool, string)> openSongAsync(SongVersioned songVersioned)
+        public async Task<bool> openSongAsync(SongVersioned songVersioned)
         {
             songVersioned.IsOpeningSong = true;
             Song song = SongsManager.findSong(songVersioned.Title);
-            (bool, string) errorMessage = await SongsManager.openSongAsync(song);
-            if (!string.IsNullOrEmpty(errorMessage.Item2))
+            bool errorMessage = await SongsManager.openSongAsync(song);
+            if (!errorMessage)
             {
                 songVersioned.IsOpeningSong = false;
                 return errorMessage;
             }
             songVersioned.IsOpeningSong = false;
-            refreshSongStatus(songVersioned, song);
+            await refreshSongStatusAsync(songVersioned, song);
             return errorMessage;
         }
 
@@ -104,7 +104,7 @@ namespace App1.ViewModels
                 songVersioned.IsRevertingSong = false;
                 return errorMessage;
             }
-            refreshSongStatus(songVersioned, song);
+            await refreshSongStatusAsync(songVersioned, song);
             songVersioned.IsRevertingSong = false;
             return errorMessage;
         }
@@ -153,7 +153,7 @@ namespace App1.ViewModels
 
         private async Task refreshSongVersionedAsync(SongVersioned songVersioned, Song song)
         {
-            refreshSongStatus(songVersioned, song);
+            await refreshSongStatusAsync(songVersioned, song);
             await refreshSongCurrentVersionAsync(songVersioned, song);
             await refreshSongVersionsAsync(songVersioned, song);
         }
@@ -180,11 +180,16 @@ namespace App1.ViewModels
             }
         }
 
-        private void refreshSongStatus(SongVersioned songVersioned, Song song)
+        private async Task refreshSongStatusAsync(SongVersioned songVersioned, Song song)
         {
+            await SongsManager.refreshSongStatusAsync(song);
             if (song.Status.state == SongStatus.State.locked)
             {
                 songVersioned.Status = "Locked by " + song.Status.whoLocked;
+            }
+            else if (song.Status.state == SongStatus.State.updatesAvailable)
+            {
+                songVersioned.Status = "Updates Available";
             }
             else if (song.Status.state == SongStatus.State.upToDate)
             {

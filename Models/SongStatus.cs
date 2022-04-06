@@ -14,7 +14,8 @@
         public enum State
         {
             upToDate,
-            locked
+            locked,
+            updatesAvailable
         }
     }
 }

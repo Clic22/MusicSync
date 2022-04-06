@@ -16,9 +16,16 @@ namespace App1.Models
 
         public async Task<string> updateSongAsync(Song song)
         {
-            string errorMessage = await VersionTool.updateSongAsync(song);
-            Locker.updateSongStatus(song);
-            return errorMessage;
+            if (await VersionTool.updatesAvailableForSongAsync(song))
+            {
+                string errorMessage = await VersionTool.updateSongAsync(song);
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    return errorMessage;
+                }
+                await refreshSongStatusAsync(song);
+            }
+            return string.Empty;
         }
 
         public async Task<string> uploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
@@ -28,6 +35,7 @@ namespace App1.Models
             {
                 string versionNumber = await VersionTool.newVersionNumberAsync(song, compo, mix, mastering);
                 errorMessage = await VersionTool.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+                await refreshSongStatusAsync(song);
             }
             return errorMessage;
         }
@@ -36,7 +44,6 @@ namespace App1.Models
         {
             Song song = new Song(songTitle, songFile, songLocalPath);
             SongList.addNewSong(song);
-            Locker.updateSongStatus(song);
         }
 
         public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
@@ -46,13 +53,15 @@ namespace App1.Models
             {
                 return errorMessage;
             }
-            string localPath = downloadLocalPath + @"\" + songTitle;
+            downloadLocalPath = FileManager.FormatPath(downloadLocalPath);
+            string localPath = downloadLocalPath + songTitle;
             string songFile = await FileManager.findFileNameBasedOnExtensionAsync(localPath,".song");
             if (string.IsNullOrEmpty(songFile))
             {
                 return "Song File not Found in " + localPath;
             }
             addLocalSong(songTitle, songFile, localPath);
+            await refreshSongStatusAsync(findSong(songTitle));
             return string.Empty;
         }
 
@@ -62,30 +71,31 @@ namespace App1.Models
             SongList.deleteSong(song);
         }
 
-        public async Task<(bool, string)> openSongAsync(Song song)
+        public async Task<bool> openSongAsync(Song song)
         {
             string errorMessage = await updateSongAsync(song);
             if (string.IsNullOrEmpty(errorMessage))
             {
-                (bool, string) locked = await Locker.lockSongAsync(song, Saver.savedUser());
+                bool locked = await Locker.lockSongAsync(song, Saver.savedUser());
                 if (Locker.isLockedByUser(song, Saver.savedUser()))
                 {
                     openSongWithDAW(song);
-                    return (true, string.Empty);
+                    await refreshSongStatusAsync(song);
+                    return true;
                 }
                 return locked;
             }
             else
             {
-                return (false, errorMessage);
+                return false;
             }
 
         }
 
         public async Task<string> revertSongAsync(Song song)
         {
-            string errorMessage = await updateSongAsync(song);
-            if (string.IsNullOrEmpty(errorMessage) && await Locker.unlockSongAsync(song, Saver.savedUser()))
+            string errorMessage = string.Empty;
+            if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
                 errorMessage = await VersionTool.revertSongAsync(song);
             }
@@ -118,6 +128,23 @@ namespace App1.Models
         public async Task<string> shareSongAsync(Song song)
         {
             return await VersionTool.shareSongAsync(song);
+        }
+
+        public async Task refreshSongStatusAsync(Song song)
+        {
+            if (await VersionTool.updatesAvailableForSongAsync(song))
+            {
+                song.Status.state = SongStatus.State.updatesAvailable;
+            }
+            else if (Locker.isLocked(song))
+            {
+                song.Status.state = SongStatus.State.locked;
+                song.Status.whoLocked = Locker.whoLocked(song);
+            }
+            else
+            {
+                song.Status.state = SongStatus.State.upToDate;
+            }
         }
 
         private static void openSongWithDAW(Song song)

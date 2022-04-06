@@ -30,7 +30,7 @@ namespace App1.ViewModels
             }
             set
             {
-                fileManager.FormatPath(ref value);
+                value = fileManager.FormatPath(value);
                 SetProperty(ref musicSyncFolder_, value);
             }
         }

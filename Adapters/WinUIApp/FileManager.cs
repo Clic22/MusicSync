@@ -86,22 +86,23 @@ namespace WinUIApp
 
         public void CreateDirectory(ref string directoryPath)
         {
-            FormatPath(ref directoryPath);
+            directoryPath = FormatPath(directoryPath);
             Directory.CreateDirectory(directoryPath);
         }
 
         public void CreateFile(string file, string directoryPath)
         {
-            FormatPath(ref directoryPath);
+            directoryPath = FormatPath(directoryPath);
             File.Create(directoryPath + file).Close();
         }
 
-        public void FormatPath(ref string path)
+        public string FormatPath(string path)
         {
             if (path.Last() != '\\')
             {
                 path = path + '\\';
             }
+            return path;
         }
     }
 }

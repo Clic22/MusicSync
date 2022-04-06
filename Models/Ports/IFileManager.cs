@@ -10,6 +10,6 @@
         public Task CopyFileAsync(string fileName, string sourceDir, string destinationDir);
         public Task CompressDirectoryAsync(string DirectoryToBeCompressed, string ArchiveName, string ArchivePath);
         public Task UncompressArchiveAsync(string ArchiveToBeUncompressed, string destinationDir);
-        public void FormatPath(ref string path);
+        public string FormatPath(string path);
     }
 }
