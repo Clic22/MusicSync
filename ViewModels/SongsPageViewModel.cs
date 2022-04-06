@@ -12,7 +12,7 @@ namespace App1.ViewModels
             SongsVersioned = new ObservableCollection<SongVersioned>();
             SongsManager = songsManager;
             FileManager = new FileManager();
-            Task.Run(() => intializeSongsVersioned()).Wait();
+            intializeSongsVersioned();
         }
 
         public async Task<string> updateAllSongsAsync()
@@ -130,7 +130,16 @@ namespace App1.ViewModels
             return await SongsManager.shareSongAsync(song);
         }
 
-        private async Task intializeSongsVersioned()
+        public async Task refreshSongsVersionedAsync()
+        {
+            foreach(var songVersioned in SongsVersioned)
+            {
+                Song song = SongsManager.findSong(songVersioned.Title);
+                await refreshSongVersionedAsync(songVersioned, song);
+            }
+        }
+
+        private void intializeSongsVersioned()
         {
             if (SongsManager.SongList != null)
             {
@@ -138,7 +147,6 @@ namespace App1.ViewModels
                 {
                     SongVersioned songVersioned = new SongVersioned(song.Title);
                     SongsVersioned.Add(songVersioned);
-                    await refreshSongVersionedAsync(songVersioned, song);
                 }
             }
         }
