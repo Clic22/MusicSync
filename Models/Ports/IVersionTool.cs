@@ -7,6 +7,7 @@
         public Task<string> downloadSharedSongAsync(string songFolder, string sharedLink, string downloadLocalPath);
         public Task<string> shareSongAsync(Song song);
         public Task<string> updateSongAsync(Song song);
+        public Task<bool> updatesAvailableForSongAsync(Song song);
         public Task<string> revertSongAsync(Song song);
         public Task<SongVersion> currentVersionAsync(Song song);
         public Task<List<SongVersion>> versionsAsync(Song song);

@@ -73,6 +73,42 @@ namespace GitVersionTool
             await uncompressSongAsync(song);
             syncLockFile(song);
             return String.Empty;
+      
+        }
+
+        public async Task<bool> updatesAvailableForSongAsync(Song song)
+        {
+            return await Task.Run(() =>
+            {
+                string logMessage = string.Empty;
+                using (var repo = new Repository(getRepoPath(song)))
+                {
+                    var remote = repo.Network.Remotes["origin"];
+                    var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
+                    User user = saver.savedUser();
+                    FetchOptions options = new FetchOptions();
+                    options.CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) =>
+                            new UsernamePasswordCredentials()
+                            { Username = user.BandEmail, Password = user.BandPassword });
+                    Commands.Fetch(repo, remote.Name, refSpecs,options,logMessage);
+                    int? behind = repo.Branches["master"].TrackingDetails.BehindBy;
+                    if (behind != null)
+                    {
+                        if (behind != 0)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            });
         }
 
         public async Task<string> revertSongAsync(Song song)

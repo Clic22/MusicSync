@@ -147,6 +147,11 @@ namespace App1Tests.Mock
             return await Task.Run(() =>{return "https://www.gitlab.com/test.git";});
         }
 
+        public async Task<bool> updatesAvailableForSongAsync(Song song)
+        {
+            return await Task.Run(() => { return true; });
+        }
+
         public User user { get; set; }
         public string versionPath;
 
