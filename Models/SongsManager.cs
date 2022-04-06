@@ -16,9 +16,13 @@ namespace App1.Models
 
         public async Task<string> updateSongAsync(Song song)
         {
-            string errorMessage = await VersionTool.updateSongAsync(song);
-            Locker.updateSongStatus(song);
-            return errorMessage;
+            if (await VersionTool.updatesAvailableForSongAsync(song))
+            {
+                string errorMessage = await VersionTool.updateSongAsync(song);
+                Locker.updateSongStatus(song);
+                return errorMessage;
+            }
+            return string.Empty;
         }
 
         public async Task<string> uploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
