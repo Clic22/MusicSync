@@ -65,14 +65,18 @@ namespace GitVersionTool
 
         public async Task<string> updateSongAsync(Song song)
         {
-            string errorMessage = await updateSongFromRepoAsync(song);
-            if (errorMessage != String.Empty)
+            if (await updatesAvailableForSongAsync(song))
             {
-                return errorMessage;
+                string errorMessage = await updateSongFromRepoAsync(song);
+                if (errorMessage != String.Empty)
+                {
+                    return errorMessage;
+                }
+                await uncompressSongAsync(song);
+                syncLockFile(song);
+                return String.Empty;
             }
-            await uncompressSongAsync(song);
-            syncLockFile(song);
-            return String.Empty;
+            return String.Empty;       
         }
 
         public async Task<bool> updatesAvailableForSongAsync(Song song)
