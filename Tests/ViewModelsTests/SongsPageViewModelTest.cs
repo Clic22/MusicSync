@@ -105,8 +105,6 @@ namespace ViewModelsTests.SongsPageViewModelTest
             expectedVersions2.Add(expectedVersion2);
             expectedVersions2.Add(expectedVersion);
 
-            Assert.Contains(expectedSong, viewModel.SongsVersioned);
-            Assert.Contains(expectedSong2, viewModel.SongsVersioned);
             Assert.Equal(expectedVersion, viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).CurrentVersion);
             Assert.Equal(expectedVersion2, viewModel.SongsVersioned.First(m => m.Equals(expectedSong2)).CurrentVersion);
             Assert.Equal(expectedVersions, viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).Versions);
