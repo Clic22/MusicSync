@@ -84,22 +84,22 @@ namespace App1.Models
             return false;
         }
 
-        private void createLockFile(Song song, User user)
+        private static void createLockFile(Song song, User user)
         {
             File.WriteAllText(song.LocalPath + @"\.lock", user.Username);
         }
 
-        private void deleteLockFile(Song song)
+        private static void deleteLockFile(Song song)
         {
             File.Delete(song.LocalPath + @"\.lock");
         }
 
-        private void removeLockFile(Song song)
+        private static void removeLockFile(Song song)
         {
             File.Delete(song.LocalPath + @"\.lock");
         }
 
-        private bool lockFileExist(Song song)
+        private static bool lockFileExist(Song song)
         {
             if (File.Exists(song.LocalPath + @"\.lock"))
             {
