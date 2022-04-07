@@ -82,12 +82,10 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Setup(m => m.findSong(song.Title)).Returns(song);
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
             songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songsVersion));
-            songsManagerMock.Setup(m => m.updatesAvailableAsync(song)).Returns(Task.FromResult(false));
             songsManagerMock.Setup(m => m.findSong(song2.Title)).Returns(song2);
             songsManagerMock.Setup(m => m.currentVersionAsync(song2)).Returns(Task.FromResult(songVersion2));
             songsManagerMock.Setup(m => m.versionsAsync(song2)).Returns(Task.FromResult(songsVersion2));
-            songsManagerMock.Setup(m => m.updatesAvailableAsync(song2)).Returns(Task.FromResult(true));
-
+            
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
             await viewModel.refreshSongsVersionedAsync();
 

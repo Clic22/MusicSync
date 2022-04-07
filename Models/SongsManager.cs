@@ -146,11 +146,6 @@ namespace App1.Models
             }
         }
 
-        public async Task<bool> updatesAvailableAsync(Song song)
-        {
-            return await VersionTool.updatesAvailableForSongAsync(song);
-        }
-
         private static void openSongWithDAW(Song song)
         {
             var p = new Process();
