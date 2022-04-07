@@ -1,5 +1,7 @@
 ﻿using App1.Models;
+using App1.Models.Ports;
 using App1Tests.Mock;
+using Moq;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -15,8 +17,6 @@ namespace ModelsTests.LockerTest
             string file = "file.song";
             string localPath = @"./LockerTest/End of the Road/";
             Directory.CreateDirectory(localPath);
-            FileStream fileStream = File.Create(localPath + file);
-            fileStream.Close();
 
             song = new Song(title, file, localPath);
             //These are the Users accepted by the versionning mock to simulate connexion problems
@@ -31,8 +31,8 @@ namespace ModelsTests.LockerTest
             string BandEmail2 = "erratum12@gmail.com";
             user2 = new User(BandName2, BandPassword2, Username2, BandEmail2);
 
-            version = new VersioningMock(user1);
-            locker = new Locker(version);
+            version = new Mock<IVersionTool>();
+            locker = new Locker(version.Object);
         }
 
         public void Dispose()
@@ -41,17 +41,13 @@ namespace ModelsTests.LockerTest
             {
                 Directory.Delete(song.LocalPath, true);
             }
-            if (Directory.Exists(version.versionPath + song.LocalPath))
-            {
-                Directory.Delete(version.versionPath + song.LocalPath, true);
-            }
         }
 
         public User user1;
         public User user2;
         public Song song;
         public Locker locker;
-        public VersioningMock version;
+        public Mock<IVersionTool> version;
     }
 
 
@@ -60,18 +56,11 @@ namespace ModelsTests.LockerTest
         [Fact]
         public async Task LockSongTest()
         {
-            //Simulate change in local workspace
-            FileStream fileStream = File.Create(song.LocalPath + "audio1.wav");
-            fileStream.Close();
-            Assert.True(File.Exists(song.LocalPath + "audio1.wav"));
-            Assert.False(File.Exists(version.versionPath + song.LocalPath + "audio1.wav"));
-
             bool result = await locker.lockSongAsync(song, user1);
 
             Assert.True(result);
             Assert.True(locker.isLocked(song));
             Assert.True(locker.isLockedByUser(song, user1));
-            Assert.False(File.Exists(version.versionPath + song.LocalPath + @"audio1.wav"));
         }
 
         [Fact]
@@ -80,18 +69,12 @@ namespace ModelsTests.LockerTest
             await locker.lockSongAsync(song, user1);
             Assert.True(locker.isLocked(song));
             Assert.True(locker.isLockedByUser(song, user1));
-            //Simulate change in local workspace
-            FileStream fileStream = File.Create(song.LocalPath + "audio1.wav");
-            fileStream.Close();
-            Assert.True(File.Exists(song.LocalPath + "audio1.wav"));
-            Assert.False(File.Exists(version.versionPath + song.LocalPath + "audio1.wav"));
 
             bool result = await locker.unlockSongAsync(song, user1);
 
             Assert.True(result);
             Assert.False(locker.isLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
-            Assert.False(File.Exists(version.versionPath + song.LocalPath + @"audio1.wav"));
         }
 
         [Fact]
@@ -180,8 +163,7 @@ namespace ModelsTests.LockerTest
             Assert.False(locker.isLockedByUser(song, user2));
 
             user1.BandName = "WrongUsername";
-            version = new VersioningMock(user1);
-            locker = new Locker(version);
+            version.Setup(m => m.uploadSongAsync(song, ".lock", "lock")).Returns(Task.FromResult("Error Band Credentials"));
 
             bool lockResult = await locker.lockSongAsync(song, user1);
             Assert.False(lockResult);
@@ -200,8 +182,7 @@ namespace ModelsTests.LockerTest
             Assert.False(locker.isLockedByUser(song, user2));
 
             user1.BandPassword = "WrongPassword";
-            version = new VersioningMock(user1);
-            locker = new Locker(version);
+            version.Setup(m => m.uploadSongAsync(song, ".lock", "lock")).Returns(Task.FromResult("Error Band Credentials"));
 
             bool lockResult = await locker.lockSongAsync(song, user1);
             Assert.False(lockResult);
