@@ -186,8 +186,9 @@ namespace GitVersionTool
             {
                 return errorMessage;
             }
+            downloadLocalPath = fileManager.FormatPath(downloadLocalPath);
             await uncompressSongAsync(songFolder, downloadLocalPath, repoPath);
-            syncFile(repoPath, downloadLocalPath + @"\" + songFolder, ".lock");
+            syncFile(repoPath, downloadLocalPath + songFolder, ".lock");
             return String.Empty;
         }
 
