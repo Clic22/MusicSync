@@ -204,13 +204,17 @@ namespace ModelsTests.SongsManagerTest
             version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
             version.Setup(m => m.newVersionNumberAsync(expectedSong, true, false, false)).Returns(Task.FromResult("1.0.0"));
             version.Setup(m => m.uploadSongAsync(expectedSong, "New Version", "No description","1.0.0")).Returns(Task.FromResult(String.Empty));
+            version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(String.Empty));
+            version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "unlock")).Returns(Task.FromResult(String.Empty));
 
             //Add song for synchronization
             await songsManager.addLocalSongAsync(title, file, localPath);
+            expectedSong.Status.state = SongStatus.State.locked;
 
             string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, "New Version", "No description", true, false, false);
 
             Assert.Equal(string.Empty, errorMessage);
+            Assert.Equal(SongStatus.State.upToDate, expectedSong.Status.state);
             version.Verify(m => m.newVersionNumberAsync(expectedSong, true, false, false), Times.Once());
             version.Verify(m => m.uploadSongAsync(expectedSong, "New Version", "No description", "1.0.0"), Times.Once());
         }

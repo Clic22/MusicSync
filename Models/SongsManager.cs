@@ -35,6 +35,7 @@ namespace App1.Models
             {
                 string versionNumber = await VersionTool.newVersionNumberAsync(song, compo, mix, mastering);
                 errorMessage = await VersionTool.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+                await refreshSongStatusAsync(song);
             }
             return errorMessage;
         }
