@@ -155,7 +155,7 @@ namespace ModelsTests.LockerTest
         }
 
         [Fact]
-        public async Task TryLockSongWithWrongBandNameCredentialTest()
+        public async Task TryLockSongWithWrongCredentialTest()
         {
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);
             Assert.False(locker.isLocked(song));
@@ -174,17 +174,23 @@ namespace ModelsTests.LockerTest
         }
 
         [Fact]
-        public async Task TryLockSongWithWrongBandPasswordCredentialTest()
+        public async Task TryUnLockSongWithWrongCredentialTest()
         {
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);
             Assert.False(locker.isLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
 
-            user1.BandPassword = "WrongPassword";
-            version.Setup(m => m.uploadSongAsync(song, ".lock", "lock")).Returns(Task.FromResult("Error Band Credentials"));
-
             bool lockResult = await locker.lockSongAsync(song, user1);
+            Assert.True(lockResult);
+            Assert.True(locker.isLocked(song));
+            Assert.True(locker.isLockedByUser(song, user1));
+            Assert.False(locker.isLockedByUser(song, user2));
+
+            user1.BandPassword = "WrongPassword";
+            version.Setup(m => m.uploadSongAsync(song, ".lock", "unlock")).Returns(Task.FromResult("Error Band Credentials"));
+
+            lockResult = await locker.unlockSongAsync(song, user1);
             Assert.False(lockResult);
             Assert.False(locker.isLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
