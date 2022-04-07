@@ -54,7 +54,7 @@ namespace App1
             {
                 if (songTitle.Text != string.Empty && songFile.Text != string.Empty && songLocalPath.Text != string.Empty)
                 {
-                    await SongsPageViewModel.addLocalSongAsync(songTitle.Text, songFile.Text, songLocalPath.Text);
+                    SongsPageViewModel.addLocalSong(songTitle.Text, songFile.Text, songLocalPath.Text);
                 }
                 else if (songSharedTitle.Text != string.Empty && sharedLink.Text != string.Empty && songSharedLocalPath.Text != string.Empty)
                 {

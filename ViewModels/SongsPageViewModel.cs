@@ -29,11 +29,11 @@ namespace App1.ViewModels
             return errorMessage;
         }
 
-        public async Task<SongVersioned> addLocalSongAsync(string songTitle, string songFile, string songLocalPath)
+        public SongVersioned addLocalSong(string songTitle, string songFile, string songLocalPath)
         {
             IsAddingSong = true;
             songLocalPath = FileManager.FormatPath(songLocalPath);
-            await SongsManager.addLocalSongAsync(songTitle, songFile, songLocalPath);
+            SongsManager.addLocalSong(songTitle, songFile, songLocalPath);
             SongVersioned songVersioned = new SongVersioned(songTitle);
             SongsVersioned.Add(songVersioned);
             IsAddingSong = false;

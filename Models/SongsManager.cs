@@ -60,7 +60,8 @@ namespace App1.Models
             {
                 return "Song File not Found in " + localPath;
             }
-            await addLocalSongAsync(songTitle, songFile, localPath);
+            addLocalSong(songTitle, songFile, localPath);
+            await refreshSongStatusAsync(findSong(songTitle));
             return string.Empty;
         }
 
