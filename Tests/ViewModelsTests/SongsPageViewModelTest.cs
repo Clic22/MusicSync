@@ -118,7 +118,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
         [Theory]
         [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road")]
         [InlineData("End of the Road", "test.song", "User/test/End of the Road")]
-        public async Task addLocalSongTest(string title, string file, string localPath)
+        public void addLocalSongTest(string title, string file, string localPath)
         {
             //Setup
             Song song = new Song(title, file, localPath);
