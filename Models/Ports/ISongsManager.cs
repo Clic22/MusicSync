@@ -12,6 +12,7 @@
         public Task<string> shareSongAsync(Song song);
         public Task<bool> openSongAsync(Song song);
         public Task<string> revertSongAsync(Song song);
+        public Task refreshSongStatusAsync(Song song);
         public Song findSong(string songTitle);
         public Task<SongVersion> currentVersionAsync(Song song);
         public Task<List<SongVersion>> versionsAsync(Song song);
