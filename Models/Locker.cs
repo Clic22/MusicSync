@@ -54,7 +54,6 @@ namespace App1.Models
                 return true;
             }
             return false;
-
         }
 
         public bool isLockedByUser(Song song, User user)
@@ -84,22 +83,22 @@ namespace App1.Models
             return false;
         }
 
-        private static void createLockFile(Song song, User user)
+        private void createLockFile(Song song, User user)
         {
             File.WriteAllText(song.LocalPath + @"\.lock", user.Username);
         }
 
-        private static void deleteLockFile(Song song)
+        private void deleteLockFile(Song song)
         {
             File.Delete(song.LocalPath + @"\.lock");
         }
 
-        private static void removeLockFile(Song song)
+        private void removeLockFile(Song song)
         {
             File.Delete(song.LocalPath + @"\.lock");
         }
 
-        private static bool lockFileExist(Song song)
+        private bool lockFileExist(Song song)
         {
             if (File.Exists(song.LocalPath + @"\.lock"))
             {
