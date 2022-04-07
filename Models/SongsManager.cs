@@ -19,8 +19,11 @@ namespace App1.Models
             if (await VersionTool.updatesAvailableForSongAsync(song))
             {
                 string errorMessage = await VersionTool.updateSongAsync(song);
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    return errorMessage;
+                }
                 await refreshSongStatusAsync(song);
-                return errorMessage;
             }
             return string.Empty;
         }

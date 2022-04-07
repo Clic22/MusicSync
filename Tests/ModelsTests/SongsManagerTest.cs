@@ -233,7 +233,23 @@ namespace ModelsTests.SongsManagerTest
             version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
             version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "lock"), Times.Once());
         }
-        
+
+        [Fact]
+        public async Task openSongErrorAtUpdateTest()
+        {
+            version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(true));
+                                                                                   
+            version.Setup(m => m.updateSongAsync(expectedSong)).Returns(Task.FromResult("Error"));
+
+            bool errorMessage = await songsManager.openSongAsync(expectedSong);
+
+            Assert.Equal(SongStatus.State.upToDate, expectedSong.Status.state);
+            Assert.False(errorMessage);
+            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Once());
+            version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
+            version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "lock"), Times.Never());
+        }
+
         [Fact]
         public async Task tryOpenSongLockedTest()
         {
