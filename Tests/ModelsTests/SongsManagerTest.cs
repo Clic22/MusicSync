@@ -24,29 +24,23 @@ namespace ModelsTests.SongsManagerTest
             title = "End of the Road";
             file = "file.song";
             localPath = @"./SongsManagerTest/End of the Road/";
-            Directory.CreateDirectory(localPath);
-            FileStream fileStream = File.Create(localPath + file);
-            fileStream.Close();
             expectedSong = new Song(title, file, localPath);
+            Directory.CreateDirectory(localPath);
 
-            version = new VersioningMock(user);
+            version = new Mock<IVersionTool>(MockBehavior.Strict);
             saver = new SaverMock();
             string musicFolder = "TestFolder";
             saver.saveSettings(user, musicFolder);
             fileManager = new Mock<IFileManager>();
-            songsManager = new SongsManager(version, saver, fileManager.Object);
-            locker = new Locker(version);
+            songsManager = new SongsManager(version.Object, saver, fileManager.Object);
+            locker = new Locker(version.Object);
         }
 
         public void Dispose()
         {
-            if (expectedSong.LocalPath != null)
+            if (Directory.Exists(localPath))
             {
-                Directory.Delete(expectedSong.LocalPath, true);
-            }
-            if (Directory.Exists(version.versionPath + expectedSong.LocalPath))
-            {
-                Directory.Delete(version.versionPath + expectedSong.LocalPath, true);
+                Directory.Delete(localPath, true);
             }
             songsManager.SongList.Clear();
         }
@@ -55,8 +49,9 @@ namespace ModelsTests.SongsManagerTest
         public Song expectedSong;
         public ISaver saver;
         public Mock<IFileManager> fileManager;
+        public Mock<IVersionTool> version;
         public SongsManager songsManager;
-        public VersioningMock version;
+        
         public Locker locker;
         public string title;
         public string file;
@@ -66,49 +61,54 @@ namespace ModelsTests.SongsManagerTest
     public class SongsManagerTest : TestsBase
     {
         [Fact]
-        public void addAndFindSongTest()
+        public async Task addAndFindSongTest()
         {
-            songsManager.addLocalSong(title, file, localPath);
+            version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
+
+            await songsManager.addLocalSongAsync(title, file, localPath);
             Song song = songsManager.findSong(title);
+
             Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
+            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Once());
         }
 
+        
         [Fact]
         public void tryFindNullSongTest()
         {
             Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
         }
-
+        
         [Fact]
         public async Task deleteSongTest()
         {
-            songsManager.addLocalSong(title, file, localPath);
+            version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
+
+            await songsManager.addLocalSongAsync(title, file, localPath);
 
             await songsManager.deleteSongAsync(expectedSong);
             Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
-            Assert.True(File.Exists(expectedSong.LocalPath + expectedSong.File));
+            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Once());
         }
-
+        
         [Fact]
         public async Task deleteSongLockedbyAnotherUserTest()
         {
+            version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
+            version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(string.Empty));
+
             //GIVEN
             //A song added to the songsManager, we expect the song being added to the songstorage and
             //be saved. Then we lock the song by another user, we expect to have lock file in local and version workspace.
-            songsManager.addLocalSong(title, file, localPath);
-            Song? song = songsManager.findSong(title);
-            Assert.Equal(expectedSong, song);
-            Assert.Contains(expectedSong, saver.savedSongs());
+            await songsManager.addLocalSongAsync(title, file, localPath);
             string Username = "Second User";
             string BandPassword = "12df546@";
             string BandName = "Clic5456";
             string BandEmail = "testdklsjfhg@yahoo.com";
             User user2 = new User(BandName, BandPassword, Username, BandEmail);
             await locker.lockSongAsync(expectedSong, user2);
-            Assert.True(File.Exists(expectedSong.LocalPath + @"\.lock"));
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
 
             //WHEN we want to delete the song
             await songsManager.deleteSongAsync(expectedSong);
@@ -117,352 +117,296 @@ namespace ModelsTests.SongsManagerTest
             //unlocked, lock file not being removed from local and version workspace.
             Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
-            Assert.True(File.Exists(expectedSong.LocalPath + expectedSong.File));
-            Assert.True(File.Exists(expectedSong.LocalPath + @"\.lock"));
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
+            version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "lock"), Times.Once());
+            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Once());
         }
-
+        
         [Fact]
         public async Task deleteSongLockedbyUserTest()
         {
-            //GIVEN
-            //A song added to the songsManager, we expect the song being added to the songstorage and
-            //be saved. Then we lock the song, we expect to have lock file in local and version workspace.
-            songsManager.addLocalSong(title, file, localPath);
-            Song? song = songsManager.findSong(title);
-            Assert.Equal(expectedSong, song);
-            Assert.Contains(expectedSong, saver.savedSongs());
-            await locker.lockSongAsync(expectedSong, user);
-            Assert.True(File.Exists(expectedSong.LocalPath + @"\.lock"));
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
+            version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
+            version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(string.Empty));
+            version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "unlock")).Returns(Task.FromResult(string.Empty));
 
-            //WHEN we want to delete the song
+            await songsManager.addLocalSongAsync(title, file, localPath);
+            await locker.lockSongAsync(expectedSong, user);
+
             await songsManager.deleteSongAsync(expectedSong);
 
-            //THEN we expect the song being removed from song storage and save. We expect the song to be
-            //locked, lock file removed from local and version workspace.
             Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
-            Assert.True(File.Exists(expectedSong.LocalPath + expectedSong.File));
-            Assert.False(File.Exists(expectedSong.LocalPath + @"\.lock"));
-            Assert.False(File.Exists(version.versionPath + expectedSong.LocalPath + expectedSong.File));
-            Assert.False(File.Exists(version.versionPath + expectedSong.LocalPath + @"\.lock"));
+            version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "unlock"), Times.Once());
+            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Once());
         }
-
+        
         [Fact]
         public async Task updateSongTest()
         {
+            version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(true));
+            version.Setup(m => m.updateSongAsync(expectedSong)).Returns(Task.FromResult(String.Empty));
+
             //Add song for synchronization
-            songsManager.addLocalSong(title, file, localPath);
-            //Simulate a change on version workspace
-            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
-            FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio.wav");
-            fileStream.Close();
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
-            Assert.False(File.Exists(expectedSong.LocalPath + "audio.wav"));
+            await songsManager.addLocalSongAsync(title, file, localPath);
 
             string errorMessage = await songsManager.updateSongAsync(expectedSong);
 
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
-            Assert.True(File.Exists(expectedSong.LocalPath + "audio.wav"));
             Assert.Equal(string.Empty, errorMessage);
+            version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
+            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Exactly(3));
         }
 
+        
         [Fact]
         public async Task updateSongLockedTest()
         {
+            version.SetupSequence(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false))
+                                                                                    .Returns(Task.FromResult(true))
+                                                                                    .Returns(Task.FromResult(false));                                                                               
+            version.Setup(m => m.updateSongAsync(expectedSong)).Returns(Task.FromResult(String.Empty));
+            version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(string.Empty));
+
+            string Username = "Second User";
+            string BandPassword = "12df546@";
+            string BandName = "Clic5456";
+            string BandEmail = "testdklsjfhg@yahoo.com";
+            User user2 = new User(BandName, BandPassword, Username, BandEmail);
+            await locker.lockSongAsync(expectedSong, user2);
             //Add song for synchronization
-            songsManager.addLocalSong(title, file, localPath);
-            //Simulate a change on version workspace
-            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
-            FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + ".lock");
-            fileStream.Close();
+            await songsManager.addLocalSongAsync(title, file, localPath);
 
             string errorMessage = await songsManager.updateSongAsync(expectedSong);
 
             Assert.Equal(SongStatus.State.locked, expectedSong.Status.state);
-            Assert.True(File.Exists(expectedSong.LocalPath + ".lock"));
             Assert.Equal(string.Empty, errorMessage);
-        }
-
-        [Fact]
-        public async Task TryUpdateSongWithWrongBandNameTest()
-        {
-            //Add song for synchronization
-            songsManager.addLocalSong(title, file, localPath);
-            //Simulate a change on version workspace
-            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
-            FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio.wav");
-            fileStream.Close();
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
-            Assert.False(File.Exists(expectedSong.LocalPath + "audio.wav"));
-
-            user.BandName = "Wrong Username";
-
-            string errorMessage = await songsManager.updateSongAsync(expectedSong);
-
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
-            Assert.False(File.Exists(expectedSong.LocalPath + "audio.wav"));
-            Assert.Equal("Error Bad Credentials", errorMessage);
-        }
-
-        [Fact]
-        public async Task TryUpdateSongWithWrongBandPasswordTest()
-        {
-            //Add song for synchronization
-            songsManager.addLocalSong(title, file, localPath);
-            //Simulate a change on version workspace
-            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
-            FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio.wav");
-            fileStream.Close();
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
-            Assert.False(File.Exists(expectedSong.LocalPath + "audio.wav"));
-
-            user.BandPassword = "Wrong Password";
-
-            string errorMessage = await songsManager.updateSongAsync(expectedSong);
-
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio.wav"));
-            Assert.False(File.Exists(expectedSong.LocalPath + "audio.wav"));
-            Assert.Equal("Error Bad Credentials", errorMessage);
+            version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
+            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Exactly(3));
         }
 
         [Fact]
         public async Task revertSongTest()
         {
+            version.SetupSequence(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
+            version.Setup(m => m.revertSongAsync(expectedSong)).Returns(Task.FromResult(String.Empty));
+
             //Add song for synchronization
-            songsManager.addLocalSong(title, file, localPath);
-            //Simulate Modifications in local workspace
-            FileStream fileStream = File.Create(expectedSong.LocalPath + "audio1.wav");
-            fileStream.Close();
-            fileStream = File.Create(expectedSong.LocalPath + "audio2.wav");
-            fileStream.Close();
-            //Different Version in version workspace
-            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
-            fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio3.wav");
-            fileStream.Close();
+            await songsManager.addLocalSongAsync(title, file, localPath);
 
             string errorMessage = await songsManager.revertSongAsync(expectedSong);
 
-            Assert.True(File.Exists(expectedSong.LocalPath + "audio3.wav"));
-            Assert.False(File.Exists(expectedSong.LocalPath + "audio1.wav"));
-            Assert.False(File.Exists(expectedSong.LocalPath + "audio2.wav"));
             Assert.Equal(string.Empty, errorMessage);
+            version.Verify(m => m.revertSongAsync(expectedSong), Times.Once());
+            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Once());
         }
-
+        
         [Fact]
         public async Task uploadSongTest()
         {
+            version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
+            version.Setup(m => m.newVersionNumberAsync(expectedSong, true, false, false)).Returns(Task.FromResult("1.0.0"));
+            version.Setup(m => m.uploadSongAsync(expectedSong, "New Version", "No description","1.0.0")).Returns(Task.FromResult(String.Empty));
+
             //Add song for synchronization
-            songsManager.addLocalSong(title, file, localPath);
-            //Simulate Modifications in local workspace
-            FileStream fileStream = File.Create(expectedSong.LocalPath + "audio1.wav");
-            fileStream.Close();
-            fileStream = File.Create(expectedSong.LocalPath + "audio2.wav");
-            fileStream.Close();
-            //Different Version in version workspace
-            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
-            fileStream = File.Create(version.versionPath + expectedSong.LocalPath + "audio3.wav");
-            fileStream.Close();
+            await songsManager.addLocalSongAsync(title, file, localPath);
 
             string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, "New Version", "No description", true, false, false);
 
-            Assert.False(File.Exists(version.versionPath + expectedSong.LocalPath + "audio3.wav"));
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio1.wav"));
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + "audio2.wav"));
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + expectedSong.File));
             Assert.Equal(string.Empty, errorMessage);
+            version.Verify(m => m.newVersionNumberAsync(expectedSong, true, false, false), Times.Once());
+            version.Verify(m => m.uploadSongAsync(expectedSong, "New Version", "No description", "1.0.0"), Times.Once());
         }
-
+        
         [Fact]
         public async Task openSongTest()
         {
-            //Simulate a change on version workspace
-            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
+            version.SetupSequence(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(true))
+                                                                                    .Returns(Task.FromResult(false))
+                                                                                    .Returns(Task.FromResult(false));
+            version.Setup(m => m.updateSongAsync(expectedSong)).Returns(Task.FromResult(String.Empty));
+            version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(string.Empty));
+            File.Create(localPath + file).Close();
 
-            (bool, string) errorMessage = await songsManager.openSongAsync(expectedSong);
+            bool errorMessage = await songsManager.openSongAsync(expectedSong);
 
             Assert.Equal(SongStatus.State.locked, expectedSong.Status.state);
-            Assert.True(File.Exists(expectedSong.LocalPath + ".lock"));
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + ".lock"));
-            Assert.True(errorMessage.Item1);
-            Assert.Equal(string.Empty, errorMessage.Item2);
+            Assert.True(errorMessage);
+            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Exactly(3));
+            version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
+            version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "lock"), Times.Once());
         }
-
+        
         [Fact]
         public async Task tryOpenSongLockedTest()
         {
-            //Simulate locked song on version workspace
-            Directory.CreateDirectory(version.versionPath + expectedSong.LocalPath);
-            FileStream fileStream = File.Create(version.versionPath + expectedSong.LocalPath + ".lock");
-            fileStream.Close();
+            version.SetupSequence(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(true))
+                                                                                    .Returns(Task.FromResult(false));
+            version.Setup(m => m.updateSongAsync(expectedSong)).Returns(Task.FromResult(String.Empty));
+            version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(string.Empty));
+            string Username = "Second User";
+            string BandPassword = "12df546@";
+            string BandName = "Clic5456";
+            string BandEmail = "testdklsjfhg@yahoo.com";
+            User user2 = new User(BandName, BandPassword, Username, BandEmail);
+            await locker.lockSongAsync(expectedSong, user2);
 
-            (bool, string) errorMessage = await songsManager.openSongAsync(expectedSong);
+            bool errorMessage = await songsManager.openSongAsync(expectedSong);
 
             Assert.Equal(SongStatus.State.locked, expectedSong.Status.state);
-            Assert.True(File.Exists(expectedSong.LocalPath + ".lock"));
-            Assert.True(File.Exists(version.versionPath + expectedSong.LocalPath + ".lock"));
-            Assert.False(errorMessage.Item1);
-            Assert.Equal("Already Locked", errorMessage.Item2);
+            Assert.False(errorMessage);
+            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Exactly(2));
+            version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
+            version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "lock"), Times.Once());
         }
-
+        
         [Fact]
         public async Task currentVersionTest()
         {
-            songsManager.addLocalSong(title, file, localPath);
-            string titleChange = "New Version";
-            string descriptionChange = "No description";
-            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, true, false, false);
+            SongVersion songVersion = new SongVersion();
+            songVersion.Number = "1.0.0";
+            songVersion.Author = "Oregano";
+            songVersion.Description = "No Description";
+            version.Setup(m => m.currentVersionAsync(expectedSong)).Returns(Task.FromResult(songVersion));
 
             SongVersion currentVersion = await songsManager.currentVersionAsync(expectedSong);
 
-            string expectedVersionDescription = titleChange + "\n\n" + descriptionChange;
+            string expectedVersionDescription = "No Description";
             string expectedVersionNumber = "1.0.0";
-            string expectedVersionAuthor = user.Username;
+            string expectedVersionAuthor = "Oregano";
             Assert.Equal(expectedVersionDescription, currentVersion.Description);
             Assert.Equal(expectedVersionNumber, currentVersion.Number);
             Assert.Equal(expectedVersionAuthor, currentVersion.Author);
         }
 
-        [Theory]
-        [InlineData(true, false, false, "1.0.0")]
-        [InlineData(false, true, false, "0.1.0")]
-        [InlineData(false, false, true, "0.0.1")]
-        [InlineData(true, true, true, "1.1.1")]
-        public async Task initialVersionNumberTest(bool compo, bool mix, bool mastering, string expectedVersionNumber)
+        [Fact]
+        public async Task versionsTest()
         {
-            title = "End of the Road";
-            file = "test.song";
-            localPath = "User/test/End of the Road/";
-            songsManager.addLocalSong(title, file, localPath);
-            string titleChange = "New Version";
-            string descriptionChange = "No description";
-            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
-
-            SongVersion currentVersion = await songsManager.currentVersionAsync(expectedSong);
-
-            Assert.Equal(expectedVersionNumber, currentVersion.Number);
-        }
-
-        [Theory]
-        [InlineData(false, false, false, "1.1.1")]
-        [InlineData(true, false, false, "2.0.0")]
-        [InlineData(false, true, false, "1.2.0")]
-        [InlineData(false, false, true, "1.1.2")]
-        [InlineData(true, false, true, "2.0.1")]
-        [InlineData(false, true, true, "1.2.1")]
-        [InlineData(true, true, false, "2.1.0")]
-        [InlineData(true, true, true, "2.1.1")]
-        public async Task versionNumberTest(bool compo, bool mix, bool mastering, string expectedVersionNumber)
-        {
-            title = "End of the Road";
-            file = "test.song";
-            localPath = "User/test/End of the Road/";
-            songsManager.addLocalSong(title, file, localPath);
-            string titleChange = "New Version";
-            string descriptionChange = "No description";
-            //Simulate first upload by another user version 1.1.1
-            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, true, true, true);
-
-            errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
-
-            SongVersion currentVersion = await songsManager.currentVersionAsync(expectedSong);
-
-            Assert.Equal(expectedVersionNumber, currentVersion.Number);
-        }
-
-        [Theory]
-        [InlineData("End of the Road", "test.song", "User/test/End of the Road/", true, true, true)]
-        public async Task versionsTest(string title, string file, string localPath, bool compo, bool mix, bool mastering)
-        {
-            songsManager.addLocalSong(title, file, localPath);
-            string titleChange = "New Version";
-            string descriptionChange = "No description";
-            //Simulate uploads by another user
-            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
-            errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, titleChange, descriptionChange, compo, mix, mastering);
+            SongVersion songVersion = new SongVersion();
+            songVersion.Number = "1.0.0";
+            songVersion.Author = "Oregano";
+            songVersion.Description = "No Description";
+            SongVersion songVersion2 = new SongVersion();
+            songVersion2.Number = "2.0.1";
+            songVersion2.Author = "Aymeric Meindre";
+            songVersion2.Description = "Mastering";
+            List<SongVersion> songs = new List<SongVersion>();
+            songs.Add(songVersion);
+            songs.Add(songVersion2);
+            version.Setup(m => m.versionsAsync(expectedSong)).Returns(Task.FromResult(songs));
 
             List<SongVersion> versions = await songsManager.versionsAsync(expectedSong);
 
-            SongVersion expectedSongVersion = new SongVersion("1.1.1", titleChange + "\n\n" + descriptionChange, user.Username);
-            SongVersion expectedSongVersion2 = new SongVersion("2.1.1", titleChange + "\n\n" + descriptionChange, user.Username);
-            Assert.Contains(expectedSongVersion, versions);
-            Assert.Contains(expectedSongVersion2, versions);
+            Assert.Contains(songVersion, versions);
+            Assert.Contains(songVersion2, versions);
         }
-
+        
         [Theory]
         [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest")]
         public async Task addSharedSongTest(string songTitle, string sharedLink, string downloadPath)
         {
-            Mock<IFileManager> fileManagerMock = new Mock<IFileManager>();
-            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(downloadPath + @"\" + songTitle, ".song")).Returns(Task.FromResult("file.song"));
-            SongsManager songsManagerTest = new SongsManager(version, saver, fileManagerMock.Object);
-
-            await songsManagerTest.addSharedSongAsync(songTitle, sharedLink, downloadPath);
+            fileManager.Setup(m => m.findFileNameBasedOnExtensionAsync(downloadPath + @"\" + songTitle, ".song")).Returns(Task.FromResult("file.song"));
+            fileManager.Setup(m => m.FormatPath(downloadPath)).Returns(@"./SongsManagerTest\");
+            Song expectedSong = new Song(songTitle, "file.song", downloadPath + @"\" + songTitle);
+            version.Setup(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath)).Returns(Task.FromResult(string.Empty));
+            version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
+            
+            await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath);
 
             //We expect a songVersioned created with the title
-            Song expectedSong = new Song(songTitle, "file.song", downloadPath + @"\" + songTitle);
-            Song song = songsManagerTest.findSong(songTitle);
+            Song song = songsManager.findSong(songTitle);
             Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
+            version.Verify(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath), Times.Once());
+            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Once());
         }
-
+        
         [Theory]
         [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest")]
         public async Task addSharedSongErrorDownloadTest(string songTitle, string sharedLink, string downloadPath)
         {
-
-            Mock<IVersionTool> versionToolMock = new Mock<IVersionTool>();
-            versionToolMock.Setup(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath)).Returns(Task.FromResult("Error"));
-            SongsManager songsManagerTest = new SongsManager(versionToolMock.Object, saver, fileManager.Object);
-
-            string errorMessage = await songsManagerTest.addSharedSongAsync(songTitle, sharedLink, downloadPath);
+            version.Setup(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath)).Returns(Task.FromResult("Error"));
+       
+            string errorMessage = await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath);
 
             //We expect a songVersioned created with the title
             Song expectedSong = new Song(songTitle, "file.song", downloadPath + @"\" + songTitle);
-            Assert.DoesNotContain(expectedSong, songsManagerTest.SongList);
+            Assert.DoesNotContain(expectedSong, songsManager.SongList);
             Assert.Equal("Error", errorMessage);
             //We expect to have called the addSharedSongAsync method in the songsManager
-            versionToolMock.Verify(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath), Times.Once());
+            version.Verify(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath), Times.Once());
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
         }
-
+        
         [Theory]
         [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest")]
         public async Task addSharedSongErrorFileNotFoundTest(string songTitle, string sharedLink, string downloadPath)
         {
-            Mock<IFileManager> fileManagerMock = new Mock<IFileManager>();
-            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(downloadPath + @"\" + songTitle, ".song")).Returns(Task.FromResult(string.Empty));
-            SongsManager songsManagerTest = new SongsManager(version, saver, fileManagerMock.Object);
+            fileManager.Setup(m => m.findFileNameBasedOnExtensionAsync(downloadPath + @"\" + songTitle, ".song")).Returns(Task.FromResult(string.Empty));
+            fileManager.Setup(m => m.FormatPath(downloadPath)).Returns(@"./SongsManagerTest\");
+            version.Setup(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath)).Returns(Task.FromResult(string.Empty));
 
-            string errorMessage = await songsManagerTest.addSharedSongAsync(songTitle, sharedLink, downloadPath);
+            string errorMessage = await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath);
 
             //We expect a songVersioned created with the title
             string localPath = downloadPath + @"\" + songTitle;
             Song expectedSong = new Song(songTitle, "file.song", localPath);
-            Assert.DoesNotContain(expectedSong, songsManagerTest.SongList);
-            fileManagerMock.Verify(m => m.findFileNameBasedOnExtensionAsync(localPath,".song"), Times.Once());
+            Assert.DoesNotContain(expectedSong, songsManager.SongList);
+            fileManager.Verify(m => m.findFileNameBasedOnExtensionAsync(localPath,".song"), Times.Once());
             Assert.Equal("Song File not Found in " + localPath, errorMessage);
         }
 
-
+        
         [Theory]
         [InlineData("End of the Road", "test.song", "User/test/End of the Road/")]
         public async Task getShareLinkTest(string title, string file, string localPath)
         {
             Song song = new Song(title, file, localPath);
-            Mock<IVersionTool> versionToolMock = new Mock<IVersionTool>();
-            versionToolMock.Setup(m => m.shareSongAsync(song)).Returns(Task.FromResult("https://www.gitlab.com/end-of-the-road"));
-            Mock<IFileManager> fileManagerMock = new Mock<IFileManager>();
-            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(localPath + @"\" + title, ".song")).Returns(Task.FromResult(file));
+            version.Setup(m => m.shareSongAsync(song)).Returns(Task.FromResult("https://www.gitlab.com/end-of-the-road"));
+            fileManager.Setup(m => m.findFileNameBasedOnExtensionAsync(localPath + @"\" + title, ".song")).Returns(Task.FromResult(file));
 
-            SongsManager songsManagerTest = new SongsManager(versionToolMock.Object, saver, fileManagerMock.Object);
-
-            string errorMessage = await songsManagerTest.shareSongAsync(song);
+            string shareLink = await songsManager.shareSongAsync(song);
 
             //We expect to have called the addSharedSongAsync method in the songsManager
-            versionToolMock.Verify(m => m.shareSongAsync(song), Times.Once());
+            Assert.Equal("https://www.gitlab.com/end-of-the-road", shareLink);
+            version.Verify(m => m.shareSongAsync(song), Times.Once());
 
         }
+        
+        [Fact]
+        public async Task refreshStatusForSongUpToDate()
+        {
+            version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
+            
+            await songsManager.refreshSongStatusAsync(expectedSong);
+
+            Assert.Equal(SongStatus.State.upToDate, expectedSong.Status.state);
+        }
+
+        [Fact]
+        public async Task refreshStatusForSongLocked()
+        {
+            version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
+            version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(string.Empty));
+
+            string Username = "Second User";
+            string BandPassword = "12df546@";
+            string BandName = "Clic5456";
+            string BandEmail = "testdklsjfhg@yahoo.com";
+            User user2 = new User(BandName, BandPassword, Username, BandEmail);
+            await locker.lockSongAsync(expectedSong, user2);
+            
+            await songsManager.refreshSongStatusAsync(expectedSong);
+
+            Assert.Equal(SongStatus.State.locked, expectedSong.Status.state);
+        }
+
+        [Fact]
+        public async Task refreshStatusForSongUpdatesAvailable()
+        {
+            version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(true));
+            
+            await songsManager.refreshSongStatusAsync(expectedSong);
+
+            Assert.Equal(SongStatus.State.updatesAvailable, expectedSong.Status.state);
+        }
+        
     }
 }

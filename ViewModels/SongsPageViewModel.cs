@@ -29,11 +29,11 @@ namespace App1.ViewModels
             return errorMessage;
         }
 
-        public SongVersioned addLocalSong(string songTitle, string songFile, string songLocalPath)
+        public async Task<SongVersioned> addLocalSongAsync(string songTitle, string songFile, string songLocalPath)
         {
             IsAddingSong = true;
-            FileManager.FormatPath(ref songLocalPath);
-            SongsManager.addLocalSong(songTitle, songFile, songLocalPath);
+            songLocalPath = FileManager.FormatPath(songLocalPath);
+            await SongsManager.addLocalSongAsync(songTitle, songFile, songLocalPath);
             SongVersioned songVersioned = new SongVersioned(songTitle);
             SongsVersioned.Add(songVersioned);
             IsAddingSong = false;
@@ -43,7 +43,7 @@ namespace App1.ViewModels
         public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string songLocalPath)
         {
             IsAddingSong = true;
-            FileManager.FormatPath(ref songLocalPath);
+            songLocalPath = FileManager.FormatPath(songLocalPath);
             string errorMessage = await SongsManager.addSharedSongAsync(songTitle, sharedLink, songLocalPath);
             if (!string.IsNullOrEmpty(errorMessage))
             {
@@ -79,12 +79,12 @@ namespace App1.ViewModels
             return errorMessage;
         }
 
-        public async Task<(bool, string)> openSongAsync(SongVersioned songVersioned)
+        public async Task<bool> openSongAsync(SongVersioned songVersioned)
         {
             songVersioned.IsOpeningSong = true;
             Song song = SongsManager.findSong(songVersioned.Title);
-            (bool, string) errorMessage = await SongsManager.openSongAsync(song);
-            if (!string.IsNullOrEmpty(errorMessage.Item2))
+            bool errorMessage = await SongsManager.openSongAsync(song);
+            if (!errorMessage)
             {
                 songVersioned.IsOpeningSong = false;
                 return errorMessage;
@@ -185,6 +185,10 @@ namespace App1.ViewModels
             if (song.Status.state == SongStatus.State.locked)
             {
                 songVersioned.Status = "Locked by " + song.Status.whoLocked;
+            }
+            else if (song.Status.state == SongStatus.State.updatesAvailable)
+            {
+                songVersioned.Status = "Updates Available";
             }
             else if (song.Status.state == SongStatus.State.upToDate)
             {

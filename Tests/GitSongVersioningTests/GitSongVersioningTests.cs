@@ -387,5 +387,7 @@ namespace GitSongVersioningTests
 
             Assert.Equal(expectedVersions, versions);
         }
+
+
     }
 }

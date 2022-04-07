@@ -253,8 +253,8 @@ namespace WinUIAppTests.FileManagerTests
         {
             var savedPath = path;
             FileManager fileManager = new FileManager();
-            fileManager.FormatPath(ref path);
-            Assert.Equal(savedPath + '\\', path);
+            string newPath = fileManager.FormatPath(path);
+            Assert.Equal(savedPath + '\\', newPath);
 
         }
 
@@ -264,7 +264,7 @@ namespace WinUIAppTests.FileManagerTests
         {
             var savedPath = path;
             FileManager fileManager = new FileManager();
-            fileManager.FormatPath(ref path);
+            path = fileManager.FormatPath(path);
             Assert.Equal(savedPath, path);
 
         }

@@ -54,7 +54,7 @@ namespace App1
             {
                 if (songTitle.Text != string.Empty && songFile.Text != string.Empty && songLocalPath.Text != string.Empty)
                 {
-                    SongsPageViewModel.addLocalSong(songTitle.Text, songFile.Text, songLocalPath.Text);
+                    await SongsPageViewModel.addLocalSongAsync(songTitle.Text, songFile.Text, songLocalPath.Text);
                 }
                 else if (songSharedTitle.Text != string.Empty && sharedLink.Text != string.Empty && songSharedLocalPath.Text != string.Empty)
                 {
@@ -171,10 +171,10 @@ namespace App1
         private async void openSongClick(object sender, RoutedEventArgs e)
         {
             SongVersioned song = (sender as Button).DataContext as SongVersioned;
-            (bool, string) opened = await SongsPageViewModel.openSongAsync(song);
-            if (!opened.Item1)
+            bool opened = await SongsPageViewModel.openSongAsync(song);
+            if (!opened)
             {
-                await displayContentDialog(opened.Item2);
+                await displayErrorDialog("An error occured when trying to open the song");
             }
         }
 
