@@ -197,5 +197,17 @@ namespace ModelsTests.LockerTest
             Assert.False(locker.isLockedByUser(song, user2));
             
         }
+
+        [Fact]
+        public void nobodyLockTheSongTest()
+        {
+            Assert.Equal(SongStatus.State.upToDate, song.Status.state);
+            Assert.False(locker.isLocked(song));
+            Assert.False(locker.isLockedByUser(song, user1));
+            Assert.False(locker.isLockedByUser(song, user2));
+
+            string whoLocked = locker.whoLocked(song);
+            Assert.Equal(string.Empty,whoLocked);
+        }
     }
 }
