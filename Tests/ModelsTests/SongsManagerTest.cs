@@ -61,16 +61,13 @@ namespace ModelsTests.SongsManagerTest
     public class SongsManagerTest : TestsBase
     {
         [Fact]
-        public async Task addAndFindSongTest()
+        public void addAndFindSongTest()
         {
-            version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
-
-            await songsManager.addLocalSongAsync(title, file, localPath);
+            songsManager.addLocalSong(title, file, localPath);
             Song song = songsManager.findSong(title);
 
             Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
-            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Once());
         }
 
         

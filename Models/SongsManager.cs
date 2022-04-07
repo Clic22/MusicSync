@@ -40,11 +40,10 @@ namespace App1.Models
             return errorMessage;
         }
 
-        public async Task addLocalSongAsync(string songTitle, string songFile, string songLocalPath)
+        public void addLocalSong(string songTitle, string songFile, string songLocalPath)
         {
             Song song = new Song(songTitle, songFile, songLocalPath);
             SongList.addNewSong(song);
-            await refreshSongStatusAsync(song);
         }
 
         public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
