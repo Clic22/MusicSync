@@ -334,6 +334,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Song song = new Song(title, file, localPath);
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
+            songsManagerMock.Setup(m => m.openSongAsync(song)).Returns(Task.FromResult(true));
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
             viewModel.addLocalSong(title, file, localPath);
             SongVersioned expectedSongToBeOpened = new SongVersioned(title);
