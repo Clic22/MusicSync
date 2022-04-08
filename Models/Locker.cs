@@ -11,7 +11,11 @@ namespace App1.Models
 
         public async Task<bool> lockSongAsync(Song song, User user)
         {
-            if (!lockFileExist(song) || isLockedByUser(song, user))
+            if(isLockedByUser(song,user))
+            {
+                return true;
+            }
+            else if (!lockFileExist(song))
             {
                 createLockFile(song, user);
                 string errorMessage = await VersionTool.uploadSongAsync(song, @".lock", "lock");

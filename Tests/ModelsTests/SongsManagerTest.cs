@@ -227,6 +227,26 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
+        public async Task openSongAlreadyLockedByUserTest()
+        {
+            version.SetupSequence(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(true))
+                                                                                    .Returns(Task.FromResult(false))
+                                                                                    .Returns(Task.FromResult(false));
+            version.Setup(m => m.updateSongAsync(expectedSong)).Returns(Task.FromResult(String.Empty));
+            version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(string.Empty));
+            File.Create(localPath + file).Close();
+            await locker.lockSongAsync(expectedSong, user);
+
+            bool errorMessage = await songsManager.openSongAsync(expectedSong);
+
+            Assert.Equal(SongStatus.State.locked, expectedSong.Status.state);
+            Assert.True(errorMessage);
+            version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Exactly(3));
+            version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
+            version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "lock"), Times.Once());
+        }
+
+        [Fact]
         public async Task openSongErrorAtUpdateTest()
         {
             version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(true));
