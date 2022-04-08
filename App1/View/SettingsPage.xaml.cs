@@ -28,7 +28,7 @@ namespace App1
         {
             settingsViewModel.MusicSyncFolder = MusicSyncFolder.Text;
             settingsViewModel.CheckUpdatesFrequency = CheckUpdatesFrequency.Text;
-            settingsViewModel.saveSettings(BandName.Text, BandPassword.Password, BandEmail.Text, Username.Text);
+            settingsViewModel.saveSettings(BandName.Text, BandPassword.Password, Username.Text, BandEmail.Text);
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = this.XamlRoot;
             dialog.Title = "Settings Saved";
