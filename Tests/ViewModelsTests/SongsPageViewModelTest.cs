@@ -87,7 +87,6 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Setup(m => m.versionsAsync(song2)).Returns(Task.FromResult(songsVersion2));
             
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
-            await viewModel.refreshSongsVersionedAsync();
 
             SongVersioned expectedSong = new SongVersioned(title);
             App1.ViewModels.Version expectedVersion = new App1.ViewModels.Version();

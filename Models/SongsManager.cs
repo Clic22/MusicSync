@@ -1,5 +1,7 @@
 ﻿using App1.Models.Ports;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Timers;
 
 namespace App1.Models
 {
@@ -12,6 +14,40 @@ namespace App1.Models
             FileManager = NewFileManager;
             SongList = new SongsStorage(Saver);
             Locker = new Locker(VersionTool);
+            Timer = new System.Timers.Timer();
+            refreshSongsStatus();
+            SetTimer();
+        }
+
+        private void NotifyPropertyChanged(string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private void SetTimer()
+        {
+            int milliseconds = Saver.savedCheckUpdatesFrequency() * 60 * 1000;
+            // Create a timer with a two second interval.
+            Timer = new System.Timers.Timer(milliseconds);
+            // Hook up the Elapsed event for the timer. 
+            Timer.Elapsed += OnTimedEvent;
+            Timer.AutoReset = true;
+            Timer.Enabled = true;
+        }
+
+        private async void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            await refreshSongsStatus();
+        }
+
+        private async Task refreshSongsStatus()
+        {
+            foreach (var song in SongList)
+            {
+                await refreshSongStatusAsync(song);
+            }
         }
 
         public async Task<string> updateSongAsync(Song song)
@@ -23,8 +59,8 @@ namespace App1.Models
                 {
                     return errorMessage;
                 }
-                await refreshSongStatusAsync(song);
             }
+            await refreshSongStatusAsync(song);
             return string.Empty;
         }
 
@@ -145,6 +181,7 @@ namespace App1.Models
             {
                 song.Status.state = SongStatus.State.upToDate;
             }
+            NotifyPropertyChanged("SongsStatus");
         }
 
         private static void openSongWithDAW(Song song)
@@ -162,5 +199,6 @@ namespace App1.Models
         private readonly Locker Locker;
         private readonly ISaver Saver;
         private readonly IFileManager FileManager;
+        private System.Timers.Timer Timer;
     }
 }

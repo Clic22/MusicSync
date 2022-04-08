@@ -2,6 +2,7 @@
 using App1.Models.Ports;
 using System.Collections.ObjectModel;
 using WinUIApp;
+using Microsoft.UI.Dispatching;
 
 namespace App1.ViewModels
 {
@@ -11,6 +12,7 @@ namespace App1.ViewModels
         {
             SongsVersioned = new ObservableCollection<SongVersioned>();
             SongsManager = songsManager;
+            SongsManager.PropertyChanged += SongsManager_PropertyChanged;
             FileManager = new FileManager();
             intializeSongsVersioned();
         }
@@ -74,7 +76,6 @@ namespace App1.ViewModels
                 songVersioned.IsUpdatingSong = false;
                 return errorMessage;
             }
-            await refreshSongVersionedAsync(songVersioned, song);
             songVersioned.IsUpdatingSong = false;
             return errorMessage;
         }
@@ -90,7 +91,6 @@ namespace App1.ViewModels
                 return errorMessage;
             }
             songVersioned.IsOpeningSong = false;
-            await refreshSongStatusAsync(songVersioned, song);
             return errorMessage;
         }
 
@@ -104,7 +104,6 @@ namespace App1.ViewModels
                 songVersioned.IsRevertingSong = false;
                 return errorMessage;
             }
-            await refreshSongStatusAsync(songVersioned, song);
             songVersioned.IsRevertingSong = false;
             return errorMessage;
         }
@@ -119,7 +118,6 @@ namespace App1.ViewModels
                 songVersioned.IsUploadingSong = false;
                 return errorMessage;
             }
-            await refreshSongVersionedAsync(songVersioned, song);
             songVersioned.IsUploadingSong = false;
             return errorMessage;
         }
@@ -130,16 +128,16 @@ namespace App1.ViewModels
             return await SongsManager.shareSongAsync(song);
         }
 
-        public async Task refreshSongsVersionedAsync()
+        public void refreshSongsStatus()
         {
-            foreach(var songVersioned in SongsVersioned)
+            foreach (var songVersioned in SongsVersioned)
             {
                 Song song = SongsManager.findSong(songVersioned.Title);
-                await refreshSongVersionedAsync(songVersioned, song);
+                refreshSongStatus(songVersioned, song);
             }
         }
 
-        private void intializeSongsVersioned()
+        private async void intializeSongsVersioned()
         {
             if (SongsManager.SongList != null)
             {
@@ -149,11 +147,37 @@ namespace App1.ViewModels
                     SongsVersioned.Add(songVersioned);
                 }
             }
+            await refreshSongsVersionedAsync();
+        }
+
+        private void refreshSongStatus(SongVersioned songVersioned, Song song)
+        {
+            if (song.Status.state == SongStatus.State.locked)
+            {
+                songVersioned.Status = "Locked by " + song.Status.whoLocked;
+            }
+            else if (song.Status.state == SongStatus.State.updatesAvailable)
+            {
+                songVersioned.Status = "Updates Available";
+            }
+            else if (song.Status.state == SongStatus.State.upToDate)
+            {
+                songVersioned.Status = string.Empty;
+            }
+        }
+
+        private async Task refreshSongsVersionedAsync()
+        {
+            foreach (var songVersioned in SongsVersioned)
+            {
+                Song song = SongsManager.findSong(songVersioned.Title);
+                await refreshSongVersionedAsync(songVersioned, song);
+            }
         }
 
         private async Task refreshSongVersionedAsync(SongVersioned songVersioned, Song song)
         {
-            await refreshSongStatusAsync(songVersioned, song);
+            refreshSongStatus(songVersioned, song);
             await refreshSongCurrentVersionAsync(songVersioned, song);
             await refreshSongVersionsAsync(songVersioned, song);
         }
@@ -180,21 +204,12 @@ namespace App1.ViewModels
             }
         }
 
-        private async Task refreshSongStatusAsync(SongVersioned songVersioned, Song song)
+        private async void SongsManager_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            await SongsManager.refreshSongStatusAsync(song);
-            if (song.Status.state == SongStatus.State.locked)
+            dispatcherQueue.TryEnqueue(() =>
             {
-                songVersioned.Status = "Locked by " + song.Status.whoLocked;
-            }
-            else if (song.Status.state == SongStatus.State.updatesAvailable)
-            {
-                songVersioned.Status = "Updates Available";
-            }
-            else if (song.Status.state == SongStatus.State.upToDate)
-            {
-                songVersioned.Status = string.Empty;
-            }
+                refreshSongsStatus();
+            });
         }
 
         public ObservableCollection<SongVersioned> SongsVersioned;
@@ -213,5 +228,7 @@ namespace App1.ViewModels
 
         private readonly IFileManager FileManager;
         private readonly ISongsManager SongsManager;
+        private readonly DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+
     }
 }

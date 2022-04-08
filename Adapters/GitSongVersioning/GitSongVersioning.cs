@@ -8,12 +8,12 @@ namespace GitVersionTool
 {
     public class GitSongVersioning : IVersionTool
     {
-        public GitSongVersioning(string askedMusiSyncFolderLocation, ISaver newSaver, IFileManager newFileManager) 
+        public GitSongVersioning(ISaver newSaver, IFileManager newFileManager) 
         {
             musicSyncFolder = string.Empty;
             saver = newSaver;
             fileManager = newFileManager;
-            createMusicSyncFolder(askedMusiSyncFolderLocation);
+            createMusicSyncFolder(saver.savedMusicSyncFolder());
         }
 
         public async Task<string> uploadSongAsync(Song song, string title, string description, string versionNumber)

@@ -1,6 +1,8 @@
-﻿namespace App1.Models.Ports
+﻿using System.ComponentModel;
+
+namespace App1.Models.Ports
 {
-    public interface ISongsManager
+    public interface ISongsManager: INotifyPropertyChanged
     {
         SongsStorage SongList { get; }
 

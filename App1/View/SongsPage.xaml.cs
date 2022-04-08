@@ -24,14 +24,9 @@ namespace App1
             this.InitializeComponent();
             ISaver saver = new LocalSettingsSaver();
             IFileManager fileManager = new FileManager();
-            IVersionTool versionTool = new GitSongVersioning(saver.savedMusicSyncFolder(), saver, fileManager);
+            IVersionTool versionTool = new GitSongVersioning(saver, fileManager);
             ISongsManager songsManager = new SongsManager(versionTool, saver, fileManager);
             SongsPageViewModel = new SongsPageViewModel(songsManager);
-        }
-
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
-        {
-            await SongsPageViewModel.refreshSongsVersionedAsync();
         }
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)
