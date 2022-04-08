@@ -20,6 +20,8 @@ namespace WinUIApp
             saveUserValue("BandEmail", settings.User.BandEmail);
 
             saveMusicSyncFolder(settings.MusicSyncFolder);
+
+            saveCheckUpdatesFrequency(settings.CheckUpdatesFrequency);
         }
 
         public User savedUser()
@@ -111,6 +113,19 @@ namespace WinUIApp
             
         }
 
+        public int savedCheckUpdatesFrequency()
+        {
+            int? CheckUpdatesFrequency = LocalSettings.Values["CheckUpdatesFrequency"] as int?;
+            if (CheckUpdatesFrequency != null)
+            {
+                return (int)CheckUpdatesFrequency;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         private void saveUserValue(string valueName, string? value)
         {
             UserContainer.Values.Remove(valueName);
@@ -123,9 +138,10 @@ namespace WinUIApp
             LocalSettings.Values.Add("MusicSyncFolder", musicSyncFolder);
         }
 
-        public int savedcheckUpdatesFrequency()
+        private void saveCheckUpdatesFrequency(int checkUpdateFrequency)
         {
-            throw new NotImplementedException();
+            LocalSettings.Values.Remove("CheckUpdatesFrequency");
+            LocalSettings.Values.Add("CheckUpdatesFrequency", checkUpdateFrequency);
         }
 
         private readonly Windows.Storage.ApplicationDataContainer LocalSettings;

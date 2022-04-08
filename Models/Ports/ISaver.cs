@@ -8,6 +8,6 @@
         public User savedUser();
         public List<Song> savedSongs();
         public string savedMusicSyncFolder();
-        public int savedcheckUpdatesFrequency();
+        public int savedCheckUpdatesFrequency();
     }
 }

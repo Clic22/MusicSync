@@ -61,9 +61,11 @@ namespace WinUIAppTests.LocalSettingsSaverTest
         public void SaveSetting1Test()
         {
             string expectedMusicSyncFolder = "TestFolder";
+            int expectedCheckUpdatesFrequency = 1;
             Settings settingsToBeSaved = new Settings();    
             settingsToBeSaved.User = user1;
             settingsToBeSaved.MusicSyncFolder = expectedMusicSyncFolder;
+            settingsToBeSaved.CheckUpdatesFrequency = expectedCheckUpdatesFrequency;
 
             saver.saveSettings(settingsToBeSaved);
 
@@ -71,15 +73,19 @@ namespace WinUIAppTests.LocalSettingsSaverTest
             Assert.AreEqual(user1, userSaved);
             string musicSyncFolderSaved = saver.savedMusicSyncFolder();
             Assert.AreEqual(expectedMusicSyncFolder, musicSyncFolderSaved);
+            int checkUpdatesFrequencySaved = saver.savedCheckUpdatesFrequency();
+            Assert.AreEqual(expectedCheckUpdatesFrequency, checkUpdatesFrequencySaved);
         }
 
         [TestMethod]
         public void SaveSetting2Test()
         {
-            string expectedMusicSyncFolder = "TestFolder";
+            string expectedMusicSyncFolder = "TestFolder2";
+            int expectedCheckUpdatesFrequency = 5;
             Settings settingsToBeSaved = new Settings();
             settingsToBeSaved.User = user2;
             settingsToBeSaved.MusicSyncFolder = expectedMusicSyncFolder;
+            settingsToBeSaved.CheckUpdatesFrequency = expectedCheckUpdatesFrequency;
 
             saver.saveSettings(settingsToBeSaved);
 
@@ -87,6 +93,8 @@ namespace WinUIAppTests.LocalSettingsSaverTest
             Assert.AreEqual(user2, userSaved);
             string musicSyncFolderSaved = saver.savedMusicSyncFolder();
             Assert.AreEqual(expectedMusicSyncFolder, musicSyncFolderSaved);
+            int checkUpdatesFrequencySaved = saver.savedCheckUpdatesFrequency();
+            Assert.AreEqual(expectedCheckUpdatesFrequency, checkUpdatesFrequencySaved);
         }
 
         [TestMethod]

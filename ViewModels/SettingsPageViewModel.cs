@@ -12,6 +12,7 @@ namespace App1.ViewModels
             this.fileManager = fileManager;
             User = new UserViewModel(saver.savedUser());
             musicSyncFolder_ = saver.savedMusicSyncFolder();
+            checkUpdatesFrequency_ = saver.savedCheckUpdatesFrequency().ToString();
         }
 
         public void saveSettings(string BandName, string BandPassword, string Username, string BandEmail)
@@ -20,6 +21,7 @@ namespace App1.ViewModels
             User userModel = new User(BandName,BandPassword,Username,BandEmail);
             settingsToBeSaved.User = userModel;
             settingsToBeSaved.MusicSyncFolder = MusicSyncFolder;
+            settingsToBeSaved.CheckUpdatesFrequency = int.Parse(CheckUpdatesFrequency);
             saver.saveSettings(settingsToBeSaved);
         }
 
@@ -38,16 +40,16 @@ namespace App1.ViewModels
             }
         }
 
-        private string checkUpdatesPeriod_;
-        public string CheckUpdatesPeriod
+        private string checkUpdatesFrequency_;
+        public string CheckUpdatesFrequency
         {
             get
             {
-                return checkUpdatesPeriod_;
+                return checkUpdatesFrequency_;
             }
             set
             {
-                SetProperty(ref checkUpdatesPeriod_, value);
+                SetProperty(ref checkUpdatesFrequency_, value);
             }
         }
 

@@ -1,9 +1,9 @@
-﻿using Microsoft.UI.Xaml;
+﻿using App1.Models.Ports;
+using App1.ViewModels;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using Windows.Storage.Pickers;
-using App1.ViewModels;
-using App1.Models.Ports;
 using WinUIApp;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -21,12 +21,14 @@ namespace App1
             this.InitializeComponent();
             ISaver saver = new LocalSettingsSaver();
             IFileManager fileManager = new FileManager();
-            viewModel = new SettingsPageViewModel(saver, fileManager);
+            settingsViewModel = new SettingsPageViewModel(saver, fileManager);
         }
 
         public async void saveSettingsClick(object sender, RoutedEventArgs e)
         {
-            viewModel.saveSettings(BandName.Text, BandPassword.Password, BandEmail.Text, Username.Text);
+            settingsViewModel.MusicSyncFolder = MusicSyncFolder.Text;
+            settingsViewModel.CheckUpdatesFrequency = CheckUpdatesFrequency.Text;
+            settingsViewModel.saveSettings(BandName.Text, BandPassword.Password, BandEmail.Text, Username.Text);
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = this.XamlRoot;
             dialog.Title = "Settings Saved";
@@ -54,10 +56,10 @@ namespace App1
             var folderPicked = await folderPicker.PickSingleFolderAsync();
             if (folderPicked != null)
             {
-                viewModel.MusicSyncFolder = folderPicked.Path;
+                MusicSyncFolder.Text = folderPicked.Path;
             }
         }
 
-        private SettingsPageViewModel viewModel;
+        private SettingsPageViewModel settingsViewModel;
     }
 }

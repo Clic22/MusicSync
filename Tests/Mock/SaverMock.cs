@@ -48,7 +48,7 @@ namespace App1Tests.Mock
             User = user;
         }
 
-        public int savedcheckUpdatesFrequency()
+        public int savedCheckUpdatesFrequency()
         {
             throw new NotImplementedException();
         }
