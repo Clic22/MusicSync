@@ -32,10 +32,10 @@ namespace App1Tests.Mock
             return Songs;
         }
 
-        public void saveSettings(User user, string musicSyncFolder)
+        public void saveSettings(Settings settings)
         {
-            saveUser(user);
-            MusicSyncFolder = musicSyncFolder;
+            saveUser(settings.User);
+            MusicSyncFolder = settings.MusicSyncFolder;
         }
 
         public string savedMusicSyncFolder()
@@ -46,6 +46,11 @@ namespace App1Tests.Mock
         private void saveUser(User user)
         {
             User = user;
+        }
+
+        public int savedcheckUpdatesFrequency()
+        {
+            throw new NotImplementedException();
         }
 
         private readonly List<Song> Songs;

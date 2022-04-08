@@ -61,8 +61,11 @@ namespace WinUIAppTests.LocalSettingsSaverTest
         public void SaveSetting1Test()
         {
             string expectedMusicSyncFolder = "TestFolder";
+            Settings settingsToBeSaved = new Settings();    
+            settingsToBeSaved.User = user1;
+            settingsToBeSaved.MusicSyncFolder = expectedMusicSyncFolder;
 
-            saver.saveSettings(user1, expectedMusicSyncFolder);
+            saver.saveSettings(settingsToBeSaved);
 
             User userSaved = saver.savedUser();
             Assert.AreEqual(user1, userSaved);
@@ -74,8 +77,11 @@ namespace WinUIAppTests.LocalSettingsSaverTest
         public void SaveSetting2Test()
         {
             string expectedMusicSyncFolder = "TestFolder";
+            Settings settingsToBeSaved = new Settings();
+            settingsToBeSaved.User = user2;
+            settingsToBeSaved.MusicSyncFolder = expectedMusicSyncFolder;
 
-            saver.saveSettings(user2, expectedMusicSyncFolder);
+            saver.saveSettings(settingsToBeSaved);
 
             User userSaved = saver.savedUser();
             Assert.AreEqual(user2, userSaved);

@@ -1,6 +1,6 @@
 ﻿namespace App1.Models
 {
-    public sealed class User
+    public class User
     {
         public User()
         {

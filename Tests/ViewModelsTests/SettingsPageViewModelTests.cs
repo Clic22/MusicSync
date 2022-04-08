@@ -61,11 +61,14 @@ namespace ViewModelsTests.SettingsPageViewModelTests
             BandEmail = "BandEmailChanged@gmail.com";
             expectedMusicSyncFolder = @"./SongsManagerTest/End of the Road/Changed";
             user = new User(BandName, BandPassword, Username, BandEmail);
-
             viewModel.MusicSyncFolder = expectedMusicSyncFolder;
+
             viewModel.saveSettings(BandName, BandPassword, Username, BandEmail);
 
-            saverMock.Verify(m => m.saveSettings(user, expectedMusicSyncFolder + '\\'), Times.Once());
+            Settings expectedSettings = new Settings();
+            expectedSettings.User = user;
+            expectedSettings.MusicSyncFolder = expectedMusicSyncFolder + '\\';
+            saverMock.Verify(m => m.saveSettings(expectedSettings), Times.Once());
         }
     }
 }

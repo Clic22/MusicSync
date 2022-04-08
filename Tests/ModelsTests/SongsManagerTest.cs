@@ -30,7 +30,10 @@ namespace ModelsTests.SongsManagerTest
             version = new Mock<IVersionTool>(MockBehavior.Strict);
             saver = new SaverMock();
             string musicFolder = "TestFolder";
-            saver.saveSettings(user, musicFolder);
+            Settings settings = new Settings();
+            settings.User = user;
+            settings.MusicSyncFolder = musicFolder;
+            saver.saveSettings(settings);
             fileManager = new Mock<IFileManager>();
             songsManager = new SongsManager(version.Object, saver, fileManager.Object);
             locker = new Locker(version.Object);

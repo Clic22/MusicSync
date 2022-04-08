@@ -16,8 +16,11 @@ namespace App1.ViewModels
 
         public void saveSettings(string BandName, string BandPassword, string Username, string BandEmail)
         {
+            Settings settingsToBeSaved = new Settings();
             User userModel = new User(BandName,BandPassword,Username,BandEmail);
-            saver.saveSettings(userModel, MusicSyncFolder);
+            settingsToBeSaved.User = userModel;
+            settingsToBeSaved.MusicSyncFolder = MusicSyncFolder;
+            saver.saveSettings(settingsToBeSaved);
         }
 
         public UserViewModel User { get; set; }
@@ -34,6 +37,20 @@ namespace App1.ViewModels
                 SetProperty(ref musicSyncFolder_, value);
             }
         }
+
+        private string checkUpdatesPeriod_;
+        public string CheckUpdatesPeriod
+        {
+            get
+            {
+                return checkUpdatesPeriod_;
+            }
+            set
+            {
+                SetProperty(ref checkUpdatesPeriod_, value);
+            }
+        }
+
         private readonly ISaver saver;
         private readonly IFileManager fileManager;
     }

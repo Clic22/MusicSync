@@ -12,14 +12,14 @@ namespace WinUIApp
             UserContainer = LocalSettings.CreateContainer("user", Windows.Storage.ApplicationDataCreateDisposition.Always);
         }
 
-        public void saveSettings(User user, string musicSyncFolder)
+        public void saveSettings(Settings settings)
         {
-            saveUserValue("BandName", user.BandName);
-            saveUserValue("BandPassword", user.BandPassword);
-            saveUserValue("Username", user.Username);
-            saveUserValue("BandEmail", user.BandEmail);
+            saveUserValue("BandName", settings.User.BandName);
+            saveUserValue("BandPassword", settings.User.BandPassword);
+            saveUserValue("Username", settings.User.Username);
+            saveUserValue("BandEmail", settings.User.BandEmail);
 
-            saveMusicSyncFolder(musicSyncFolder);
+            saveMusicSyncFolder(settings.MusicSyncFolder);
         }
 
         public User savedUser()
@@ -121,6 +121,11 @@ namespace WinUIApp
         {
             LocalSettings.Values.Remove("MusicSyncFolder");
             LocalSettings.Values.Add("MusicSyncFolder", musicSyncFolder);
+        }
+
+        public int savedcheckUpdatesFrequency()
+        {
+            throw new NotImplementedException();
         }
 
         private readonly Windows.Storage.ApplicationDataContainer LocalSettings;
