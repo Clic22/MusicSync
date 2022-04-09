@@ -73,7 +73,6 @@ namespace GitVersionTool
             await uncompressSongAsync(song);
             syncLockFile(song);
             return String.Empty;
-      
         }
 
         public async Task<bool> updatesAvailableForSongAsync(Song song)
