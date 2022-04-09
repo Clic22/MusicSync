@@ -327,13 +327,13 @@ namespace ModelsTests.SongsManagerTest
         }
         
         [Theory]
-        [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest")]
+        [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest\")]
         public async Task addSharedSongTest(string songTitle, string sharedLink, string downloadPath)
         {
-            fileManager.Setup(m => m.findFileNameBasedOnExtensionAsync(downloadPath + @"\" + songTitle, ".song")).Returns(Task.FromResult("file.song"));
-            fileManager.Setup(m => m.FormatPath(downloadPath)).Returns(@"./SongsManagerTest\");
-            Song expectedSong = new Song(songTitle, "file.song", downloadPath + @"\" + songTitle);
-            version.Setup(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath)).Returns(Task.FromResult(string.Empty));
+            fileManager.Setup(m => m.findFileNameBasedOnExtensionAsync(downloadPath + songTitle + '\\', ".song")).Returns(Task.FromResult("file.song"));
+            fileManager.Setup(m => m.FormatPath(songTitle)).Returns(songTitle + '\\');
+            Song expectedSong = new Song(songTitle, "file.song", downloadPath + songTitle + '\\');
+            version.Setup(m => m.downloadSharedSongAsync(songTitle + '\\', sharedLink, downloadPath)).Returns(Task.FromResult(string.Empty));
             version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
             
             await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath);
@@ -342,15 +342,16 @@ namespace ModelsTests.SongsManagerTest
             Song song = songsManager.findSong(songTitle);
             Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
-            version.Verify(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath), Times.Once());
+            version.Verify(m => m.downloadSharedSongAsync(songTitle + '\\', sharedLink, downloadPath), Times.Once());
             version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Once());
         }
         
         [Theory]
-        [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest")]
+        [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest\")]
         public async Task addSharedSongErrorDownloadTest(string songTitle, string sharedLink, string downloadPath)
         {
-            version.Setup(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath)).Returns(Task.FromResult("Error"));
+            fileManager.Setup(m => m.FormatPath(songTitle)).Returns(songTitle + '\\');
+            version.Setup(m => m.downloadSharedSongAsync(songTitle + '\\', sharedLink, downloadPath)).Returns(Task.FromResult("Error"));
        
             string errorMessage = await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath);
 
@@ -359,22 +360,22 @@ namespace ModelsTests.SongsManagerTest
             Assert.DoesNotContain(expectedSong, songsManager.SongList);
             Assert.Equal("Error", errorMessage);
             //We expect to have called the addSharedSongAsync method in the songsManager
-            version.Verify(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath), Times.Once());
+            version.Verify(m => m.downloadSharedSongAsync(songTitle + '\\', sharedLink, downloadPath), Times.Once());
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
         }
         
         [Theory]
-        [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest")]
+        [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest\")]
         public async Task addSharedSongErrorFileNotFoundTest(string songTitle, string sharedLink, string downloadPath)
         {
-            fileManager.Setup(m => m.findFileNameBasedOnExtensionAsync(downloadPath + @"\" + songTitle, ".song")).Returns(Task.FromResult(string.Empty));
-            fileManager.Setup(m => m.FormatPath(downloadPath)).Returns(@"./SongsManagerTest\");
-            version.Setup(m => m.downloadSharedSongAsync(songTitle, sharedLink, downloadPath)).Returns(Task.FromResult(string.Empty));
+            fileManager.Setup(m => m.findFileNameBasedOnExtensionAsync(downloadPath + songTitle + '\\', ".song")).Returns(Task.FromResult(string.Empty));
+            fileManager.Setup(m => m.FormatPath(songTitle)).Returns(songTitle + '\\');
+            version.Setup(m => m.downloadSharedSongAsync(songTitle + '\\', sharedLink, downloadPath)).Returns(Task.FromResult(string.Empty));
 
             string errorMessage = await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath);
 
             //We expect a songVersioned created with the title
-            string localPath = downloadPath + @"\" + songTitle;
+            string localPath = downloadPath + songTitle + '\\';
             Song expectedSong = new Song(songTitle, "file.song", localPath);
             Assert.DoesNotContain(expectedSong, songsManager.SongList);
             fileManager.Verify(m => m.findFileNameBasedOnExtensionAsync(localPath,".song"), Times.Once());
