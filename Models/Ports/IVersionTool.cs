@@ -13,7 +13,9 @@
         public Task<List<SongVersion>> versionsAsync(Song song);
         public async Task<string> newVersionNumberAsync(Song song, bool compo, bool mix, bool mastering)
         {
-            SongVersion currentVersion = await currentVersionAsync(song);
+            SongVersion currentVersion = new SongVersion();
+            currentVersion = await currentVersionAsync(song);
+            
             string versionNumber = currentVersion.Number;
             int compoNumber = 0;
             int mixNumber = 0;

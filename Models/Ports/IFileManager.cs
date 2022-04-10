@@ -8,8 +8,11 @@
         public void CopyDirectory(string sourceDir, string destinationDir);
         public void CopyDirectories(List<string> directoriesToCopied, string directorySrc, string directoryDst);
         public Task CopyFileAsync(string fileName, string sourceDir, string destinationDir);
+        public void SyncFile(string srcPath, string dstPath, string file);
         public Task CompressDirectoryAsync(string DirectoryToBeCompressed, string ArchiveName, string ArchivePath);
         public Task UncompressArchiveAsync(string ArchiveToBeUncompressed, string destinationDir);
+        public bool DirectoryExists(string directoryPath);
         public string FormatPath(string path);
+
     }
 }

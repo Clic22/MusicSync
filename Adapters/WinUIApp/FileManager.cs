@@ -104,5 +104,26 @@ namespace WinUIApp
             }
             return path;
         }
+
+        public bool DirectoryExists(string directoryPath)
+        {
+            if (Directory.Exists(directoryPath))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void SyncFile(string srcPath, string dstPath, string file)
+        {
+            if (File.Exists(srcPath + file) && !File.Exists(dstPath + file))
+            {
+                File.Copy(srcPath + file, dstPath + file);
+            }
+            else if (!File.Exists(srcPath + file) && File.Exists(dstPath + file))
+            {
+                File.Delete(dstPath + file);
+            }
+        }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
 using LibGit2Sharp;
-using LibGit2Sharp.Handlers;
 using System.IO.Compression;
 
 namespace GitVersionTool
@@ -14,29 +13,27 @@ namespace GitVersionTool
             saver = newSaver;
             fileManager = newFileManager;
             createMusicSyncFolder(askedMusiSyncFolderLocation);
+            git = new Git(newSaver, newFileManager);
         }
 
         public async Task<string> uploadSongAsync(Song song, string title, string description, string versionNumber)
         {
             try
             {
-                if (!repoInitiated(song))
+                string songMusicSyncPath = getMusicSyncPathForSong(song);
+                if (!git.initiated(songMusicSyncPath))
                 {
-                    initiateRepo(song);
+                    git.init(songMusicSyncPath, song.Title);
                 }
                 await compressSongAsync(song);
                 await Task.Run(() =>
                 {
-                    addAllChanges(song);
-                    commitChanges(song, title, description);
-                    pushChangesToRepo(song);
-                    tagRepo(song, versionNumber);
+                    git.addAll(songMusicSyncPath);
+                    git.commit(songMusicSyncPath, title, description);
+                    git.push(songMusicSyncPath);
+                    git.tag(songMusicSyncPath, versionNumber);
                 });
                 return String.Empty;
-            }
-            catch (LibGit2SharpException ex)
-            {
-                return ex.Message;
             }
             catch (Exception ex)
             {
@@ -50,14 +47,15 @@ namespace GitVersionTool
             {
                 await Task.Run(() =>
                 {
-                    syncFile(song.LocalPath, getRepoPath(song), file);
-                    addChanges(song, file);
-                    commitChanges(song, title, string.Empty);
-                    pushChangesToRepo(song);
+                    string songMusicSyncPath = getMusicSyncPathForSong(song);
+                    fileManager.SyncFile(song.LocalPath, songMusicSyncPath, file);
+                    git.add(songMusicSyncPath, file);
+                    git.commit(songMusicSyncPath, title, string.Empty);
+                    git.push(songMusicSyncPath);
                 });
                 return String.Empty;
             }
-            catch (LibGit2SharpException ex)
+            catch (Exception ex)
             {
                 return ex.Message;
             }
@@ -71,7 +69,6 @@ namespace GitVersionTool
                 return errorMessage;
             }
             await uncompressSongAsync(song);
-            syncLockFile(song);
             return String.Empty;
         }
 
@@ -79,33 +76,22 @@ namespace GitVersionTool
         {
             return await Task.Run(() =>
             {
-                string logMessage = string.Empty;
-                using (var repo = new Repository(getRepoPath(song)))
+                string songMusicSyncPath = getMusicSyncPathForSong(song);
+                int? behind = git.masterBranchIsBehindBy(songMusicSyncPath);
+                if (behind != null)
                 {
-                    var remote = repo.Network.Remotes["origin"];
-                    var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
-                    User user = saver.savedUser();
-                    FetchOptions options = new FetchOptions();
-                    options.CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) =>
-                            new UsernamePasswordCredentials()
-                            { Username = user.BandEmail, Password = user.BandPassword });
-                    Commands.Fetch(repo, remote.Name, refSpecs,options,logMessage);
-                    int? behind = repo.Branches["master"].TrackingDetails.BehindBy;
-                    if (behind != null)
+                    if (behind != 0)
                     {
-                        if (behind != 0)
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        return true;
                     }
                     else
                     {
                         return false;
                     }
+                }
+                else
+                {
+                    return false;
                 }
             });
         }
@@ -118,76 +104,61 @@ namespace GitVersionTool
                 return errorMessage;
             }
             await uncompressSongAsync(song);
-            syncLockFile(song);
             return String.Empty;
         }
 
         public async Task<SongVersion> currentVersionAsync(Song song)
         {
-            SongVersion currentVersion = new SongVersion();
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
+                SongVersion currentVersion = new SongVersion();
                 try
                 {
-                    using (var repo = new Repository(getRepoPath(song)))
-                    {
-                        Tag lastTag = repo.Tags.Last();
-                        currentVersion.Number = lastTag.FriendlyName;
-                        Commit commitTagged = (Commit)lastTag.Target;
-                        currentVersion.Description = commitTagged.Message.Remove(commitTagged.Message.Length - 1);
-                        currentVersion.Author = commitTagged.Author.Name;
-                    }
+                    string songMusicSyncPath = getMusicSyncPathForSong(song);
+                    Tag lastTag = git.lastTag(songMusicSyncPath);
+                    currentVersion.Number = lastTag.FriendlyName;
+                    Commit commitTagged = (Commit)lastTag.Target;
+                    currentVersion.Description = commitTagged.Message.Remove(commitTagged.Message.Length - 1);
+                    currentVersion.Author = commitTagged.Author.Name;
+                    return currentVersion;
                 }
-                catch (Exception)
+                catch
                 {
-                    currentVersion = new SongVersion();
+                    return currentVersion;
                 }
-
-            });
-            return currentVersion;
+            });       
         }
 
         public async Task<List<SongVersion>> versionsAsync(Song song)
         {
-
-            List<SongVersion> versions = new List<SongVersion>();
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
-                try
+                string songMusicSyncPath = getMusicSyncPathForSong(song);
+                List<SongVersion> versions = new List<SongVersion>();
+                TagCollection Tags = git.tags(songMusicSyncPath);
+                foreach (var tag in Tags)
                 {
-                    using (var repo = new Repository(getRepoPath(song)))
-                    {
-                        foreach (var tag in repo.Tags)
-                        {
-                            SongVersion version = new SongVersion();
-                            version.Number = tag.FriendlyName;
-                            Commit commitTagged = (Commit)tag.Target;
-                            version.Description = commitTagged.Message.Remove(commitTagged.Message.Length - 1);
-                            version.Author = commitTagged.Author.Name;
-                            versions.Add(version);
-                        }
-                    }
+                    SongVersion version = new SongVersion();
+                    version.Number = tag.FriendlyName;
+                    Commit commitTagged = (Commit)tag.Target;
+                    version.Description = commitTagged.Message.Remove(commitTagged.Message.Length - 1);
+                    version.Author = commitTagged.Author.Name;
+                    versions.Add(version);
                 }
-                catch (Exception)
-                {
-                    versions = new List<SongVersion>();
-                }
-
+                return versions;
             });
-            return versions;
         }
 
         public async Task<string> downloadSharedSongAsync(string songFolder, string sharedLink, string downloadLocalPath)
         {
-            string repoPath = getRepoPath(songFolder);
-            string errorMessage = await downloadSharedSongFromRepoAsync(sharedLink, repoPath);
+            string songMusicSyncPath = getMusicSyncPathForFolder(songFolder);
+            string errorMessage = await downloadSharedSongFromRepoAsync(sharedLink, songMusicSyncPath);
             if (errorMessage != String.Empty)
             {
                 return errorMessage;
             }
             downloadLocalPath = fileManager.FormatPath(downloadLocalPath);
-            await uncompressSongAsync(songFolder, downloadLocalPath, repoPath);
-            syncFile(repoPath, downloadLocalPath + songFolder, ".lock");
+            await uncompressSongAsync(songFolder, downloadLocalPath, songMusicSyncPath);
             return String.Empty;
         }
 
@@ -197,39 +168,15 @@ namespace GitVersionTool
             {
                 return await Task.Run(() =>
                 {
-                    using (var repo = new Repository(getRepoPath(song)))
-                    {
-                        var remote = repo.Network.Remotes["origin"];
-                        return remote.PushUrl;
-                    }
+                    string songMusicSyncPath = getMusicSyncPathForSong(song);
+                    return git.remoteUrl(songMusicSyncPath);
                 });
 
             }
-            catch (LibGit2SharpException ex)
+            catch (Exception ex)
             {
                 return ex.Message;
             }
-        }
-
-        private bool repoInitiated(Song song)
-        {
-            if (Directory.Exists(getRepoPath(song) + @".git"))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        private void initiateRepo(Song song)
-        {
-            User user = saver.savedUser();
-            Repository.Init(getRepoPath(song));
-            var repo = new Repository(getRepoPath(song));
-            string url = "https://gitlab.com/" + user.BandName.Replace(" ", "-") + "/" + song.Title.ToLower().Replace(" ", "-").Replace("(", null).Replace(")", null) + ".git";
-            Remote remote = repo.Network.Remotes.Add("origin", url);
-            repo.Branches.Update(repo.Head,
-                b => b.Remote = remote.Name,
-                b => b.UpstreamBranch = repo.Head.CanonicalName);
         }
 
         private async Task<string> updateSongFromRepoAsync(Song song)
@@ -238,31 +185,15 @@ namespace GitVersionTool
             {
                 await Task.Run(() =>
                 {
-                    User user = saver.savedUser();
-                    using (var repo = new Repository(getRepoPath(song)))
-                    {
-                        PullOptions options = new PullOptions();
-                        options.FetchOptions = new FetchOptions();
-                        options.FetchOptions.CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) =>
-                                new UsernamePasswordCredentials()
-                                { Username = user.BandEmail, Password = user.BandPassword });
-
-                        var signature = new Signature(new Identity(user.Username, user.BandEmail), DateTimeOffset.Now);
-
-                        Commands.Pull(repo, signature, options);
-                    }
+                    string songMusicSyncPath = getMusicSyncPathForSong(song);
+                    git.pull(songMusicSyncPath);
                 });
                 return String.Empty;
             }
-            catch (LibGit2SharpException ex)
+            catch (Exception ex)
             {
                 return ex.Message;
             }
-            catch (ArgumentException ex)
-            {
-                return ex.Message;
-            }
-
         }
 
         private async Task<string> downloadSharedSongFromRepoAsync(string sharedLink, string downloadPath)
@@ -271,14 +202,11 @@ namespace GitVersionTool
             {
                 await Task.Run(() =>
                 {
-                    User user = saver.savedUser();
-                    var options = new CloneOptions();
-                    options.CredentialsProvider = (_url, _user, _cred) => new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
-                    Repository.Clone(sharedLink, downloadPath, options);
+                    git.clone(sharedLink, downloadPath);
                 });
                 return string.Empty;
             }
-            catch (LibGit2SharpException ex)
+            catch (Exception ex)
             {
                 return ex.Message;
             }
@@ -290,15 +218,12 @@ namespace GitVersionTool
             {
                 await Task.Run(() =>
                 {
-                    using (var repo = new Repository(getRepoPath(song)))
-                    {
-                        Branch originMaster = repo.Branches["origin/master"];
-                        repo.Reset(ResetMode.Hard, originMaster.Tip);
-                    }
+                    string songMusicSyncPath = getMusicSyncPathForSong(song);
+                    git.resetMasterHard(songMusicSyncPath);
                 });
                 return String.Empty;
             }
-            catch (LibGit2SharpException ex)
+            catch (Exception ex)
             {
                 return ex.Message;
             }
@@ -306,12 +231,12 @@ namespace GitVersionTool
 
         private async Task compressSongAsync(Song song)
         {
-            if (File.Exists(getRepoPath(song) + song.Title + ".zip"))
+            if (File.Exists(getMusicSyncPathForSong(song) + song.Title + ".zip"))
             {
-                File.Delete(getRepoPath(song) + song.Title + ".zip");
+                File.Delete(getMusicSyncPathForSong(song) + song.Title + ".zip");
             }
             string pathToSongWithSelectedFodlers = await selectFoldersToBeCompressed(song);
-            await fileManager.CompressDirectoryAsync(pathToSongWithSelectedFodlers, song.Title + ".zip", getRepoPath(song));
+            await fileManager.CompressDirectoryAsync(pathToSongWithSelectedFodlers, song.Title + ".zip", getMusicSyncPathForSong(song));
             Directory.Delete(pathToSongWithSelectedFodlers, true);
         }
 
@@ -340,110 +265,25 @@ namespace GitVersionTool
 
         private async Task uncompressSongAsync(Song song)
         {
-            string repoPath = getRepoPath(song);
+            string repoPath = getMusicSyncPathForSong(song);
             string zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
             await fileManager.UncompressArchiveAsync(repoPath + zipFile, song.LocalPath);
+            fileManager.SyncFile(repoPath, song.LocalPath, ".lock");
         }
 
         private async Task uncompressSongAsync(string songFolder, string downloadLocalPath, string repoPath)
         {
             string zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
             await fileManager.UncompressArchiveAsync(repoPath + zipFile, downloadLocalPath + songFolder );
+            fileManager.SyncFile(repoPath, downloadLocalPath + songFolder, ".lock");
         }
 
-        private void syncFile(string srcPath, string dstPath, string file)
-        {
-            if (File.Exists(srcPath + file))
-            {
-                File.Copy(srcPath + file, dstPath + file);
-            }
-            else
-            {
-                File.Delete(dstPath + file);
-            }
-        }
-
-        private void syncLockFile(Song song)
-        {
-            if (File.Exists(getRepoPath(song) + @".lock") && !File.Exists(song.LocalPath + @".lock"))
-            {
-                File.Copy(getRepoPath(song) + @".lock", song.LocalPath + @".lock");
-            }
-            else if (!File.Exists(getRepoPath(song) + @".lock") && File.Exists(song.LocalPath + @".lock"))
-            {
-                File.Delete(song.LocalPath + @".lock");
-            }
-        }
-
-        private void addAllChanges(Song song)
-        {
-            using (var repo = new Repository(getRepoPath(song)))
-            {
-                Commands.Stage(repo, "*");
-            }
-        }
-
-        private void addChanges(Song song, string file)
-        {
-            using (var repo = new Repository(getRepoPath(song)))
-            {
-                Commands.Stage(repo, file);
-            }
-        }
-
-        private void commitChanges(Song song, string title, string description)
-        {
-            
-            User user = saver.savedUser();
-            using (var repo = new Repository(getRepoPath(song)))
-            {
-                var signature = new Signature(
-                    new Identity(user.Username, user.BandEmail), DateTimeOffset.Now);
-                Signature committer = signature;
-                if (string.IsNullOrEmpty(description))
-                {
-                    repo.Commit($"{title}", signature, committer);
-                }
-                else
-                {
-                    repo.Commit($"{title}\n\n{description.ReplaceLineEndings()}", signature, committer);
-                }
-            }
-        }
-
-        private void pushChangesToRepo(Song song)
-        {
-            User user = saver.savedUser();
-            using (var repo = new Repository(getRepoPath(song)))
-            {
-                Remote remote = repo.Network.Remotes["origin"];
-                var options = new PushOptions();
-                options.CredentialsProvider = (_url, _user, _cred) =>
-                    new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
-                repo.Network.Push(remote, repo.Head.CanonicalName, options);
-            }
-        }
-
-        private void tagRepo(Song song, string tag)
-        {
-            User user = saver.savedUser();
-            using (var repo = new Repository(getRepoPath(song)))
-            {
-                Remote remote = repo.Network.Remotes["origin"];
-                var options = new PushOptions();
-                options.CredentialsProvider = (_url, _user, _cred) =>
-                    new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
-                repo.ApplyTag(tag);
-                repo.Network.Push(remote, @"refs/tags/" + tag, options);
-            }
-        }
-
-        private string getRepoPath(Song song)
+        private string getMusicSyncPathForSong(Song song)
         {
             return musicSyncFolder + song.Title + @"\";
         }
 
-        private string getRepoPath(string songFolder)
+        private string getMusicSyncPathForFolder(string songFolder)
         {
             return musicSyncFolder + songFolder;
         }
@@ -460,5 +300,6 @@ namespace GitVersionTool
         private string musicSyncFolder;
         private readonly ISaver saver;
         private readonly IFileManager fileManager;
+        private readonly Git git;
     }
 }
