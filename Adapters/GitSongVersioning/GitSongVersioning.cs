@@ -10,7 +10,6 @@ namespace GitVersionTool
         public GitSongVersioning(string askedMusiSyncFolderLocation, ISaver newSaver, IFileManager newFileManager) 
         {
             musicSyncFolder = string.Empty;
-            saver = newSaver;
             fileManager = newFileManager;
             createMusicSyncFolder(askedMusiSyncFolderLocation);
             git = new Git(newSaver, newFileManager);
@@ -300,7 +299,6 @@ namespace GitVersionTool
         }
 
         private string musicSyncFolder;
-        private readonly ISaver saver;
         private readonly IFileManager fileManager;
         private readonly Git git;
     }
