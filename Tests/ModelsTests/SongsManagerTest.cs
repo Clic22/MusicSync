@@ -327,7 +327,7 @@ namespace ModelsTests.SongsManagerTest
         {
             string songTitle = "End of the Road";
             string sharedLink = "http://test.com/band/end-of-the-road";
-            string downloadPath = testDirectory;
+            string downloadPath = localPath;
             Song expectedSong = new Song(songTitle, "file.song", downloadPath + songTitle + '\\');
             version.Setup(m => m.downloadSharedSongAsync(songTitle + '\\', sharedLink, downloadPath)).Returns(Task.FromResult(string.Empty))
                                                                                                      .Callback(() => { 
