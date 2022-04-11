@@ -64,13 +64,10 @@ namespace GitVersionTool
 
         public void addAll(string repoPath)
         {
-
             using (var repo = new Repository(repoPath))
             {
                 Commands.Stage(repo, "*");
             }
-
-
         }
 
         public void add(string repoPath, string file)

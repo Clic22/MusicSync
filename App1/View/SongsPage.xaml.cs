@@ -41,12 +41,11 @@ namespace App1
             }
         }
 
-        private async void updateAllSongsClick(object sender, RoutedEventArgs e)
+        private async void refreshAllSongsClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                await SongsPageViewModel.updateAllSongsAsync();
-                await displayContentDialog("All Songs Updated");
+                await SongsPageViewModel.refreshSongsVersionedAsync();
             }
             catch (Exception ex)
             {

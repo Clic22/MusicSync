@@ -64,9 +64,18 @@ namespace App1.ViewModels
 
         public async Task deleteSongAsync(SongVersioned songVersioned)
         {
-            Song song = SongsManager.findSong(songVersioned.Title);
-            await SongsManager.deleteSongAsync(song);
-            SongsVersioned.Remove(songVersioned);      
+            try
+            {
+                Song song = SongsManager.findSong(songVersioned.Title);
+                await SongsManager.deleteSongAsync(song);
+                SongsVersioned.Remove(songVersioned);
+            }
+            catch
+            {
+                songVersioned.Status = "Error";
+                throw;
+            }
+              
         }
 
         public async Task updateSongAsync(SongVersioned songVersioned)
@@ -82,6 +91,7 @@ namespace App1.ViewModels
             catch
             {
                 songVersioned.IsUpdatingSong = false;
+                songVersioned.Status = "Error";
                 throw;
             }
         }
@@ -99,6 +109,7 @@ namespace App1.ViewModels
             catch
             {
                 songVersioned.IsOpeningSong = false;
+                songVersioned.Status = "Error";
                 throw;
             }
             
@@ -117,6 +128,7 @@ namespace App1.ViewModels
             catch
             {
                 songVersioned.IsRevertingSong = false;
+                songVersioned.Status = "Error";
                 throw;
             }
             
@@ -135,22 +147,44 @@ namespace App1.ViewModels
             catch
             {
                 songVersioned.IsUploadingSong = false;
+                songVersioned.Status = "Error";
                 throw;
             }
         }
 
         public async Task<string> shareSongAsync(SongVersioned songVersioned)
         {
+            try
+            {
                 Song song = SongsManager.findSong(songVersioned.Title);
-                return await SongsManager.shareSongAsync(song);         
+                return await SongsManager.shareSongAsync(song);
+            }
+            catch
+            {
+                songVersioned.Status = "Error";
+                throw;
+            }
+                      
         }
 
         public async Task refreshSongsVersionedAsync()
         {
-            foreach(var songVersioned in SongsVersioned)
+            foreach (var songVersioned in SongsVersioned)
             {
-                Song song = SongsManager.findSong(songVersioned.Title);
-                await refreshSongVersionedAsync(songVersioned, song);
+                try
+                {
+                    songVersioned.IsRefreshingSong = true;
+                    Song song = SongsManager.findSong(songVersioned.Title);
+                    await refreshSongVersionedAsync(songVersioned, song);
+                    songVersioned.IsRefreshingSong = false;
+                }
+                catch
+                {
+                    songVersioned.IsRefreshingSong = false;
+                    songVersioned.Status = "Error";
+                    throw;
+                }
+                
             }
         }
 
@@ -168,9 +202,17 @@ namespace App1.ViewModels
 
         private async Task refreshSongVersionedAsync(SongVersioned songVersioned, Song song)
         {
-            await refreshSongStatusAsync(songVersioned, song);
-            await refreshSongCurrentVersionAsync(songVersioned, song);
-            await refreshSongVersionsAsync(songVersioned, song);
+            try
+            {
+                await refreshSongStatusAsync(songVersioned, song);
+                await refreshSongCurrentVersionAsync(songVersioned, song);
+                await refreshSongVersionsAsync(songVersioned, song);
+            }
+            catch
+            {
+                songVersioned.Status = "Error";
+                throw;
+            }
         }
 
         private async Task refreshSongCurrentVersionAsync(SongVersioned songVersioned, Song song)

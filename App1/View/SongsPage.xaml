@@ -85,7 +85,7 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <ProgressRing IsActive="{x:Bind SongsPageViewModel.IsAddingSong}" x:DefaultBindMode="OneWay"/>
                 <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
-                    <AppBarButton Label="Update All Songs" Click="updateAllSongsClick"/>
+                    <AppBarButton Label="Refresh All Songs" Click="refreshAllSongsClick"/>
                     <AppBarSeparator></AppBarSeparator>
                     <AppBarButton Icon="Add" Label="Add" Click="addSongClick"/>
                 </CommandBar>
