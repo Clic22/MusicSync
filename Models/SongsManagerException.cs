@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace App1.Models
+﻿namespace App1.Models
 {
     public class SongsManagerException : Exception
     {

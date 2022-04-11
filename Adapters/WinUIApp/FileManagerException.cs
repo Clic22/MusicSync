@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace WinUIApp
+﻿namespace WinUIApp
 {
     public class FileManagerException : Exception
     {
