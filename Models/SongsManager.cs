@@ -14,26 +14,23 @@ namespace App1.Models
             Locker = new Locker(VersionTool,FileManager);
         }
 
-        public async Task<string> updateSongAsync(Song song)
+        public async Task updateSongAsync(Song song)
         {
             if (await VersionTool.updatesAvailableForSongAsync(song))
             {
                 await VersionTool.updateSongAsync(song);
                 await refreshSongStatusAsync(song);
             }
-            return string.Empty;
         }
 
-        public async Task<string> uploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
+        public async Task uploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
         {
-            string errorMessage = string.Empty;
             if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
                 string versionNumber = await VersionTool.newVersionNumberAsync(song, compo, mix, mastering);
                 await VersionTool.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
                 await refreshSongStatusAsync(song);
             }
-            return errorMessage;
         }
 
         public void addLocalSong(string songTitle, string songFile, string songLocalPath)
@@ -42,19 +39,14 @@ namespace App1.Models
             SongList.addNewSong(song);
         }
 
-        public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
+        public async Task addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
         {
             string songFolder = FileManager.FormatPath(songTitle);
             await VersionTool.downloadSharedSongAsync(songFolder, sharedLink, downloadLocalPath);
             string localPath = downloadLocalPath + songFolder;
             string songFile = await FileManager.findFileNameBasedOnExtensionAsync(localPath,".song");
-            if (string.IsNullOrEmpty(songFile))
-            {
-                return "Song File not Found in " + localPath;
-            }
             addLocalSong(songTitle, songFile, localPath);
             await refreshSongStatusAsync(findSong(songTitle));
-            return string.Empty;
         }
 
         public async Task deleteSongAsync(Song song)
@@ -63,35 +55,28 @@ namespace App1.Models
             SongList.deleteSong(song);
         }
 
-        public async Task<bool> openSongAsync(Song song)
+        public async Task openSongAsync(Song song)
         {
-            string errorMessage = await updateSongAsync(song);
-            if (string.IsNullOrEmpty(errorMessage))
+            await updateSongAsync(song);
+
+            bool locked = await Locker.lockSongAsync(song, Saver.savedUser());
+            if (locked)
             {
-                bool locked = await Locker.lockSongAsync(song, Saver.savedUser());
-                if (Locker.isLockedByUser(song, Saver.savedUser()))
-                {
-                    openSongWithDAW(song);
-                    await refreshSongStatusAsync(song);
-                    return true;
-                }
-                return locked;
+                openSongWithDAW(song);
+                await refreshSongStatusAsync(song);
             }
             else
             {
-                return false;
+                throw new InvalidOperationException("Song locked by " + song.Status.whoLocked);
             }
-
         }
 
-        public async Task<string> revertSongAsync(Song song)
+        public async Task revertSongAsync(Song song)
         {
-            string errorMessage = string.Empty;
             if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
                 await VersionTool.revertSongAsync(song);
             }
-            return errorMessage;
         }
 
         public Song findSong(string songTitle)
@@ -103,7 +88,7 @@ namespace App1.Models
             }
             else
             {
-                throw new InvalidOperationException("Song not Found in SongList");
+                throw new NullReferenceException("Song not Found with title : " + songTitle);
             }
         }
 

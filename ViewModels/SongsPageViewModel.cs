@@ -15,119 +15,134 @@ namespace App1.ViewModels
             intializeSongsVersioned();
         }
 
-        public async Task<string> updateAllSongsAsync()
+        public async Task updateAllSongsAsync()
         {
-            string errorMessage = string.Empty;
             foreach (SongVersioned songVersioned in SongsVersioned)
             {
-                errorMessage = await updateSongAsync(songVersioned);
-                if (errorMessage != string.Empty)
-                {
-                    break;
-                }
+                await updateSongAsync(songVersioned);
             }
-            return errorMessage;
         }
 
         public SongVersioned addLocalSong(string songTitle, string songFile, string songLocalPath)
         {
-            IsAddingSong = true;
-            songLocalPath = FileManager.FormatPath(songLocalPath);
-            SongsManager.addLocalSong(songTitle, songFile, songLocalPath);
-            SongVersioned songVersioned = new SongVersioned(songTitle);
-            SongsVersioned.Add(songVersioned);
-            IsAddingSong = false;
-            return songVersioned;
-        }
-
-        public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string songLocalPath)
-        {
-            IsAddingSong = true;
-            songLocalPath = FileManager.FormatPath(songLocalPath);
-            string errorMessage = await SongsManager.addSharedSongAsync(songTitle, sharedLink, songLocalPath);
-            if (!string.IsNullOrEmpty(errorMessage))
+            try
+            {
+                IsAddingSong = true;
+                songLocalPath = FileManager.FormatPath(songLocalPath);
+                SongsManager.addLocalSong(songTitle, songFile, songLocalPath);
+                SongVersioned songVersioned = new SongVersioned(songTitle);
+                SongsVersioned.Add(songVersioned);
+                IsAddingSong = false;
+                return songVersioned;
+            }
+            catch
             {
                 IsAddingSong = false;
-                return errorMessage;
+                throw;
             }
-            SongVersioned songVersioned = new SongVersioned(songTitle);
-            SongsVersioned.Add(songVersioned);
-            await updateSongAsync(songVersioned);
-            IsAddingSong = false;
-            return string.Empty;
+            
+        }
+
+        public async Task addSharedSongAsync(string songTitle, string sharedLink, string songLocalPath)
+        {
+            try
+            {
+                IsAddingSong = true;
+                songLocalPath = FileManager.FormatPath(songLocalPath);
+                await SongsManager.addSharedSongAsync(songTitle, sharedLink, songLocalPath);
+                SongVersioned songVersioned = new SongVersioned(songTitle);
+                SongsVersioned.Add(songVersioned);
+                await updateSongAsync(songVersioned);
+                IsAddingSong = false;
+            }
+            catch
+            {
+                IsAddingSong = false;
+                throw;
+            }
         }
 
         public async Task deleteSongAsync(SongVersioned songVersioned)
         {
             Song song = SongsManager.findSong(songVersioned.Title);
             await SongsManager.deleteSongAsync(song);
-            SongsVersioned.Remove(songVersioned);
+            SongsVersioned.Remove(songVersioned);      
         }
 
-        public async Task<string> updateSongAsync(SongVersioned songVersioned)
+        public async Task updateSongAsync(SongVersioned songVersioned)
         {
-            songVersioned.IsUpdatingSong = true;
-            Song song = SongsManager.findSong(songVersioned.Title);
-            string errorMessage = await SongsManager.updateSongAsync(song);
-            if (!string.IsNullOrEmpty(errorMessage))
+            try
+            {
+                songVersioned.IsUpdatingSong = true;
+                Song song = SongsManager.findSong(songVersioned.Title);
+                await SongsManager.updateSongAsync(song);
+                await refreshSongVersionedAsync(songVersioned, song);
+                songVersioned.IsUpdatingSong = false;
+            }
+            catch
             {
                 songVersioned.IsUpdatingSong = false;
-                return errorMessage;
+                throw;
             }
-            await refreshSongVersionedAsync(songVersioned, song);
-            songVersioned.IsUpdatingSong = false;
-            return errorMessage;
         }
 
-        public async Task<bool> openSongAsync(SongVersioned songVersioned)
+        public async Task openSongAsync(SongVersioned songVersioned)
         {
-            songVersioned.IsOpeningSong = true;
-            Song song = SongsManager.findSong(songVersioned.Title);
-            bool errorMessage = await SongsManager.openSongAsync(song);
-            if (!errorMessage)
+            try
+            {
+                songVersioned.IsOpeningSong = true;
+                Song song = SongsManager.findSong(songVersioned.Title);
+                await SongsManager.openSongAsync(song);
+                songVersioned.IsOpeningSong = false;
+                await refreshSongStatusAsync(songVersioned, song);
+            }
+            catch
             {
                 songVersioned.IsOpeningSong = false;
-                return errorMessage;
+                throw;
             }
-            songVersioned.IsOpeningSong = false;
-            await refreshSongStatusAsync(songVersioned, song);
-            return errorMessage;
+            
         }
 
-        public async Task<string> revertSongAsync(SongVersioned songVersioned)
+        public async Task revertSongAsync(SongVersioned songVersioned)
         {
-            songVersioned.IsRevertingSong = true;
-            Song song = SongsManager.findSong(songVersioned.Title);
-            string errorMessage = await SongsManager.revertSongAsync(song);
-            if (!string.IsNullOrEmpty(errorMessage))
+            try
+            {
+                songVersioned.IsRevertingSong = true;
+                Song song = SongsManager.findSong(songVersioned.Title);
+                await SongsManager.revertSongAsync(song);
+                await refreshSongStatusAsync(songVersioned, song);
+                songVersioned.IsRevertingSong = false;
+            }
+            catch
             {
                 songVersioned.IsRevertingSong = false;
-                return errorMessage;
+                throw;
             }
-            await refreshSongStatusAsync(songVersioned, song);
-            songVersioned.IsRevertingSong = false;
-            return errorMessage;
+            
         }
 
-        public async Task<string> uploadNewSongVersionAsync(SongVersioned songVersioned, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
+        public async Task uploadNewSongVersionAsync(SongVersioned songVersioned, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
         {
-            songVersioned.IsUploadingSong = true;
-            Song song = SongsManager.findSong(songVersioned.Title);
-            string errorMessage = await SongsManager.uploadNewSongVersionAsync(song, changeTitle, changeDescription, compo, mix, mastering);
-            if (!string.IsNullOrEmpty(errorMessage))
+            try
+            {
+                songVersioned.IsUploadingSong = true;
+                Song song = SongsManager.findSong(songVersioned.Title);
+                await SongsManager.uploadNewSongVersionAsync(song, changeTitle, changeDescription, compo, mix, mastering);
+                await refreshSongVersionedAsync(songVersioned, song);
+                songVersioned.IsUploadingSong = false;
+            }
+            catch
             {
                 songVersioned.IsUploadingSong = false;
-                return errorMessage;
+                throw;
             }
-            await refreshSongVersionedAsync(songVersioned, song);
-            songVersioned.IsUploadingSong = false;
-            return errorMessage;
         }
 
         public async Task<string> shareSongAsync(SongVersioned songVersioned)
         {
-            Song song = SongsManager.findSong(songVersioned.Title);
-            return await SongsManager.shareSongAsync(song);
+                Song song = SongsManager.findSong(songVersioned.Title);
+                return await SongsManager.shareSongAsync(song);         
         }
 
         public async Task refreshSongsVersionedAsync()

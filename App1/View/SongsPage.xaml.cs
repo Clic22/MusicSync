@@ -31,165 +31,211 @@ namespace App1
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            await SongsPageViewModel.refreshSongsVersionedAsync();
+            try
+            {
+                await SongsPageViewModel.refreshSongsVersionedAsync();
+            }
+            catch (Exception ex)
+            {
+                await displayErrorDialog(ex.Message);
+            }
         }
 
         private async void updateAllSongsClick(object sender, RoutedEventArgs e)
         {
-            string errorMessage = await SongsPageViewModel.updateAllSongsAsync();
-            if (errorMessage != string.Empty)
+            try
             {
-                await displayErrorDialog(errorMessage);
-            }
-            else
-            {
+                await SongsPageViewModel.updateAllSongsAsync();
                 await displayContentDialog("All Songs Updated");
+            }
+            catch (Exception ex)
+            {
+                await displayErrorDialog(ex.Message);
             }
         }
 
         private async void addSongClick(object sender, RoutedEventArgs e)
         {
-            ContentDialogResult result = await addNewSongContentDialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
+            try
             {
-                if (songTitle.Text != string.Empty && songFile.Text != string.Empty && songLocalPath.Text != string.Empty)
+                ContentDialogResult result = await addNewSongContentDialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
                 {
-                    SongsPageViewModel.addLocalSong(songTitle.Text, songFile.Text, songLocalPath.Text);
-                }
-                else if (songSharedTitle.Text != string.Empty && sharedLink.Text != string.Empty && songSharedLocalPath.Text != string.Empty)
-                {
-                    string errorMessage = await SongsPageViewModel.addSharedSongAsync(songSharedTitle.Text, sharedLink.Text, songSharedLocalPath.Text);
-                    if (errorMessage != string.Empty)
+                    if (songTitle.Text != string.Empty && songFile.Text != string.Empty && songLocalPath.Text != string.Empty)
                     {
-                        await displayErrorDialog(errorMessage);
+                        SongsPageViewModel.addLocalSong(songTitle.Text, songFile.Text, songLocalPath.Text);
+                    }
+                    else if (songSharedTitle.Text != string.Empty && sharedLink.Text != string.Empty && songSharedLocalPath.Text != string.Empty)
+                    {
+                        await SongsPageViewModel.addSharedSongAsync(songSharedTitle.Text, sharedLink.Text, songSharedLocalPath.Text);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Please provide all needed informations.");
                     }
                 }
-                else
-                {
-                    string errorMessage = "Please provide all needed informations.";
-                    await displayErrorDialog(errorMessage);
-                }
             }
-            songTitle.Text = string.Empty;
-            songFile.Text = string.Empty;
-            songLocalPath.Text = string.Empty;
-            sharedLink.Text = string.Empty;
-            songSharedTitle.Text = string.Empty;
-            songSharedLocalPath.Text = string.Empty;
+            catch (Exception ex)
+            {
+                await displayErrorDialog(ex.Message);
+            }
+            finally
+            {
+                songTitle.Text = string.Empty;
+                songFile.Text = string.Empty;
+                songLocalPath.Text = string.Empty;
+                sharedLink.Text = string.Empty;
+                songSharedTitle.Text = string.Empty;
+                songSharedLocalPath.Text = string.Empty;
+            }
+            
         }
 
         private async void songFolder_Click(object sender, RoutedEventArgs e)
         {
-            var folderPicker = new FolderPicker();
-            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, App.WindowHandle);
-            var folderPicked = await folderPicker.PickSingleFolderAsync();
-            if (folderPicked != null)
+            try
             {
-                var files = await folderPicked.GetFilesAsync();
-                foreach (var file in files)
+                var folderPicker = new FolderPicker();
+                WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, App.WindowHandle);
+                var folderPicked = await folderPicker.PickSingleFolderAsync();
+                if (folderPicked != null)
                 {
-                    if (file.Name.Contains(".song"))
+                    var files = await folderPicked.GetFilesAsync();
+                    foreach (var file in files)
                     {
-                        songTitle.Text = folderPicked.Name;
-                        songFile.Text = file.Name;
-                        songLocalPath.Text = folderPicked.Path;
+                        if (file.Name.Contains(".song"))
+                        {
+                            songTitle.Text = folderPicked.Name;
+                            songFile.Text = file.Name;
+                            songLocalPath.Text = folderPicked.Path;
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                await displayErrorDialog(ex.Message);
             }
         }
 
         private async void folder_Click(object sender, RoutedEventArgs e)
         {
-            var folderPicker = new FolderPicker();
-            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, App.WindowHandle);
-            var folderPicked = await folderPicker.PickSingleFolderAsync();
-            if (folderPicked != null)
+            try
             {
-                songSharedLocalPath.Text = folderPicked.Path;
+                var folderPicker = new FolderPicker();
+                WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, App.WindowHandle);
+                var folderPicked = await folderPicker.PickSingleFolderAsync();
+                if (folderPicked != null)
+                {
+                    songSharedLocalPath.Text = folderPicked.Path;
+                }
+            }
+            catch (Exception ex)
+            {
+                await displayErrorDialog(ex.Message);
             }
         }
 
         private async void deleteSongClick(object sender, RoutedEventArgs e)
         {
-            SongVersioned song = (sender as Button).DataContext as SongVersioned;
-            await SongsPageViewModel.deleteSongAsync(song);
+            try
+            {
+                SongVersioned song = (sender as Button).DataContext as SongVersioned;
+                await SongsPageViewModel.deleteSongAsync(song);
+            }
+            catch (Exception ex)
+            {
+                await displayErrorDialog(ex.Message);
+            }
         }
 
         private async void shareSongClick(object sender, RoutedEventArgs e)
         {
-            SongVersioned song = (sender as Button).DataContext as SongVersioned;
-            string shareLink = await SongsPageViewModel.shareSongAsync(song);
-            ContentDialogResult result = await displayShareLinkDialog(shareLink);
-            if (result == ContentDialogResult.Primary)
+            try
             {
-                DataPackage dataPackage = new DataPackage();
-                dataPackage.RequestedOperation = DataPackageOperation.Copy;
-                dataPackage.SetText(shareLink);
-                Clipboard.SetContent(dataPackage);
+                SongVersioned song = (sender as Button).DataContext as SongVersioned;
+                string shareLink = await SongsPageViewModel.shareSongAsync(song);
+                ContentDialogResult result = await displayShareLinkDialog(shareLink);
+                if (result == ContentDialogResult.Primary)
+                {
+                    DataPackage dataPackage = new DataPackage();
+                    dataPackage.RequestedOperation = DataPackageOperation.Copy;
+                    dataPackage.SetText(shareLink);
+                    Clipboard.SetContent(dataPackage);
+                }
+            }
+            catch (Exception ex)
+            {
+                await displayErrorDialog(ex.Message);
             }
         }
 
         private async void updateSongClick(object sender, RoutedEventArgs e)
         {
-            SongVersioned song = (sender as Button).DataContext as SongVersioned;
-            string errorMessage = await SongsPageViewModel.updateSongAsync(song);
-            if (errorMessage != string.Empty)
+            try
             {
-                await displayErrorDialog(errorMessage);
-            }
-            else
-            {
+                SongVersioned song = (sender as Button).DataContext as SongVersioned;
+                await SongsPageViewModel.updateSongAsync(song);
                 await displayContentDialog($"Song '{song.Title}' Updated");
             }
-
+            catch (Exception ex)
+            {
+                await displayErrorDialog(ex.Message);
+            }
         }
 
         private async void uploadNewVersionClick(object sender, RoutedEventArgs e)
         {
-            ContentDialogResult result = await uploadNewSongVersionContentDialog.ShowAsync();
-            if (result == ContentDialogResult.Primary)
+            try
             {
-                SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                string errorMessage = await SongsPageViewModel.uploadNewSongVersionAsync(song, title.Text, description.Text, compo, mix, mastering);
-                if (errorMessage != string.Empty)
+                ContentDialogResult result = await uploadNewSongVersionContentDialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
                 {
-                    await displayErrorDialog(errorMessage);
-                }
-                else
-                {
+                    SongVersioned song = (sender as Button).DataContext as SongVersioned;
+                    await SongsPageViewModel.uploadNewSongVersionAsync(song, title.Text, description.Text, compo, mix, mastering);
                     await displayContentDialog($"New Version of '{song.Title}' Uploaded");
                 }
-
             }
-            title.Text = String.Empty;
-            description.Text = String.Empty;
-            Compo.IsChecked = false;
-            Mix.IsChecked = false;
-            Mastering.IsChecked = false;
+            catch (Exception ex)
+            {
+                await displayErrorDialog(ex.Message);
+            }
+            finally
+            {
+                title.Text = String.Empty;
+                description.Text = String.Empty;
+                Compo.IsChecked = false;
+                Mix.IsChecked = false;
+                Mastering.IsChecked = false;
+            }
         }
 
         private async void openSongClick(object sender, RoutedEventArgs e)
         {
-            SongVersioned song = (sender as Button).DataContext as SongVersioned;
-            bool opened = await SongsPageViewModel.openSongAsync(song);
-            if (!opened)
+            try
             {
-                await displayErrorDialog("An error occured when trying to open the song");
+                SongVersioned song = (sender as Button).DataContext as SongVersioned;
+                await SongsPageViewModel.openSongAsync(song);
+            }
+            catch (Exception ex)
+            {
+                await displayErrorDialog(ex.Message);
             }
         }
 
         private async void revertSongClick(object sender, RoutedEventArgs e)
         {
-            SongVersioned song = (sender as Button).DataContext as SongVersioned;
-            string errorMessage = await SongsPageViewModel.revertSongAsync(song);
-            if (errorMessage != string.Empty)
+            try
             {
-                await displayErrorDialog(errorMessage);
-            }
-            else
-            {
+                SongVersioned song = (sender as Button).DataContext as SongVersioned;
+                await SongsPageViewModel.revertSongAsync(song);
                 await displayContentDialog($"'{song.Title}' Reverted");
             }
+            catch (Exception ex)
+            {
+                await displayErrorDialog(ex.Message);
+            }
+
         }
 
         private async Task displayContentDialog(string text)
