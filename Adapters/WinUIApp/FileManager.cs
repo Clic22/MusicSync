@@ -1,7 +1,5 @@
 ﻿using App1.Models.Ports;
 using System.IO.Compression;
-using System.Linq;
-using Windows.Storage;
 
 namespace WinUIApp
 {
@@ -96,6 +94,35 @@ namespace WinUIApp
             File.Create(directoryPath + file).Close();
         }
 
+        public void WriteFile(string content, string file, string directoryPath)
+        {
+            File.WriteAllText(directoryPath + file, content);
+        }
+
+        public string ReadFile(string file, string directoryPath)
+        {
+            return File.ReadAllText(directoryPath + file);
+        }
+        
+        
+
+        public void DeleteDirectory(string directoryPath)
+        {
+            var directory = new DirectoryInfo(directoryPath) { Attributes = System.IO.FileAttributes.Normal };
+
+            foreach (var info in directory.GetFileSystemInfos("*", SearchOption.AllDirectories))
+            {
+                info.Attributes = System.IO.FileAttributes.Normal;
+            }
+
+            directory.Delete(true);
+        }
+
+        public void DeleteFile(string file, string directoryPath)
+        {
+           File.Delete(directoryPath + file);
+        }
+
         public string FormatPath(string path)
         {
             if (path.Last() != '\\')
@@ -124,6 +151,15 @@ namespace WinUIApp
             {
                 File.Delete(dstPath + file);
             }
+        }
+
+        public bool FileExists(string file, string directoryPath)
+        {
+            if (File.Exists(directoryPath + file))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

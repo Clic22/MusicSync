@@ -231,21 +231,23 @@ namespace GitVersionTool
 
         private async Task compressSongAsync(Song song)
         {
-            if (File.Exists(getMusicSyncPathForSong(song) + song.Title + ".zip"))
+            string musicSyncFolderForSong = getMusicSyncPathForSong(song);
+            string songArchive = song.Title + ".zip";
+            if (fileManager.FileExists(songArchive, musicSyncFolderForSong))
             {
-                File.Delete(getMusicSyncPathForSong(song) + song.Title + ".zip");
+                fileManager.DeleteFile(songArchive, musicSyncFolderForSong);
             }
             string pathToSongWithSelectedFodlers = await selectFoldersToBeCompressed(song);
             await fileManager.CompressDirectoryAsync(pathToSongWithSelectedFodlers, song.Title + ".zip", getMusicSyncPathForSong(song));
-            Directory.Delete(pathToSongWithSelectedFodlers, true);
+            fileManager.DeleteDirectory(pathToSongWithSelectedFodlers);
         }
 
         private async Task<string> selectFoldersToBeCompressed(Song song)
         {
             string tmpDirectory = musicSyncFolder + @"tmpDirectory\";
-            if (Directory.Exists(tmpDirectory))
+            if (fileManager.DirectoryExists(tmpDirectory))
             {
-                Directory.Delete(tmpDirectory, true);
+                fileManager.DeleteDirectory(tmpDirectory);
             }
             fileManager.CreateDirectory(ref tmpDirectory);
 
@@ -254,8 +256,8 @@ namespace GitVersionTool
 
             List<string> foldersToBeCopied = new List<string>();
             string mediaFolder = "Media";
-            foldersToBeCopied.Add(mediaFolder);
             string melodyneFolder = "Melodyne";
+            foldersToBeCopied.Add(mediaFolder);
             foldersToBeCopied.Add(melodyneFolder);
 
             fileManager.CopyDirectories(foldersToBeCopied,song.LocalPath,tmpDirectory);

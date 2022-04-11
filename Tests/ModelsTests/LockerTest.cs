@@ -1,10 +1,10 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
-using App1Tests.Mock;
 using Moq;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using WinUIApp;
 using Xunit;
 
 namespace ModelsTests.LockerTest
@@ -32,7 +32,8 @@ namespace ModelsTests.LockerTest
             user2 = new User(BandName2, BandPassword2, Username2, BandEmail2);
 
             version = new Mock<IVersionTool>();
-            locker = new Locker(version.Object);
+            fileManager = new FileManager();
+            locker = new Locker(version.Object, fileManager);
         }
 
         public void Dispose()
@@ -48,6 +49,7 @@ namespace ModelsTests.LockerTest
         public Song song;
         public Locker locker;
         public Mock<IVersionTool> version;
+        public FileManager fileManager;
     }
 
 

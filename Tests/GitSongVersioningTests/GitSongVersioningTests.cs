@@ -40,7 +40,7 @@ namespace GitSongVersioningTests
         public async Task DisposeAsync()
         {
             await deleteGitlabProject();
-            deleteDirectory(testDirectory);
+            FileManager.DeleteDirectory(testDirectory);
         }
 
         public string testDirectory;
@@ -69,31 +69,6 @@ namespace GitSongVersioningTests
                 }
             }
             System.Threading.Thread.Sleep(5000);
-        }
-
-        private static void deleteDirectory(string directoryToDelete)
-        {
-            /*
-            foreach (var sub in Directory.EnumerateDirectories(directoryToDelete))
-            {
-                deleteDirectory(sub);
-            }
-            foreach (var f in Directory.EnumerateFiles(directoryToDelete))
-            {
-                var fi = new FileInfo(f);
-                fi.Attributes = FileAttributes.Normal;
-                fi.Delete();
-            }
-            Directory.Delete(directoryToDelete);*/
-            
-            var directory = new DirectoryInfo(directoryToDelete) { Attributes = FileAttributes.Normal };
-
-            foreach (var info in directory.GetFileSystemInfos("*", SearchOption.AllDirectories))
-            {
-                info.Attributes = FileAttributes.Normal;
-            }
-
-            directory.Delete(true);
         }
     }
 

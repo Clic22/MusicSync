@@ -4,9 +4,10 @@ namespace App1.Models
 {
     public class Locker
     {
-        public Locker(IVersionTool NewVersionTool)
+        public Locker(IVersionTool NewVersionTool, IFileManager NewFileManager)
         {
             VersionTool = NewVersionTool;
+            FileManager = NewFileManager;
         }
 
         public async Task<bool> lockSongAsync(Song song, User user)
@@ -35,7 +36,7 @@ namespace App1.Models
             {
                 if (isLockedByUser(song, user))
                 {
-                    removeLockFile(song);
+                    deleteLockFile(song);
                     string errorMessage = await VersionTool.uploadSongAsync(song, @".lock", "unlock");
                     if (!string.IsNullOrEmpty(errorMessage))
                     {
@@ -73,7 +74,7 @@ namespace App1.Models
         {
             if (lockFileExist(song))
             {
-                return File.ReadAllText(song.LocalPath + @"\.lock");
+                return FileManager.ReadFile(@".lock", song.LocalPath);
             }
             return String.Empty;
         }
@@ -89,28 +90,22 @@ namespace App1.Models
 
         private void createLockFile(Song song, User user)
         {
-            File.WriteAllText(song.LocalPath + @"\.lock", user.Username);
+            string fileName = @".lock";
+            FileManager.CreateFile(fileName, song.LocalPath);
+            FileManager.WriteFile(user.Username, fileName, song.LocalPath);
         }
 
         private void deleteLockFile(Song song)
         {
-            File.Delete(song.LocalPath + @"\.lock");
-        }
-
-        private void removeLockFile(Song song)
-        {
-            File.Delete(song.LocalPath + @"\.lock");
+            FileManager.DeleteFile(".lock", song.LocalPath);
         }
 
         private bool lockFileExist(Song song)
         {
-            if (File.Exists(song.LocalPath + @"\.lock"))
-            {
-                return true;
-            }
-            return false;
+            return FileManager.FileExists(@".lock",song.LocalPath);
         }
 
         private readonly IVersionTool VersionTool;
+        private readonly IFileManager FileManager;
     }
 }

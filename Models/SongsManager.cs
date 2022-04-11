@@ -11,7 +11,7 @@ namespace App1.Models
             Saver = NewSaver;
             FileManager = NewFileManager;
             SongList = new SongsStorage(Saver);
-            Locker = new Locker(VersionTool);
+            Locker = new Locker(VersionTool,FileManager);
         }
 
         public async Task<string> updateSongAsync(Song song)
