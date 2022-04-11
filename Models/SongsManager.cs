@@ -18,11 +18,7 @@ namespace App1.Models
         {
             if (await VersionTool.updatesAvailableForSongAsync(song))
             {
-                string errorMessage = await VersionTool.updateSongAsync(song);
-                if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    return errorMessage;
-                }
+                await VersionTool.updateSongAsync(song);
                 await refreshSongStatusAsync(song);
             }
             return string.Empty;
@@ -34,7 +30,7 @@ namespace App1.Models
             if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
                 string versionNumber = await VersionTool.newVersionNumberAsync(song, compo, mix, mastering);
-                errorMessage = await VersionTool.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+                await VersionTool.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
                 await refreshSongStatusAsync(song);
             }
             return errorMessage;
@@ -49,11 +45,7 @@ namespace App1.Models
         public async Task<string> addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
         {
             string songFolder = FileManager.FormatPath(songTitle);
-            string errorMessage = await VersionTool.downloadSharedSongAsync(songFolder, sharedLink, downloadLocalPath);
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                return errorMessage;
-            }
+            await VersionTool.downloadSharedSongAsync(songFolder, sharedLink, downloadLocalPath);
             string localPath = downloadLocalPath + songFolder;
             string songFile = await FileManager.findFileNameBasedOnExtensionAsync(localPath,".song");
             if (string.IsNullOrEmpty(songFile))
@@ -97,7 +89,7 @@ namespace App1.Models
             string errorMessage = string.Empty;
             if (await Locker.unlockSongAsync(song, Saver.savedUser()))
             {
-                errorMessage = await VersionTool.revertSongAsync(song);
+                await VersionTool.revertSongAsync(song);
             }
             return errorMessage;
         }

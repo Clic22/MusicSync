@@ -19,11 +19,14 @@ namespace App1.Models
             else if (!lockFileExist(song))
             {
                 createLockFile(song, user);
-                string errorMessage = await VersionTool.uploadSongAsync(song, @".lock", "lock");
-                if (!string.IsNullOrEmpty(errorMessage))
+                try
+                {
+                    await VersionTool.uploadSongAsync(song, @".lock", "lock");
+                }
+                catch
                 {
                     deleteLockFile(song);
-                    return false;
+                    throw;
                 }
                 return true;
             }
@@ -37,11 +40,7 @@ namespace App1.Models
                 if (isLockedByUser(song, user))
                 {
                     deleteLockFile(song);
-                    string errorMessage = await VersionTool.uploadSongAsync(song, @".lock", "unlock");
-                    if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        return false;
-                    }
+                    await VersionTool.uploadSongAsync(song, @".lock", "unlock");
                     return true;
                 }
                 return false;

@@ -15,60 +15,40 @@ namespace GitVersionTool
             git = new Git(newSaver, newFileManager);
         }
 
-        public async Task<string> uploadSongAsync(Song song, string title, string description, string versionNumber)
+        public async Task uploadSongAsync(Song song, string title, string description, string versionNumber)
         {
-            try
+            string songMusicSyncPath = getMusicSyncPathForSong(song);
+            if (!git.initiated(songMusicSyncPath))
+            {
+                git.init(songMusicSyncPath, song.Title);
+            }
+            await compressSongAsync(song);
+            await Task.Run(() =>
+            {
+                git.addAll(songMusicSyncPath);
+                git.commit(songMusicSyncPath, title, description);
+                git.push(songMusicSyncPath);
+                git.tag(songMusicSyncPath, versionNumber);
+            });
+
+        }
+
+        public async Task uploadSongAsync(Song song, string file, string title)
+        {
+            await Task.Run(() =>
             {
                 string songMusicSyncPath = getMusicSyncPathForSong(song);
-                if (!git.initiated(songMusicSyncPath))
-                {
-                    git.init(songMusicSyncPath, song.Title);
-                }
-                await compressSongAsync(song);
-                await Task.Run(() =>
-                {
-                    git.addAll(songMusicSyncPath);
-                    git.commit(songMusicSyncPath, title, description);
-                    git.push(songMusicSyncPath);
-                    git.tag(songMusicSyncPath, versionNumber);
-                });
-                return String.Empty;
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+                fileManager.SyncFile(song.LocalPath, songMusicSyncPath, file);
+                git.add(songMusicSyncPath, file);
+                git.commit(songMusicSyncPath, title, string.Empty);
+                git.push(songMusicSyncPath);
+            });
         }
 
-        public async Task<string> uploadSongAsync(Song song, string file, string title)
+        public async Task updateSongAsync(Song song)
         {
-            try
-            {
-                await Task.Run(() =>
-                {
-                    string songMusicSyncPath = getMusicSyncPathForSong(song);
-                    fileManager.SyncFile(song.LocalPath, songMusicSyncPath, file);
-                    git.add(songMusicSyncPath, file);
-                    git.commit(songMusicSyncPath, title, string.Empty);
-                    git.push(songMusicSyncPath);
-                });
-                return String.Empty;
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-        }
-
-        public async Task<string> updateSongAsync(Song song)
-        {
-            string errorMessage = await updateSongFromRepoAsync(song);
-            if (errorMessage != String.Empty)
-            {
-                return errorMessage;
-            }
+            await updateSongFromRepoAsync(song);
             await uncompressSongAsync(song);
-            return String.Empty;
         }
 
         public async Task<bool> updatesAvailableForSongAsync(Song song)
@@ -95,15 +75,10 @@ namespace GitVersionTool
             });
         }
 
-        public async Task<string> revertSongAsync(Song song)
+        public async Task revertSongAsync(Song song)
         {
-            string errorMessage = await revertSongFromRepoAsync(song);
-            if (errorMessage != String.Empty)
-            {
-                return errorMessage;
-            }
+            await revertSongFromRepoAsync(song);
             await uncompressSongAsync(song);
-            return String.Empty;
         }
 
         public async Task<SongVersion> currentVersionAsync(Song song)
@@ -111,20 +86,13 @@ namespace GitVersionTool
             return await Task.Run(() =>
             {
                 SongVersion currentVersion = new SongVersion();
-                try
-                {
-                    string songMusicSyncPath = getMusicSyncPathForSong(song);
-                    Tag lastTag = git.lastTag(songMusicSyncPath);
-                    currentVersion.Number = lastTag.FriendlyName;
-                    Commit commitTagged = (Commit)lastTag.Target;
-                    currentVersion.Description = commitTagged.Message.Remove(commitTagged.Message.Length - 1);
-                    currentVersion.Author = commitTagged.Author.Name;
-                    return currentVersion;
-                }
-                catch
-                {
-                    return currentVersion;
-                }
+                string songMusicSyncPath = getMusicSyncPathForSong(song);
+                Tag lastTag = git.lastTag(songMusicSyncPath);
+                currentVersion.Number = lastTag.FriendlyName;
+                Commit commitTagged = (Commit)lastTag.Target;
+                currentVersion.Description = commitTagged.Message.Remove(commitTagged.Message.Length - 1);
+                currentVersion.Author = commitTagged.Author.Name;
+                return currentVersion;
             });       
         }
 
@@ -148,84 +116,48 @@ namespace GitVersionTool
             });
         }
 
-        public async Task<string> downloadSharedSongAsync(string songFolder, string sharedLink, string downloadLocalPath)
+        public async Task downloadSharedSongAsync(string songFolder, string sharedLink, string downloadLocalPath)
         {
             string songMusicSyncPath = getMusicSyncPathForFolder(songFolder);
-            string errorMessage = await downloadSharedSongFromRepoAsync(sharedLink, songMusicSyncPath);
-            if (errorMessage != String.Empty)
-            {
-                return errorMessage;
-            }
+            await downloadSharedSongFromRepoAsync(sharedLink, songMusicSyncPath);
             downloadLocalPath = fileManager.FormatPath(downloadLocalPath);
             await uncompressSongAsync(songFolder, downloadLocalPath, songMusicSyncPath);
-            return String.Empty;
         }
 
         public async Task<string> shareSongAsync(Song song)
         {
-            try
+            return await Task.Run(() =>
             {
-                return await Task.Run(() =>
-                {
-                    string songMusicSyncPath = getMusicSyncPathForSong(song);
-                    return git.remoteUrl(songMusicSyncPath);
-                });
-
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+                string songMusicSyncPath = getMusicSyncPathForSong(song);
+                return git.remoteUrl(songMusicSyncPath);
+            });
         }
 
-        private async Task<string> updateSongFromRepoAsync(Song song)
+        private async Task updateSongFromRepoAsync(Song song)
         {
-            try
+            await Task.Run(() =>
             {
-                await Task.Run(() =>
-                {
-                    string songMusicSyncPath = getMusicSyncPathForSong(song);
-                    git.pull(songMusicSyncPath);
-                });
-                return String.Empty;
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+                string songMusicSyncPath = getMusicSyncPathForSong(song);
+                git.pull(songMusicSyncPath);
+            });
         }
 
-        private async Task<string> downloadSharedSongFromRepoAsync(string sharedLink, string downloadPath)
+        private async Task downloadSharedSongFromRepoAsync(string sharedLink, string downloadPath)
         {
-            try
+            await Task.Run(() =>
             {
-                await Task.Run(() =>
-                {
-                    git.clone(sharedLink, downloadPath);
-                });
-                return string.Empty;
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+                git.clone(sharedLink, downloadPath);
+            });
         }
 
-        private async Task<string> revertSongFromRepoAsync(Song song)
+        private async Task revertSongFromRepoAsync(Song song)
         {
-            try
+            await Task.Run(() =>
             {
-                await Task.Run(() =>
-                {
-                    string songMusicSyncPath = getMusicSyncPathForSong(song);
-                    git.resetMasterHard(songMusicSyncPath);
-                });
-                return String.Empty;
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
+                string songMusicSyncPath = getMusicSyncPathForSong(song);
+                git.resetMasterHard(songMusicSyncPath);
+            });
+
         }
 
         private async Task compressSongAsync(Song song)
