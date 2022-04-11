@@ -67,7 +67,7 @@ namespace App1.Models
             }
             else
             {
-                throw new InvalidOperationException("Song locked by " + song.Status.whoLocked);
+                throw new SongsManagerException("Song locked by " + song.Status.whoLocked);
             }
         }
 
@@ -88,7 +88,7 @@ namespace App1.Models
             }
             else
             {
-                throw new NullReferenceException("Song not Found with title : " + songTitle);
+                throw new SongsManagerException("Song not Found with title : " + songTitle);
             }
         }
 

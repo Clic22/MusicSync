@@ -12,7 +12,7 @@ namespace WinUIApp
             string fileName = files.First(file => file.Name.Contains(extension)).Name;
             if (fileName == null)
             {
-                throw new NullReferenceException("No file with extension " + extension + " in " + directoryPath);
+                throw new FileManagerException("No file with extension " + extension + " in " + directoryPath);
             }
             return fileName;
         }
