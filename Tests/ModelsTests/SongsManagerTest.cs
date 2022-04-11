@@ -78,7 +78,7 @@ namespace ModelsTests.SongsManagerTest
         [Fact]
         public void tryFindNullSongTest()
         {
-            Assert.Throws<NullReferenceException>(() => songsManager.findSong(title));
+            Assert.Throws<SongsManagerException>(() => songsManager.findSong(title));
         }
         
         [Fact]
@@ -88,7 +88,7 @@ namespace ModelsTests.SongsManagerTest
 
             await songsManager.deleteSongAsync(expectedSong);
 
-            Assert.Throws<NullReferenceException>(() => songsManager.findSong(title));
+            Assert.Throws<SongsManagerException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
         }
         
@@ -114,7 +114,7 @@ namespace ModelsTests.SongsManagerTest
 
             //THEN we expect the song being removed from song storage and save. We expect the song to be
             //unlocked, lock file not being removed from local and version workspace.
-            Assert.Throws<NullReferenceException>(() => songsManager.findSong(title));
+            Assert.Throws<SongsManagerException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "lock"), Times.Once());
         }
@@ -130,7 +130,7 @@ namespace ModelsTests.SongsManagerTest
 
             await songsManager.deleteSongAsync(expectedSong);
 
-            Assert.Throws<NullReferenceException>(() => songsManager.findSong(title));
+            Assert.Throws<SongsManagerException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "unlock"), Times.Once());
         }
