@@ -117,7 +117,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
 
         [Theory]
         [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road")]
-        [InlineData("End of the Road", "test.song", "User/test/End of the Road")]
+        [InlineData("End of the Road", "test.song", @"User/test/End of the Road")]
         public void addLocalSongTest(string title, string file, string localPath)
         {
             //Setup
@@ -133,6 +133,28 @@ namespace ViewModelsTests.SongsPageViewModelTest
             SongVersioned expectedSongVersioned = new SongVersioned(title);
             Assert.Equal(expectedSongVersioned, songVersioned);
             Assert.Contains(expectedSongVersioned, viewModel.SongsVersioned);
+            //We expect to have called the addLocalSong method in the songsManager
+            songsManagerMock.Verify(m => m.addLocalSong(title, file, localPath + '\\'), Times.Once());
+        }
+
+        [Theory]
+        [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road")]
+        [InlineData("End of the Road", "test.song", @"User/test/End of the Road")]
+        public void addLocalSongErrorTest(string title, string file, string localPath)
+        {
+            //Setup
+            Song song = new Song(title, file, localPath);
+            Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
+            songsManagerMock.Setup(m => m.addLocalSong(title, file, localPath + '\\')).Throws(new Exception());
+            SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
+
+            //Add a new song
+            var exception = Assert.Throws<Exception>(() => viewModel.addLocalSong(title, file, localPath));
+
+            //We expect a songVersioned created with the title
+            SongVersioned expectedSongVersioned = new SongVersioned(title);
+            Assert.DoesNotContain(expectedSongVersioned, viewModel.SongsVersioned);
+            Assert.False(viewModel.IsAddingSong);
             //We expect to have called the addLocalSong method in the songsManager
             songsManagerMock.Verify(m => m.addLocalSong(title, file, localPath + '\\'), Times.Once());
         }
