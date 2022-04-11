@@ -65,10 +65,6 @@ namespace App1.ViewModels
                 {
                     Status = "Refreshing...";
                 }
-                else
-                {
-                    Status = string.Empty;
-                }
                 SetProperty(ref isRefreshingSong_, value);
                 IsLoading = value;
             }
@@ -86,10 +82,6 @@ namespace App1.ViewModels
                 if (value)
                 {
                     Status = "Updating...";
-                }
-                else
-                {
-                    Status = string.Empty;
                 }
                 SetProperty(ref isUpdatingSong_, value);
                 IsLoading = value;
@@ -109,10 +101,6 @@ namespace App1.ViewModels
                 {
                     Status = "Uploading...";
                 }
-                else
-                {
-                    Status = string.Empty;
-                }
                 SetProperty(ref isUploadingSong_, value);
                 IsLoading = value;
             }
@@ -131,10 +119,6 @@ namespace App1.ViewModels
                 {
                     Status = "Reverting...";
                 }
-                else
-                {
-                    Status = string.Empty;
-                }
                 SetProperty(ref isRevertingSong_, value);
                 IsLoading = value;
             }
@@ -152,10 +136,6 @@ namespace App1.ViewModels
                 if (value)
                 {
                     Status = "Opening...";
-                }
-                else
-                {
-                    Status = string.Empty;
                 }
                 SetProperty(ref isOpeningSong_, value);
                 IsLoading = value;
