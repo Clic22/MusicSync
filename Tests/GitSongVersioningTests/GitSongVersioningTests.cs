@@ -292,6 +292,9 @@ namespace GitSongVersioningTests
             dataToBeTested.Add((true, false, false, "1.0.0"));
             dataToBeTested.Add((false, true, false, "0.1.0"));
             dataToBeTested.Add((false, false, true, "0.0.1"));
+            dataToBeTested.Add((false, true, true, "0.1.1"));
+            dataToBeTested.Add((true, false, true, "1.0.1"));
+            dataToBeTested.Add((true, true, false, "1.1.0"));
             dataToBeTested.Add((true, true, true, "1.1.1"));
 
             foreach (var data in dataToBeTested)
