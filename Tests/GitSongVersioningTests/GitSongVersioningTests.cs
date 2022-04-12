@@ -27,7 +27,8 @@ namespace GitSongVersioningTests
             user = new User("MusicSyncTool", "HelloWorld12", "Clic", "musicsynctool@gmail.com");
             SaverMock = new Mock<ISaver>();
             SaverMock.Setup(m => m.savedUser()).Returns(user);
-            GitVersioning = new GitSongVersioning(testDirectory, SaverMock.Object, FileManager);
+            SaverMock.Setup(m => m.savedMusicSyncFolder()).Returns(testDirectory);
+            GitVersioning = new GitSongVersioning(SaverMock.Object, FileManager);
             FileManager.CreateDirectory(ref songLocalPath);
             FileManager.CreateFile(songFile, songLocalPath);
         }
