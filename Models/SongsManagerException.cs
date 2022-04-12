@@ -1,8 +1,23 @@
-﻿namespace App1.Models
+﻿using System.Runtime.Serialization;
+
+namespace App1.Models
 {
-    public class SongsManagerException : Exception
+    [Serializable]
+    internal class SongsManagerException : Exception
     {
+        public SongsManagerException()
+        {
+        }
+
         public SongsManagerException(string? message) : base(message)
+        {
+        }
+
+        public SongsManagerException(string? message, Exception? innerException) : base(message, innerException)
+        {
+        }
+
+        protected SongsManagerException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }

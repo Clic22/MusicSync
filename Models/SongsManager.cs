@@ -59,8 +59,8 @@ namespace App1.Models
         {
             await updateSongAsync(song);
 
-            bool locked = await Locker.lockSongAsync(song, Saver.savedUser());
-            if (locked)
+            bool lockedByUser = await Locker.lockSongAsync(song, Saver.savedUser());
+            if (lockedByUser)
             {
                 openSongWithDAW(song);
                 await refreshSongStatusAsync(song);
