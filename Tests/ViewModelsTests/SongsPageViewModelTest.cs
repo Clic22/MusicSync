@@ -147,6 +147,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             await Assert.ThrowsAnyAsync<Exception>(async () => await viewModel.refreshSongsVersionedAsync());
 
             SongVersioned expectedSong = new SongVersioned(title);
+            Assert.False(viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).IsRefreshingSong);
             Assert.Equal("Error", viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).Status);
         }
 
@@ -251,6 +252,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Verify(m => m.currentVersionAsync(song), Times.Never());
             Action action = () => viewModel.addSharedSongAsync(title, link, downloadPath);
             Assert.PropertyChanged(viewModel, "IsAddingSong", action);
+            Assert.False(viewModel.IsAddingSong);
         }
 
         [Fact]
@@ -370,6 +372,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             await Assert.ThrowsAnyAsync<Exception>(async () => await viewModel.updateSongAsync(expectedSongToBeUpdated));
 
             Assert.Equal("Error", expectedSongToBeUpdated.Status);
+            Assert.False(expectedSongToBeUpdated.IsUpdatingSong);
             songsManagerMock.Verify(m => m.updateSongAsync(song), Times.Once());
             Action action = () => viewModel.updateSongAsync(expectedSongToBeUpdated);
             Assert.PropertyChanged(expectedSongToBeUpdated, "Status", action);
@@ -452,6 +455,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
 
             songsManagerMock.Verify(m => m.openSongAsync(song), Times.Once());
             Assert.Equal("Error", expectedSongToBeOpened.Status);
+            Assert.False(expectedSongToBeOpened.IsOpeningSong);
         }
 
         [Theory]
@@ -493,6 +497,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
 
             songsManagerMock.Verify(m => m.revertSongAsync(song), Times.Once());
             Assert.Equal("Error", expectedSongToBeReverted.Status);
+            Assert.False(expectedSongToBeReverted.IsRevertingSong);
         }
 
         [Theory]
@@ -543,6 +548,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
 
             songsManagerMock.Verify(m => m.uploadNewSongVersionAsync(song, changeTitle, changeDescritpion, true, false, false), Times.Once());
             Assert.Equal("Error", expectedSongToBeUploaded.Status);
+            Assert.False(expectedSongToBeUploaded.IsUploadingSong);
         }
     }
 }
