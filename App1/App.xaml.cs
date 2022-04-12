@@ -1,5 +1,10 @@
-﻿using Microsoft.UI.Xaml;
+﻿using App1.Models;
+using App1.Models.Ports;
+using App1.ViewModels;
+using GitVersionTool;
+using Microsoft.UI.Xaml;
 using System;
+using WinUIApp;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -18,8 +23,11 @@ namespace App1
         public App()
         {
             this.InitializeComponent();
-
-
+            FileManager = new FileManager();
+            Saver = new LocalSettingsSaver();
+            VersionTool = new GitSongVersioning(Saver, FileManager);
+            SongsManager = new SongsManager(VersionTool, Saver, FileManager);
+            SongsViewModel = new SongsPageViewModel(SongsManager);
         }
 
         /// <summary>
@@ -37,5 +45,10 @@ namespace App1
 
         public static Window window_ { get; set; }
         public static IntPtr WindowHandle { get; private set; }
+        public static IFileManager FileManager;
+        public static ISaver Saver;
+        public static IVersionTool VersionTool;
+        public static ISongsManager SongsManager;
+        public static SongsPageViewModel SongsViewModel;
     }
 }

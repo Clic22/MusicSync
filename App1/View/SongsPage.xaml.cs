@@ -22,11 +22,6 @@ namespace App1
         public SongsPage()
         {
             this.InitializeComponent();
-            ISaver saver = new LocalSettingsSaver();
-            IFileManager fileManager = new FileManager();
-            IVersionTool versionTool = new GitSongVersioning(saver.savedMusicSyncFolder(), saver, fileManager);
-            ISongsManager songsManager = new SongsManager(versionTool, saver, fileManager);
-            SongsPageViewModel = new SongsPageViewModel(songsManager);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -336,7 +331,7 @@ namespace App1
                 uploadNewSongVersionContentDialog.IsPrimaryButtonEnabled = true;
         }
 
-        private SongsPageViewModel SongsPageViewModel;
+        private SongsPageViewModel SongsPageViewModel => App.SongsViewModel;
         private bool compo;
         private bool mix;
         private bool mastering;

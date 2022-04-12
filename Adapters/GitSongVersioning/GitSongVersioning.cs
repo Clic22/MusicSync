@@ -7,11 +7,11 @@ namespace GitVersionTool
 {
     public class GitSongVersioning : IVersionTool
     {
-        public GitSongVersioning(string askedMusiSyncFolderLocation, ISaver newSaver, IFileManager newFileManager) 
+        public GitSongVersioning(ISaver newSaver, IFileManager newFileManager) 
         {
             musicSyncFolder = string.Empty;
             fileManager = newFileManager;
-            createMusicSyncFolder(askedMusiSyncFolderLocation);
+            createMusicSyncFolder(newSaver.savedMusicSyncFolder());
             git = new Git(newSaver, newFileManager);
         }
 
