@@ -15,14 +15,6 @@ namespace App1.ViewModels
             intializeSongsVersioned();
         }
 
-        public async Task updateAllSongsAsync()
-        {
-            foreach (SongVersioned songVersioned in SongsVersioned)
-            {
-                await updateSongAsync(songVersioned);
-            }
-        }
-
         public SongVersioned addLocalSong(string songTitle, string songFile, string songLocalPath)
         {
             try

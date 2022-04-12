@@ -133,8 +133,11 @@ namespace ViewModelsTests.SongsPageViewModelTest
             SongVersioned expectedSongVersioned = new SongVersioned(title);
             Assert.Equal(expectedSongVersioned, songVersioned);
             Assert.Contains(expectedSongVersioned, viewModel.SongsVersioned);
+            Assert.False(viewModel.IsAddingSong);
             //We expect to have called the addLocalSong method in the songsManager
             songsManagerMock.Verify(m => m.addLocalSong(title, file, localPath + '\\'), Times.Once());
+            Action action = () => viewModel.addLocalSong(title, file, localPath);
+            Assert.PropertyChanged(viewModel, "IsAddingSong", action);
         }
 
         [Theory]
@@ -192,25 +195,6 @@ namespace ViewModelsTests.SongsPageViewModelTest
         }
 
         [Theory]
-        [InlineData("title")]
-        public async Task shareLinkSongTest(string title)
-        {
-            //Setup
-            Song song = new Song(title, "file.Song", "LocalPath");
-            SongVersioned songVersioned = new SongVersioned(title);
-            Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
-            songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
-            songsManagerMock.Setup(m => m.shareSongAsync(song)).Returns(Task.FromResult("https://www.gitlab.com"));
-            SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
-
-            //Add a new song
-            string errorMessage = await viewModel.shareSongAsync(songVersioned);
-
-            //We expect to have called the addSharedSongAsync method in the songsManager
-            songsManagerMock.Verify(m => m.shareSongAsync(song), Times.Once());
-        }
-
-        [Theory]
         [InlineData("title", "ERROR", @"./SongsManagerTest")]
         public async Task addSharedSongErrorTest(string title, string link, string downloadPath)
         {
@@ -232,6 +216,46 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Verify(m => m.currentVersionAsync(song), Times.Never());
             Action action = () => viewModel.addSharedSongAsync(title, link, downloadPath);
             Assert.PropertyChanged(viewModel, "IsAddingSong", action);
+        }
+
+        [Fact]
+        public async Task shareLinkSongTest()
+        {
+            //Setup
+            Song song = new Song("title", "file.Song", "LocalPath");
+            SongVersioned songVersioned = new SongVersioned("title");
+            Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
+            songsManagerMock.Setup(m => m.findSong("title")).Returns(song);
+            string expectedShareLink = @"https://www.gitlab.com/test.git";
+            songsManagerMock.Setup(m => m.shareSongAsync(song)).Returns(Task.FromResult(expectedShareLink));
+            SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
+
+            //Add a new song
+            string shareLink = await viewModel.shareSongAsync(songVersioned);
+
+            Assert.Equal(expectedShareLink, shareLink);
+            //We expect to have called the addSharedSongAsync method in the songsManager
+            songsManagerMock.Verify(m => m.shareSongAsync(song), Times.Once());
+        }
+
+        [Theory]
+        [InlineData("title")]
+        public async Task shareLinkSongErrorTest(string title)
+        {
+            //Setup
+            Song song = new Song(title, "file.Song", "LocalPath");
+            SongVersioned songVersioned = new SongVersioned(title);
+            Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
+            songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
+            songsManagerMock.Setup(m => m.shareSongAsync(song)).Throws(new Exception());
+            SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
+
+            //Add a new song
+            await Assert.ThrowsAnyAsync<Exception>(async () => await viewModel.shareSongAsync(songVersioned));
+
+            Assert.Equal("Error", songVersioned.Status);     
+            //We expect to have called the addSharedSongAsync method in the songsManager
+            songsManagerMock.Verify(m => m.shareSongAsync(song), Times.Once());
         }
 
         [Theory]
@@ -296,35 +320,25 @@ namespace ViewModelsTests.SongsPageViewModelTest
         }
 
         [Theory]
-        [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road/")]
-        [InlineData("End of the Road", "test.song", "User/test/End of the Road/")]
-        public async Task updateAllSongsAsyncTest(string title, string file, string localPath)
+        [InlineData("LockedSong", "file.song", @"./SongsManagerTest/End of the Road/")]
+        public async Task updateSongAsyncErrorTest(string title, string file, string localPath)
         {
             //Setup
             Song song = new Song(title, file, localPath);
-            Song song2 = new Song("Test", "File2", "Another Local path");
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
-            songsManagerMock.Setup(m => m.findSong("Test")).Returns(song2);
-            SongVersion version = new SongVersion("1.0.0", "No Description", "Aymeric");
-            songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(version));
-            songsManagerMock.Setup(m => m.currentVersionAsync(song2)).Returns(Task.FromResult(version));
-            songsManagerMock.Setup(m => m.updateSongAsync(song)).Returns(Task.FromResult(string.Empty));
-            songsManagerMock.Setup(m => m.updateSongAsync(song2)).Returns(Task.FromResult(string.Empty));
-            List<SongVersion> songVersions = new List<SongVersion>();
-            songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songVersions));
-            songsManagerMock.Setup(m => m.versionsAsync(song2)).Returns(Task.FromResult(songVersions));
+            songsManagerMock.Setup(m => m.updateSongAsync(song)).Throws(new Exception());
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
             viewModel.addLocalSong(title, file, localPath);
-            viewModel.addLocalSong("Test", "File2", "Another Local path");
+            SongVersioned expectedSongToBeUpdated = new SongVersioned(title);
 
-            await viewModel.updateAllSongsAsync();
+            await Assert.ThrowsAnyAsync<Exception>(async () => await viewModel.updateSongAsync(expectedSongToBeUpdated));
 
+            Assert.Equal("Error", expectedSongToBeUpdated.Status);
             songsManagerMock.Verify(m => m.updateSongAsync(song), Times.Once());
-            songsManagerMock.Verify(m => m.updateSongAsync(song2), Times.Once());
-            Action action = () => viewModel.updateAllSongsAsync();
-            Assert.PropertyChanged(viewModel.SongsVersioned.First(songVersioned => songVersioned.Title == title), "Status", action);
-            Assert.PropertyChanged(viewModel.SongsVersioned.First(songVersioned => songVersioned.Title == "Test"), "Status", action);
+            Action action = () => viewModel.updateSongAsync(expectedSongToBeUpdated);
+            Assert.PropertyChanged(expectedSongToBeUpdated, "Status", action);
+            Assert.PropertyChanged(expectedSongToBeUpdated, "IsLoading", action);
         }
 
         [Theory]
@@ -349,6 +363,23 @@ namespace ViewModelsTests.SongsPageViewModelTest
         [Theory]
         [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road/")]
         [InlineData("End of the Road", "test.song", "User/test/End of the Road/")]
+        public async Task deleteSongAsyncErrorTest(string title, string file, string localPath)
+        {
+            //Setup
+            Song song = new Song(title, file, localPath);
+            Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
+            songsManagerMock.Setup(m => m.findSong(title)).Throws(new Exception());
+            SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
+            SongVersioned expectedSongToBeDeleted = new SongVersioned(title);
+
+            await Assert.ThrowsAnyAsync<Exception>(async () => await viewModel.deleteSongAsync(expectedSongToBeDeleted));
+
+            Assert.Equal("Error", expectedSongToBeDeleted.Status);
+        }
+
+        [Theory]
+        [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road/")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/")]
         public async Task openSongAsyncTest(string title, string file, string localPath)
         {
             //Setup
@@ -366,6 +397,26 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Action action = () => viewModel.openSongAsync(expectedSongToBeOpened);
             Assert.PropertyChanged(expectedSongToBeOpened, "Status", action);
             Assert.PropertyChanged(expectedSongToBeOpened, "IsLoading", action);
+        }
+
+        [Theory]
+        [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road/")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/")]
+        public async Task openSongAsyncErrorTest(string title, string file, string localPath)
+        {
+            //Setup
+            Song song = new Song(title, file, localPath);
+            Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
+            songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
+            songsManagerMock.Setup(m => m.openSongAsync(song)).Throws(new Exception());
+            SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
+            viewModel.addLocalSong(title, file, localPath);
+            SongVersioned expectedSongToBeOpened = new SongVersioned(title);
+
+            await Assert.ThrowsAnyAsync<Exception>(async () => await viewModel.openSongAsync(expectedSongToBeOpened));
+
+            songsManagerMock.Verify(m => m.openSongAsync(song), Times.Once());
+            Assert.Equal("Error", expectedSongToBeOpened.Status);
         }
 
         [Theory]
