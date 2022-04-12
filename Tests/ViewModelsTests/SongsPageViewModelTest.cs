@@ -443,6 +443,26 @@ namespace ViewModelsTests.SongsPageViewModelTest
         [Theory]
         [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road/")]
         [InlineData("End of the Road", "test.song", "User/test/End of the Road/")]
+        public async Task revertSongAsyncErrorTest(string title, string file, string localPath)
+        {
+            //Setup
+            Song song = new Song(title, file, localPath);
+            Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
+            songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
+            songsManagerMock.Setup(m => m.revertSongAsync(song)).Throws(new Exception());
+            SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
+            viewModel.addLocalSong(title, file, localPath);
+            SongVersioned expectedSongToBeReverted = new SongVersioned(title);
+
+            await Assert.ThrowsAnyAsync<Exception>(async () => await viewModel.revertSongAsync(expectedSongToBeReverted));
+
+            songsManagerMock.Verify(m => m.revertSongAsync(song), Times.Once());
+            Assert.Equal("Error", expectedSongToBeReverted.Status);
+        }
+
+        [Theory]
+        [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road/")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/")]
         public async Task uploadNewSongVersionAsyncTest(string title, string file, string localPath)
         {
             //Setup
@@ -466,6 +486,28 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Action action = () => viewModel.uploadNewSongVersionAsync(expectedSongToBeUploaded, changeTitle, changeDescritpion, true, false, false);
             Assert.PropertyChanged(expectedSongToBeUploaded, "Status", action);
             Assert.PropertyChanged(expectedSongToBeUploaded, "IsLoading", action);
+        }
+
+        [Theory]
+        [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road/")]
+        [InlineData("End of the Road", "test.song", "User/test/End of the Road/")]
+        public async Task uploadNewSongVersionAsyncErrorTest(string title, string file, string localPath)
+        {
+            //Setup
+            Song song = new Song(title, file, localPath);
+            Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
+            songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
+            songsManagerMock.Setup(m => m.uploadNewSongVersionAsync(song, "Change Title", "No Description", true, false, false)).Throws(new Exception());
+            SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
+            viewModel.addLocalSong(title, file, localPath);
+            SongVersioned expectedSongToBeUploaded = new SongVersioned(title);
+            string changeTitle = "New Title";
+            string changeDescritpion = "No Description";
+
+            await Assert.ThrowsAnyAsync<Exception>(async () => await viewModel.uploadNewSongVersionAsync(expectedSongToBeUploaded, changeTitle, changeDescritpion, true, false, false));
+
+            songsManagerMock.Verify(m => m.uploadNewSongVersionAsync(song, changeTitle, changeDescritpion, true, false, false), Times.Once());
+            Assert.Equal("Error", expectedSongToBeUploaded.Status);
         }
     }
 }
