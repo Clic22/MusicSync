@@ -52,6 +52,24 @@ namespace App1.ViewModels
 
         public ObservableCollection<Version> Versions;
 
+        private bool isRefreshingSong_;
+        public bool IsRefreshingSong
+        {
+            get
+            {
+                return isRefreshingSong_;
+            }
+            set
+            {
+                if (value)
+                {
+                    Status = "Refreshing...";
+                }
+                SetProperty(ref isRefreshingSong_, value);
+                IsLoading = value;
+            }
+        }
+
         private bool isUpdatingSong_;
         public bool IsUpdatingSong
         {

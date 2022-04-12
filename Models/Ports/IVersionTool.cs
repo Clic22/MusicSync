@@ -2,18 +2,27 @@
 {
     public interface IVersionTool
     {
-        public Task<string> uploadSongAsync(Song song, string title, string description, string versionNumber);
-        public Task<string> uploadSongAsync(Song song, string file, string title);
-        public Task<string> downloadSharedSongAsync(string songFolder, string sharedLink, string downloadLocalPath);
+        public Task uploadSongAsync(Song song, string title, string description, string versionNumber);
+        public Task uploadSongAsync(Song song, string file, string title);
+        public Task downloadSharedSongAsync(string songFolder, string sharedLink, string downloadLocalPath);
         public Task<string> shareSongAsync(Song song);
-        public Task<string> updateSongAsync(Song song);
+        public Task updateSongAsync(Song song);
         public Task<bool> updatesAvailableForSongAsync(Song song);
-        public Task<string> revertSongAsync(Song song);
+        public Task revertSongAsync(Song song);
         public Task<SongVersion> currentVersionAsync(Song song);
         public Task<List<SongVersion>> versionsAsync(Song song);
         public async Task<string> newVersionNumberAsync(Song song, bool compo, bool mix, bool mastering)
         {
-            SongVersion currentVersion = await currentVersionAsync(song);
+            SongVersion currentVersion;
+            try
+            {
+                currentVersion = await currentVersionAsync(song);
+            }
+            catch
+            {
+                currentVersion = new SongVersion();
+            }
+            
             string versionNumber = currentVersion.Number;
             int compoNumber = 0;
             int mixNumber = 0;

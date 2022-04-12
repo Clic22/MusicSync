@@ -61,6 +61,54 @@ namespace WinUIAppTests.FileManagerTests
         }
 
         [Fact]
+        public void syncSrcFile()
+        {
+            string directoryPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
+            string directorySrc = directoryPath + @"Src\";
+            string directoryDst = directoryPath + @"Dst\";
+            string songFile = "file.song";
+
+            Directory.CreateDirectory(directorySrc);
+            Directory.CreateDirectory(directoryDst);
+            File.CreateText(directorySrc + songFile).Close();
+
+            Assert.True(File.Exists(directorySrc + songFile));
+            Assert.False(File.Exists(directoryDst + songFile));
+
+            IFileManager fileManager = new FileManager();
+            fileManager.SyncFile(directorySrc, directoryDst, songFile);
+
+            Assert.True(File.Exists(directorySrc + songFile));
+            Assert.True(File.Exists(directoryDst + songFile));
+
+            Directory.Delete(directoryPath, true);
+        }
+
+        [Fact]
+        public void syncDstFile()
+        {
+            string directoryPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
+            string directorySrc = directoryPath + @"Src\";
+            string directoryDst = directoryPath + @"Dst\";
+            string songFile = "file.song";
+
+            Directory.CreateDirectory(directorySrc);
+            Directory.CreateDirectory(directoryDst);
+            File.CreateText(directoryDst + songFile).Close();
+
+            Assert.False(File.Exists(directorySrc + songFile));
+            Assert.True(File.Exists(directoryDst + songFile));
+
+            IFileManager fileManager = new FileManager();
+            fileManager.SyncFile(directorySrc, directoryDst, songFile);
+
+            Assert.False(File.Exists(directorySrc + songFile));
+            Assert.False(File.Exists(directoryDst + songFile));
+
+            Directory.Delete(directoryPath, true);
+        }
+
+        [Fact]
         public void copySubDirectoryTest()
         {
             string directoryPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
@@ -266,7 +314,35 @@ namespace WinUIAppTests.FileManagerTests
             FileManager fileManager = new FileManager();
             path = fileManager.FormatPath(path);
             Assert.Equal(savedPath, path);
+        }
 
+        [Theory]
+        [InlineData(@"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\")]
+        public void DeleteDirectoryTest(string path)
+        {
+            IFileManager fileManager = new FileManager();
+            fileManager.CreateDirectory(ref path);
+            string subFolder = path + @"Sub\";
+            fileManager.CreateDirectory(ref subFolder);
+
+            fileManager.DeleteDirectory(path);
+
+            Assert.False(fileManager.DirectoryExists(subFolder));
+            Assert.False(fileManager.DirectoryExists(path));
+        }
+
+        [Theory]
+        [InlineData("file.song", @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory")]
+        public void DeleteFileTest(string fileToDelete, string inDirectory)
+        {
+            IFileManager fileManager = new FileManager();
+            fileManager.CreateDirectory(ref inDirectory);
+            fileManager.CreateFile(fileToDelete, inDirectory);
+
+            fileManager.DeleteFile(fileToDelete,inDirectory);
+
+            Assert.False(File.Exists(inDirectory + fileToDelete));
+            Directory.Delete(inDirectory, true);
         }
     }
 }

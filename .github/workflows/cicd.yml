@@ -140,7 +140,7 @@ jobs:
     - name: Test and coverage
       shell: powershell
       run: |
-        vstest.console.exe D:\a\MusicSync\MusicSync\Tests\ModelsTests\bin\$env:Platform\$env:Configuration\net6.0\ModelsTests.dll D:\a\MusicSync\MusicSync\Tests\ViewModelsTests\bin\$env:Platform\$env:Configuration\net6.0-windows10.0.19041.0\ViewModelsTests.dll D:\a\MusicSync\MusicSync\Tests\GitSongVersioningTests\bin\$env:Platform\$env:Configuration\net6.0-windows10.0.19041.0\GitSongVersioningTests.dll D:\a\MusicSync\MusicSync\Tests\FileManagerTests\bin\$env:Platform\$env:Configuration\net6.0-windows10.0.19041.0\FileManagerTests.dll /EnableCodeCoverage /logger:"trx" /collect:"Code Coverage;Format=Xml"
+        vstest.console.exe D:\a\MusicSync\MusicSync\Tests\ModelsTests\bin\$env:Platform\$env:Configuration\net6.0-windows10.0.19041.0\ModelsTests.dll D:\a\MusicSync\MusicSync\Tests\ViewModelsTests\bin\$env:Platform\$env:Configuration\net6.0-windows10.0.19041.0\ViewModelsTests.dll D:\a\MusicSync\MusicSync\Tests\GitSongVersioningTests\bin\$env:Platform\$env:Configuration\net6.0-windows10.0.19041.0\GitSongVersioningTests.dll D:\a\MusicSync\MusicSync\Tests\FileManagerTests\bin\$env:Platform\$env:Configuration\net6.0-windows10.0.19041.0\FileManagerTests.dll /EnableCodeCoverage /logger:"trx" /collect:"Code Coverage;Format=Xml"
       env:
         Configuration: ${{ matrix.configuration }}
         Platform: ${{ matrix.platform }}

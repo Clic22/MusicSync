@@ -19,30 +19,28 @@ namespace GitSongVersioningTests
         {
             testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
             songTitle = "End of the Road";
-            songLocalPath = testDirectory + songTitle ;
+            songLocalPath = testDirectory + songTitle + '\\';
             songFile = "file.song";           
 
             FileManager = new FileManager();
-            FileManager.CreateDirectory(ref songLocalPath);
-            FileManager.CreateFile(songFile, songLocalPath);
-
             song = new Song(songTitle, songFile, songLocalPath);
-
             user = new User("MusicSyncTool", "HelloWorld12", "Clic", "musicsynctool@gmail.com");
             SaverMock = new Mock<ISaver>();
             SaverMock.Setup(m => m.savedUser()).Returns(user);
             GitVersioning = new GitSongVersioning(testDirectory, SaverMock.Object, FileManager);
+            FileManager.CreateDirectory(ref songLocalPath);
+            FileManager.CreateFile(songFile, songLocalPath);
         }
 
         public Task InitializeAsync()
         {
-            return Task.CompletedTask; 
+            return Task.CompletedTask;
         }
 
         public async Task DisposeAsync()
         {
-            deleteDirectory(testDirectory);
             await deleteGitlabProject();
+            FileManager.DeleteDirectory(testDirectory);
         }
 
         public string testDirectory;
@@ -71,22 +69,6 @@ namespace GitSongVersioningTests
                 }
             }
             System.Threading.Thread.Sleep(5000);
-        }
-
-        private static void deleteDirectory(string directoryToDelete)
-        {
-            var directory = new DirectoryInfo(directoryToDelete) { Attributes = FileAttributes.Normal };
-
-            foreach (var info in directory.GetFileSystemInfos("*", SearchOption.AllDirectories))
-            {
-                info.Attributes = FileAttributes.Normal;
-            }
-
-            directory.Delete(true);
-            while (directory.Exists)
-            {
-
-            }
         }
     }
 
@@ -212,7 +194,7 @@ namespace GitSongVersioningTests
         }
 
         [Fact]
-        public async Task fetchUpdateForSong()
+        public async Task updateAvailableForSong()
         {
             string changeTitle = "Test";
             string changeDescription = "No Description";
@@ -245,7 +227,7 @@ namespace GitSongVersioningTests
         }
 
         [Fact]
-        public async Task noUpdateToFetchForSong()
+        public async Task noUpdateAvailableForSong()
         {
             string changeTitle = "Test";
             string changeDescription = "No Description";
@@ -310,6 +292,9 @@ namespace GitSongVersioningTests
             dataToBeTested.Add((true, false, false, "1.0.0"));
             dataToBeTested.Add((false, true, false, "0.1.0"));
             dataToBeTested.Add((false, false, true, "0.0.1"));
+            dataToBeTested.Add((false, true, true, "0.1.1"));
+            dataToBeTested.Add((true, false, true, "1.0.1"));
+            dataToBeTested.Add((true, true, false, "1.1.0"));
             dataToBeTested.Add((true, true, true, "1.1.1"));
 
             foreach (var data in dataToBeTested)

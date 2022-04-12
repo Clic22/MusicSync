@@ -1,7 +1,5 @@
 ﻿using App1.Models.Ports;
 using System.IO.Compression;
-using System.Linq;
-using Windows.Storage;
 
 namespace WinUIApp
 {
@@ -9,17 +7,14 @@ namespace WinUIApp
     {
         public async Task<string> findFileNameBasedOnExtensionAsync(string directoryPath, string extension)
         {
-            try
+            var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(directoryPath);
+            var files = await folder.GetFilesAsync();
+            string fileName = files.First(file => file.Name.Contains(extension)).Name;
+            if (fileName == null)
             {
-                var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(directoryPath);
-                var files = await folder.GetFilesAsync();
-                string fileName = files.First(file => file.Name.Contains(extension)).Name;
-                return fileName;
+                throw new FileManagerException("No file with extension " + extension + " in " + directoryPath);
             }
-            catch
-            {
-                return string.Empty;
-            }
+            return fileName;
         }
 
         public void CopyDirectories(List<string> directoriesToCopied, string directorySrc, string directoryDst)
@@ -32,27 +27,20 @@ namespace WinUIApp
 
         public void CopyDirectory(string sourceDir, string destinationDir)
         {
-            // Get information about the source directory
             var dir = new DirectoryInfo(sourceDir);
 
-            // Check if the source directory exists
             if (!dir.Exists)
                 throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
 
-            // Cache directories before we start copying
             DirectoryInfo[] dirs = dir.GetDirectories();
-
-            // Create the destination directory
             Directory.CreateDirectory(destinationDir);
 
-            // Get the files in the source directory and copy to the destination directory
             foreach (FileInfo file in dir.GetFiles())
             {
                 string targetFilePath = Path.Combine(destinationDir, file.Name);
                 file.CopyTo(targetFilePath);
             }
 
-            // If recursive and copying subdirectories, recursively call this method
             foreach (DirectoryInfo subDir in dirs)
             {
                 string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
@@ -96,6 +84,35 @@ namespace WinUIApp
             File.Create(directoryPath + file).Close();
         }
 
+        public void WriteFile(string content, string file, string directoryPath)
+        {
+            File.WriteAllText(directoryPath + file, content);
+        }
+
+        public string ReadFile(string file, string directoryPath)
+        {
+            return File.ReadAllText(directoryPath + file);
+        }
+        
+        
+
+        public void DeleteDirectory(string directoryPath)
+        {
+            var directory = new DirectoryInfo(directoryPath) { Attributes = System.IO.FileAttributes.Normal };
+
+            foreach (var info in directory.GetFileSystemInfos("*", SearchOption.AllDirectories))
+            {
+                info.Attributes = System.IO.FileAttributes.Normal;
+            }
+
+            directory.Delete(true);
+        }
+
+        public void DeleteFile(string file, string directoryPath)
+        {
+           File.Delete(directoryPath + file);
+        }
+
         public string FormatPath(string path)
         {
             if (path.Last() != '\\')
@@ -103,6 +120,36 @@ namespace WinUIApp
                 path = path + '\\';
             }
             return path;
+        }
+
+        public bool DirectoryExists(string directoryPath)
+        {
+            if (Directory.Exists(directoryPath))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void SyncFile(string srcPath, string dstPath, string file)
+        {
+            if (File.Exists(srcPath + file) && !File.Exists(dstPath + file))
+            {
+                File.Copy(srcPath + file, dstPath + file);
+            }
+            else if (!File.Exists(srcPath + file) && File.Exists(dstPath + file))
+            {
+                File.Delete(dstPath + file);
+            }
+        }
+
+        public bool FileExists(string file, string directoryPath)
+        {
+            if (File.Exists(directoryPath + file))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

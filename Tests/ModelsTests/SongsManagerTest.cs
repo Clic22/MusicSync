@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using WinUIApp;
 using Xunit;
 
 namespace ModelsTests.SongsManagerTest
@@ -21,19 +22,21 @@ namespace ModelsTests.SongsManagerTest
             string BandEmail = "testdklsjfhg@yahoo.com";
             user = new User(BandName, BandPassword, Username, BandEmail);
 
+            testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
             title = "End of the Road";
             file = "file.song";
-            localPath = @"./SongsManagerTest/End of the Road/";
+            localPath = testDirectory + @"SongsManagerTest\End of the Road\";
             expectedSong = new Song(title, file, localPath);
             Directory.CreateDirectory(localPath);
+            File.Create(localPath + file).Close();
 
             version = new Mock<IVersionTool>(MockBehavior.Strict);
             saver = new SaverMock();
             string musicFolder = "TestFolder";
             saver.saveSettings(user, musicFolder);
-            fileManager = new Mock<IFileManager>();
-            songsManager = new SongsManager(version.Object, saver, fileManager.Object);
-            locker = new Locker(version.Object);
+            fileManager = new FileManager();
+            songsManager = new SongsManager(version.Object, saver, fileManager);
+            locker = new Locker(version.Object, fileManager);
         }
 
         public void Dispose()
@@ -48,7 +51,7 @@ namespace ModelsTests.SongsManagerTest
         public User user;
         public Song expectedSong;
         public ISaver saver;
-        public Mock<IFileManager> fileManager;
+        public FileManager fileManager;
         public Mock<IVersionTool> version;
         public SongsManager songsManager;
         
@@ -56,6 +59,7 @@ namespace ModelsTests.SongsManagerTest
         public string title;
         public string file;
         public string localPath;
+        public string testDirectory;
     }
 
     public class SongsManagerTest : TestsBase
@@ -74,7 +78,7 @@ namespace ModelsTests.SongsManagerTest
         [Fact]
         public void tryFindNullSongTest()
         {
-            Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
+            Assert.Throws<SongsManagerException>(() => songsManager.findSong(title));
         }
         
         [Fact]
@@ -84,7 +88,7 @@ namespace ModelsTests.SongsManagerTest
 
             await songsManager.deleteSongAsync(expectedSong);
 
-            Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
+            Assert.Throws<SongsManagerException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
         }
         
@@ -110,7 +114,7 @@ namespace ModelsTests.SongsManagerTest
 
             //THEN we expect the song being removed from song storage and save. We expect the song to be
             //unlocked, lock file not being removed from local and version workspace.
-            Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
+            Assert.Throws<SongsManagerException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "lock"), Times.Once());
         }
@@ -126,7 +130,7 @@ namespace ModelsTests.SongsManagerTest
 
             await songsManager.deleteSongAsync(expectedSong);
 
-            Assert.Throws<InvalidOperationException>(() => songsManager.findSong(title));
+            Assert.Throws<SongsManagerException>(() => songsManager.findSong(title));
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
             version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "unlock"), Times.Once());
         }
@@ -140,9 +144,8 @@ namespace ModelsTests.SongsManagerTest
             //Add song for synchronization
             songsManager.addLocalSong(title, file, localPath);
 
-            string errorMessage = await songsManager.updateSongAsync(expectedSong);
+            await songsManager.updateSongAsync(expectedSong);
 
-            Assert.Equal(string.Empty, errorMessage);
             version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
         }
 
@@ -164,10 +167,9 @@ namespace ModelsTests.SongsManagerTest
             //Add song for synchronization
             songsManager.addLocalSong(title, file, localPath);
 
-            string errorMessage = await songsManager.updateSongAsync(expectedSong);
+            await songsManager.updateSongAsync(expectedSong);
 
             Assert.Equal(SongStatus.State.locked, expectedSong.Status.state);
-            Assert.Equal(string.Empty, errorMessage);
             version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
             version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Exactly(2));
         }
@@ -180,9 +182,8 @@ namespace ModelsTests.SongsManagerTest
             //Add song for synchronization
             songsManager.addLocalSong(title, file, localPath);
 
-            string errorMessage = await songsManager.revertSongAsync(expectedSong);
+            await songsManager.revertSongAsync(expectedSong);
 
-            Assert.Equal(string.Empty, errorMessage);
             version.Verify(m => m.revertSongAsync(expectedSong), Times.Once());
         }
         
@@ -199,9 +200,8 @@ namespace ModelsTests.SongsManagerTest
             songsManager.addLocalSong(title, file, localPath);
             expectedSong.Status.state = SongStatus.State.locked;
 
-            string errorMessage = await songsManager.uploadNewSongVersionAsync(expectedSong, "New Version", "No description", true, false, false);
+            await songsManager.uploadNewSongVersionAsync(expectedSong, "New Version", "No description", true, false, false);
 
-            Assert.Equal(string.Empty, errorMessage);
             Assert.Equal(SongStatus.State.upToDate, expectedSong.Status.state);
             version.Verify(m => m.newVersionNumberAsync(expectedSong, true, false, false), Times.Once());
             version.Verify(m => m.uploadSongAsync(expectedSong, "New Version", "No description", "1.0.0"), Times.Once());
@@ -217,10 +217,9 @@ namespace ModelsTests.SongsManagerTest
             version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(string.Empty));
             File.Create(localPath + file).Close();
 
-            bool errorMessage = await songsManager.openSongAsync(expectedSong);
+            await songsManager.openSongAsync(expectedSong);
 
             Assert.Equal(SongStatus.State.locked, expectedSong.Status.state);
-            Assert.True(errorMessage);
             version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Exactly(3));
             version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
             version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "lock"), Times.Once());
@@ -237,10 +236,9 @@ namespace ModelsTests.SongsManagerTest
             File.Create(localPath + file).Close();
             await locker.lockSongAsync(expectedSong, user);
 
-            bool errorMessage = await songsManager.openSongAsync(expectedSong);
+            await songsManager.openSongAsync(expectedSong);
 
             Assert.Equal(SongStatus.State.locked, expectedSong.Status.state);
-            Assert.True(errorMessage);
             version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Exactly(3));
             version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
             version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "lock"), Times.Once());
@@ -251,12 +249,11 @@ namespace ModelsTests.SongsManagerTest
         {
             version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(true));
                                                                                    
-            version.Setup(m => m.updateSongAsync(expectedSong)).Returns(Task.FromResult("Error"));
+            version.Setup(m => m.updateSongAsync(expectedSong)).Throws(new Exception());
 
-            bool errorMessage = await songsManager.openSongAsync(expectedSong);
+            await Assert.ThrowsAnyAsync<Exception>(async () => await songsManager.openSongAsync(expectedSong));
 
             Assert.Equal(SongStatus.State.upToDate, expectedSong.Status.state);
-            Assert.False(errorMessage);
             version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Once());
             version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
             version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "lock"), Times.Never());
@@ -276,10 +273,9 @@ namespace ModelsTests.SongsManagerTest
             User user2 = new User(BandName, BandPassword, Username, BandEmail);
             await locker.lockSongAsync(expectedSong, user2);
 
-            bool errorMessage = await songsManager.openSongAsync(expectedSong);
+            await Assert.ThrowsAnyAsync<Exception>(async () => await songsManager.openSongAsync(expectedSong));
 
             Assert.Equal(SongStatus.State.locked, expectedSong.Status.state);
-            Assert.False(errorMessage);
             version.Verify(m => m.updatesAvailableForSongAsync(expectedSong), Times.Exactly(2));
             version.Verify(m => m.updateSongAsync(expectedSong), Times.Once());
             version.Verify(m => m.uploadSongAsync(expectedSong, ".lock", "lock"), Times.Once());
@@ -326,14 +322,18 @@ namespace ModelsTests.SongsManagerTest
             Assert.Contains(songVersion2, versions);
         }
         
-        [Theory]
-        [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest\")]
-        public async Task addSharedSongTest(string songTitle, string sharedLink, string downloadPath)
+        [Fact]
+        public async Task addSharedSongTest()
         {
-            fileManager.Setup(m => m.findFileNameBasedOnExtensionAsync(downloadPath + songTitle + '\\', ".song")).Returns(Task.FromResult("file.song"));
-            fileManager.Setup(m => m.FormatPath(songTitle)).Returns(songTitle + '\\');
+            string songTitle = "End of the Road";
+            string sharedLink = "http://test.com/band/end-of-the-road";
+            string downloadPath = localPath;
             Song expectedSong = new Song(songTitle, "file.song", downloadPath + songTitle + '\\');
-            version.Setup(m => m.downloadSharedSongAsync(songTitle + '\\', sharedLink, downloadPath)).Returns(Task.FromResult(string.Empty));
+            version.Setup(m => m.downloadSharedSongAsync(songTitle + '\\', sharedLink, downloadPath)).Returns(Task.FromResult(string.Empty))
+                                                                                                     .Callback(() => { 
+                                                                                                         Directory.CreateDirectory(downloadPath + songTitle + '\\');
+                                                                                                         File.Create(downloadPath + songTitle + '\\' + file).Close(); 
+                                                                                                     });
             version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
             
             await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath);
@@ -350,15 +350,13 @@ namespace ModelsTests.SongsManagerTest
         [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest\")]
         public async Task addSharedSongErrorDownloadTest(string songTitle, string sharedLink, string downloadPath)
         {
-            fileManager.Setup(m => m.FormatPath(songTitle)).Returns(songTitle + '\\');
-            version.Setup(m => m.downloadSharedSongAsync(songTitle + '\\', sharedLink, downloadPath)).Returns(Task.FromResult("Error"));
-       
-            string errorMessage = await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath);
+            version.Setup(m => m.downloadSharedSongAsync(songTitle + '\\', sharedLink, downloadPath)).Throws(new Exception());
+
+            await Assert.ThrowsAnyAsync<Exception>(async () => await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath));
 
             //We expect a songVersioned created with the title
             Song expectedSong = new Song(songTitle, "file.song", downloadPath + @"\" + songTitle);
             Assert.DoesNotContain(expectedSong, songsManager.SongList);
-            Assert.Equal("Error", errorMessage);
             //We expect to have called the addSharedSongAsync method in the songsManager
             version.Verify(m => m.downloadSharedSongAsync(songTitle + '\\', sharedLink, downloadPath), Times.Once());
             Assert.DoesNotContain(expectedSong, saver.savedSongs());
@@ -368,18 +366,14 @@ namespace ModelsTests.SongsManagerTest
         [InlineData("End of the Road", "http://test.com/band/end-of-the-road", @"./SongsManagerTest\")]
         public async Task addSharedSongErrorFileNotFoundTest(string songTitle, string sharedLink, string downloadPath)
         {
-            fileManager.Setup(m => m.findFileNameBasedOnExtensionAsync(downloadPath + songTitle + '\\', ".song")).Returns(Task.FromResult(string.Empty));
-            fileManager.Setup(m => m.FormatPath(songTitle)).Returns(songTitle + '\\');
             version.Setup(m => m.downloadSharedSongAsync(songTitle + '\\', sharedLink, downloadPath)).Returns(Task.FromResult(string.Empty));
 
-            string errorMessage = await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath);
+            await Assert.ThrowsAnyAsync<Exception>(async () => await songsManager.addSharedSongAsync(songTitle, sharedLink, downloadPath));
 
             //We expect a songVersioned created with the title
             string localPath = downloadPath + songTitle + '\\';
             Song expectedSong = new Song(songTitle, "file.song", localPath);
             Assert.DoesNotContain(expectedSong, songsManager.SongList);
-            fileManager.Verify(m => m.findFileNameBasedOnExtensionAsync(localPath,".song"), Times.Once());
-            Assert.Equal("Song File not Found in " + localPath, errorMessage);
         }
 
         
@@ -389,8 +383,7 @@ namespace ModelsTests.SongsManagerTest
         {
             Song song = new Song(title, file, localPath);
             version.Setup(m => m.shareSongAsync(song)).Returns(Task.FromResult("https://www.gitlab.com/end-of-the-road"));
-            fileManager.Setup(m => m.findFileNameBasedOnExtensionAsync(localPath + @"\" + title, ".song")).Returns(Task.FromResult(file));
-
+            
             string shareLink = await songsManager.shareSongAsync(song);
 
             //We expect to have called the addSharedSongAsync method in the songsManager
