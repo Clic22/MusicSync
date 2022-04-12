@@ -3,7 +3,7 @@
 namespace App1.Models
 {
     [Serializable]
-    internal class SongsManagerException : Exception
+    public class SongsManagerException : Exception
     {
         public SongsManagerException()
         {
