@@ -115,6 +115,41 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Assert.Equal(expectedSong2.Status, viewModel.SongsVersioned.First(m => m.Equals(expectedSong2)).Status);
         }
 
+        [Fact]
+        public async Task refreshSongErrorTest()
+        {
+            //Setup
+            string title = "title";
+            string file = "file";
+            string localPath = "localPath";
+            SongVersion songVersion = new SongVersion();
+            songVersion.Number = "1.0.0";
+            songVersion.Author = "Oregano";
+            songVersion.Description = "No description";
+            List<SongVersion> songsVersion = new List<SongVersion>();
+            songsVersion.Add(songVersion);
+            Song song = new Song(title, file, localPath);
+            song.Status.state = SongStatus.State.locked;
+            song.Status.whoLocked = "Oregano";
+            Mock<ISaver> saverMock = new Mock<ISaver>();
+            List<Song> songsList = new List<Song>();
+            songsList.Add(song);
+            saverMock.Setup(m => m.savedSongs()).Returns(songsList);
+            SongsStorage songs = new SongsStorage(saverMock.Object);
+            Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
+            songsManagerMock.Setup(m => m.SongList).Returns(songs);
+            songsManagerMock.Setup(m => m.findSong(song.Title)).Returns(song);
+            songsManagerMock.Setup(m => m.currentVersionAsync(song)).Throws(new Exception());
+            songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songsVersion));
+            SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
+
+            //Add a new song
+            await Assert.ThrowsAnyAsync<Exception>(async () => await viewModel.refreshSongsVersionedAsync());
+
+            SongVersioned expectedSong = new SongVersioned(title);
+            Assert.Equal("Error", viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).Status);
+        }
+
         [Theory]
         [InlineData("title", "file.song", @"./SongsManagerTest/End of the Road")]
         [InlineData("End of the Road", "test.song", @"User/test/End of the Road")]
