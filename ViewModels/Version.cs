@@ -18,7 +18,20 @@
             }
             set
             {
-                SetProperty(ref number_, value);
+                var numbers = value.Split('.').ToList();
+                string compoVersion = numbers[0];
+                string mixVersion = numbers[1];
+                string versionNumber = string.Empty;
+                if (mixVersion == "0")
+                {
+                    versionNumber = "Compo v" + compoVersion;
+                }
+                else
+                {
+                    versionNumber = "Compo v" + compoVersion + " / Mix v" + mixVersion;
+                }
+                 
+                SetProperty(ref number_, versionNumber);
             }
         }
 
