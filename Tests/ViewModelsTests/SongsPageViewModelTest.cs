@@ -92,12 +92,14 @@ namespace ViewModelsTests.SongsPageViewModelTest
             SongVersioned expectedSong = new SongVersioned(title);
             App1.ViewModels.Version expectedVersion = new App1.ViewModels.Version();
             expectedVersion.Number = "1.0.0";
+            Assert.Equal("Compo v1", expectedVersion.Number);
             expectedVersion.Author = "Oregano";
             expectedVersion.Description = "No description";
             expectedSong.Status = "Locked by Oregano";
             SongVersioned expectedSong2 = new SongVersioned(title2);
             App1.ViewModels.Version expectedVersion2 = new App1.ViewModels.Version();
             expectedVersion2.Number = "2.1.0";
+            Assert.Equal("Compo v2 / Mix v1", expectedVersion2.Number);
             expectedVersion2.Author = "Aymeric Meindre";
             expectedVersion2.Description = "Test new mix";
             expectedSong2.Status = "Updates Available";
@@ -174,7 +176,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             //We expect a songVersioned created with the title
             SongVersioned expectedSongVersioned = new SongVersioned(title);
             Assert.Equal(expectedSongVersioned, songVersioned);
-            Assert.Equal("1.0.0", songVersioned.CurrentVersion.Number);
+            Assert.Equal("Compo v1", songVersioned.CurrentVersion.Number);
             Assert.Equal(String.Empty, songVersioned.CurrentVersion.Description);
             Assert.Contains(expectedSongVersioned, viewModel.SongsVersioned);
             Assert.False(viewModel.IsAddingSong);
@@ -313,7 +315,8 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
             string expectedDescription = "New Version from an User";
-            string expectedNumber = "v2.3.0";
+            string expectedNumber = "2.3.0";
+            string expectedVersionNumber = "Compo v2 / Mix v3";
             string expectedAuthor = "Oregano";
             SongVersion songVersion = new SongVersion(expectedNumber, expectedDescription, expectedAuthor);
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
@@ -327,7 +330,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
 
             Assert.Equal(string.Empty, expectedSongToBeUpdated.Status);
             Assert.Equal(expectedDescription, expectedSongToBeUpdated.CurrentVersion.Description);
-            Assert.Equal(expectedNumber, expectedSongToBeUpdated.CurrentVersion.Number);
+            Assert.Equal(expectedVersionNumber, expectedSongToBeUpdated.CurrentVersion.Number);
             Assert.Equal(expectedAuthor, expectedSongToBeUpdated.CurrentVersion.Author);
             songsManagerMock.Verify(m => m.updateSongAsync(song), Times.Once());
             songsManagerMock.Verify(m => m.currentVersionAsync(song), Times.Exactly(2));
