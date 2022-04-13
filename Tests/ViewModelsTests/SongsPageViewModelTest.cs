@@ -147,8 +147,9 @@ namespace ViewModelsTests.SongsPageViewModelTest
             await Assert.ThrowsAnyAsync<Exception>(async () => await viewModel.refreshSongsVersionedAsync());
 
             SongVersioned expectedSong = new SongVersioned(title);
-            Assert.False(viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).IsRefreshingSong);
             Assert.Equal("Error", viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).Status);
+            Assert.False(viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).IsRefreshingSong);
+            
         }
 
         [Theory]

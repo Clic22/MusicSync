@@ -163,22 +163,16 @@ namespace App1.ViewModels
 
         public async Task refreshSongsVersionedAsync()
         {
+            List<Task> refreshSongVersionedTasks = new List<Task>();
             foreach (var songVersioned in SongsVersioned)
             {
-                try
-                {
-                    songVersioned.IsRefreshingSong = true;
-                    Song song = SongsManager.findSong(songVersioned.Title);
-                    await refreshSongVersionedAsync(songVersioned, song);
-                    songVersioned.IsRefreshingSong = false;
-                }
-                catch
-                {
-                    songVersioned.IsRefreshingSong = false;
-                    songVersioned.Status = "Error";
-                    throw;
-                }
-                
+                Song song = SongsManager.findSong(songVersioned.Title);
+                Task refreshSongVersionedTask = refreshSongVersionedAsync(songVersioned, song);
+                refreshSongVersionedTasks.Add(refreshSongVersionedTask);
+            }
+            foreach(var task in refreshSongVersionedTasks)
+            {
+                await task;
             }
         }
 
@@ -198,13 +192,16 @@ namespace App1.ViewModels
         {
             try
             {
+                songVersioned.IsRefreshingSong = true;
                 await refreshSongStatusAsync(songVersioned, song);
                 await refreshSongCurrentVersionAsync(songVersioned, song);
                 await refreshSongVersionsAsync(songVersioned, song);
+                songVersioned.IsRefreshingSong = false;
             }
             catch
             {
                 songVersioned.Status = "Error";
+                songVersioned.IsRefreshingSong = false;
                 throw;
             }
         }
