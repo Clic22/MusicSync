@@ -33,10 +33,10 @@ namespace App1.Models
             }
         }
 
-        public void addLocalSong(string songTitle, string songFile, string songLocalPath)
+        public async Task addLocalSongAsync(string songTitle, string songFile, string songLocalPath)
         {
-            Song song = new Song(songTitle, songFile, songLocalPath);
-            SongList.addNewSong(song);
+            Song song = addSong(songTitle, songFile, songLocalPath);
+            await VersionTool.uploadSongAsync(song, "First Upload", String.Empty, "1.0.0");
         }
 
         public async Task addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
@@ -45,7 +45,7 @@ namespace App1.Models
             await VersionTool.downloadSharedSongAsync(songFolder, sharedLink, downloadLocalPath);
             string localPath = downloadLocalPath + songFolder;
             string songFile = await FileManager.findFileNameBasedOnExtensionAsync(localPath,".song");
-            addLocalSong(songTitle, songFile, localPath);
+            addSong(songTitle, songFile, localPath);
             await refreshSongStatusAsync(findSong(songTitle));
         }
 
@@ -122,6 +122,13 @@ namespace App1.Models
             {
                 song.Status.state = SongStatus.State.upToDate;
             }
+        }
+
+        private Song addSong(string songTitle, string songFile, string songLocalPath)
+        {
+            Song song = new Song(songTitle, songFile, songLocalPath);
+            SongList.addNewSong(song);
+            return song;
         }
 
         private static void openSongWithDAW(Song song)

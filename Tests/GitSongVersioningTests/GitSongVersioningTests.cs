@@ -287,25 +287,6 @@ namespace GitSongVersioningTests
         }
 
         [Fact]
-        public async Task initialVersionNumberTest()
-        {
-            List<(bool compo, bool mix, bool mastering, string expectedVersionNumber)> dataToBeTested = new List<(bool, bool, bool, string)>();
-            dataToBeTested.Add((true, false, false, "1.0.0"));
-            dataToBeTested.Add((false, true, false, "0.1.0"));
-            dataToBeTested.Add((false, false, true, "0.0.1"));
-            dataToBeTested.Add((false, true, true, "0.1.1"));
-            dataToBeTested.Add((true, false, true, "1.0.1"));
-            dataToBeTested.Add((true, true, false, "1.1.0"));
-            dataToBeTested.Add((true, true, true, "1.1.1"));
-
-            foreach (var data in dataToBeTested)
-            {
-                string versionNumber = await GitVersioning.newVersionNumberAsync(song, data.compo, data.mix, data.mastering);
-                Assert.Equal(data.expectedVersionNumber, versionNumber);
-            }
-        }
-
-        [Fact]
         public async Task currentVersionTest()
         {
             string changeTitle = "Test";
