@@ -65,13 +65,16 @@ namespace ModelsTests.SongsManagerTest
     public class SongsManagerTest : TestsBase
     {
         [Fact]
-        public void addAndFindSongTest()
+        public async void addLocalSongAsyncTest()
         {
-            songsManager.addLocalSong(title, file, localPath);
+            version.Setup(m => m.uploadSongAsync(expectedSong, "First Upload", string.Empty, "1.0.0")).Returns(Task.FromResult(String.Empty));
+            
+            await songsManager.addLocalSongAsync(title, file, localPath);
             Song song = songsManager.findSong(title);
 
             Assert.Equal(expectedSong, song);
             Assert.Contains(expectedSong, saver.savedSongs());
+            version.Verify(m => m.uploadSongAsync(expectedSong, "First Upload", string.Empty, "1.0.0"), Times.Once());
         }
 
         
@@ -84,7 +87,8 @@ namespace ModelsTests.SongsManagerTest
         [Fact]
         public async Task deleteSongTest()
         {
-            songsManager.addLocalSong(title, file, localPath);
+            version.Setup(m => m.uploadSongAsync(expectedSong, "First Upload", string.Empty, "1.0.0")).Returns(Task.FromResult(String.Empty));
+            await songsManager.addLocalSongAsync(title, file, localPath);
 
             await songsManager.deleteSongAsync(expectedSong);
 
@@ -97,11 +101,12 @@ namespace ModelsTests.SongsManagerTest
         {
             version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
             version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(string.Empty));
+            version.Setup(m => m.uploadSongAsync(expectedSong, "First Upload", string.Empty, "1.0.0")).Returns(Task.FromResult(String.Empty));
 
             //GIVEN
             //A song added to the songsManager, we expect the song being added to the songstorage and
             //be saved. Then we lock the song by another user, we expect to have lock file in local and version workspace.
-            songsManager.addLocalSong(title, file, localPath);
+            await songsManager.addLocalSongAsync(title, file, localPath);
             string Username = "Second User";
             string BandPassword = "12df546@";
             string BandName = "Clic5456";
@@ -124,8 +129,9 @@ namespace ModelsTests.SongsManagerTest
         {
             version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(string.Empty));
             version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "unlock")).Returns(Task.FromResult(string.Empty));
+            version.Setup(m => m.uploadSongAsync(expectedSong, "First Upload", string.Empty, "1.0.0")).Returns(Task.FromResult(String.Empty));
 
-            songsManager.addLocalSong(title, file, localPath);
+            await songsManager.addLocalSongAsync(title, file, localPath);
             await locker.lockSongAsync(expectedSong, user);
 
             await songsManager.deleteSongAsync(expectedSong);
@@ -140,9 +146,10 @@ namespace ModelsTests.SongsManagerTest
         {
             version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(true));
             version.Setup(m => m.updateSongAsync(expectedSong)).Returns(Task.FromResult(String.Empty));
+            version.Setup(m => m.uploadSongAsync(expectedSong, "First Upload", string.Empty, "1.0.0")).Returns(Task.FromResult(String.Empty));
 
             //Add song for synchronization
-            songsManager.addLocalSong(title, file, localPath);
+            await songsManager.addLocalSongAsync(title, file, localPath);
 
             await songsManager.updateSongAsync(expectedSong);
 
@@ -157,7 +164,8 @@ namespace ModelsTests.SongsManagerTest
                                                                                     .Returns(Task.FromResult(false));                                                                               
             version.Setup(m => m.updateSongAsync(expectedSong)).Returns(Task.FromResult(String.Empty));
             version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(string.Empty));
-
+            version.Setup(m => m.uploadSongAsync(expectedSong, "First Upload", string.Empty, "1.0.0")).Returns(Task.FromResult(String.Empty));
+            
             string Username = "Second User";
             string BandPassword = "12df546@";
             string BandName = "Clic5456";
@@ -165,7 +173,7 @@ namespace ModelsTests.SongsManagerTest
             User user2 = new User(BandName, BandPassword, Username, BandEmail);
             await locker.lockSongAsync(expectedSong, user2);
             //Add song for synchronization
-            songsManager.addLocalSong(title, file, localPath);
+            await songsManager.addLocalSongAsync(title, file, localPath);
 
             await songsManager.updateSongAsync(expectedSong);
 
@@ -177,10 +185,11 @@ namespace ModelsTests.SongsManagerTest
         [Fact]
         public async Task revertSongTest()
         {
-           version.Setup(m => m.revertSongAsync(expectedSong)).Returns(Task.FromResult(String.Empty));
+            version.Setup(m => m.revertSongAsync(expectedSong)).Returns(Task.FromResult(String.Empty));
+            version.Setup(m => m.uploadSongAsync(expectedSong, "First Upload", string.Empty, "1.0.0")).Returns(Task.FromResult(String.Empty));
 
             //Add song for synchronization
-            songsManager.addLocalSong(title, file, localPath);
+            await songsManager.addLocalSongAsync(title, file, localPath);
 
             await songsManager.revertSongAsync(expectedSong);
 
@@ -191,20 +200,21 @@ namespace ModelsTests.SongsManagerTest
         public async Task uploadSongTest()
         {
             version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
-            version.Setup(m => m.newVersionNumberAsync(expectedSong, true, false, false)).Returns(Task.FromResult("1.0.0"));
-            version.Setup(m => m.uploadSongAsync(expectedSong, "New Version", "No description","1.0.0")).Returns(Task.FromResult(String.Empty));
+            version.Setup(m => m.newVersionNumberAsync(expectedSong, true, false, false)).Returns(Task.FromResult("2.0.0"));
+            version.Setup(m => m.uploadSongAsync(expectedSong, "New Version", "No description","2.0.0")).Returns(Task.FromResult(String.Empty));
             version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(String.Empty));
             version.Setup(m => m.uploadSongAsync(expectedSong, ".lock", "unlock")).Returns(Task.FromResult(String.Empty));
+            version.Setup(m => m.uploadSongAsync(expectedSong, "First Upload", string.Empty, "1.0.0")).Returns(Task.FromResult(String.Empty));
 
             //Add song for synchronization
-            songsManager.addLocalSong(title, file, localPath);
+            await songsManager.addLocalSongAsync(title, file, localPath);
             expectedSong.Status.state = SongStatus.State.locked;
 
             await songsManager.uploadNewSongVersionAsync(expectedSong, "New Version", "No description", true, false, false);
 
             Assert.Equal(SongStatus.State.upToDate, expectedSong.Status.state);
             version.Verify(m => m.newVersionNumberAsync(expectedSong, true, false, false), Times.Once());
-            version.Verify(m => m.uploadSongAsync(expectedSong, "New Version", "No description", "1.0.0"), Times.Once());
+            version.Verify(m => m.uploadSongAsync(expectedSong, "New Version", "No description", "2.0.0"), Times.Once());
         }
         
         [Fact]

@@ -7,7 +7,7 @@
         public Task updateSongAsync(Song song);
         public Task uploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering);
         public Task addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath);
-        public void addLocalSong(string songTitle, string songFile, string songLocalPath);
+        public Task addLocalSongAsync(string songTitle, string songFile, string songLocalPath);
         public Task deleteSongAsync(Song song);
         public Task<string> shareSongAsync(Song song);
         public Task openSongAsync(Song song);
