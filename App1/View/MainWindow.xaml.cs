@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using App1.View;
+using App1.ViewModels;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using System;
@@ -26,6 +28,7 @@ namespace App1
         private readonly List<(string Tag, Type Page)> _pages = new List<(string Tag, Type Page)>
         {
             ("songs", typeof(SongsPage)),
+            ("song", typeof(SongPage)),
         };
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
@@ -93,12 +96,21 @@ namespace App1
             {
                 var item = _pages.FirstOrDefault(p => p.Page == e.SourcePageType);
 
-                NavView.SelectedItem = NavView.MenuItems
+                if (item.Tag == "song")
+                {
+                    SongVersioned song = (e.Parameter as SongVersioned);
+                    NavView.Header = song.Title; 
+                }
+                else
+                {
+                    NavView.SelectedItem = NavView.MenuItems
                     .OfType<NavigationViewItem>()
                     .First(n => n.Tag.Equals(item.Tag));
-
-                NavView.Header =
+                    NavView.Header =
                     ((NavigationViewItem)NavView.SelectedItem)?.Content?.ToString();
+                }
+
+                
             }
         }
 

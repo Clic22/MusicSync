@@ -15,7 +15,7 @@ using Windows.Storage.Pickers;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace App1
+namespace App1.View
 {
     public sealed partial class SongsPage : Page
     {
@@ -335,5 +335,11 @@ namespace App1
         private bool compo;
         private bool mix;
         private bool mastering;
+
+        private void ListView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            SongVersioned song = e.ClickedItem as SongVersioned;
+            this.Frame.Navigate(typeof(SongPage), song);
+        }
     }
 }
