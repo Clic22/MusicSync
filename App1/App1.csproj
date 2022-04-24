@@ -26,6 +26,7 @@
   <ItemGroup>
     <None Remove="AddNewSong.xaml" />
     <None Remove="View\SettingsPage.xaml" />
+    <None Remove="View\SongPage.xaml" />
     <None Remove="View\SongsPage.xaml" />
   </ItemGroup>
 
@@ -57,6 +58,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="View\SongPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="View - ModelView\SongsPage.xaml">
