@@ -11,6 +11,7 @@
         public Task revertSongAsync(Song song);
         public Task<SongVersion> currentVersionAsync(Song song);
         public Task<List<SongVersion>> versionsAsync(Song song);
+        public Task<List<SongVersion>> upcomingVersionsAsync(Song song);
         public async Task<string> newVersionNumberAsync(Song song, bool compo, bool mix, bool mastering)
         {
             SongVersion currentVersion = await currentVersionAsync(song);

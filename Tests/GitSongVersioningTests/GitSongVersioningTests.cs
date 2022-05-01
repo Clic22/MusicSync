@@ -396,6 +396,62 @@ namespace GitSongVersioningTests
             Assert.Equal(expectedVersions, versions);
         }
 
+        [Fact]
+        public async Task upcomingVersionsTest()
+        {
+            string changeTitle = "Test";
+            string changeDescription = "No Description";
+            string versionNumber = "1.1.1";
+            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
+            using (var httpClient = new HttpClient())
+            {
+                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road/repository/files/End%20of%20the%20Road.zip"))
+                {
+                    request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
+                    request.Content = new StringContent("{\"branch\": \"master\", \"author_email\": \"author@example.com\", \"author_name\": \"Aymeric Meindre\",\n       \"commit_message\": \"delete file\\n\"}");
+                    request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+
+                    var response = await httpClient.SendAsync(request);
+                }
+            }
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var request = new HttpRequestMessage(new HttpMethod("POST"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road/repository/tags?tag_name=2.0.0&ref=master"))
+                {
+                    request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
+
+                    var response = await httpClient.SendAsync(request);
+                }
+            }
+            bool updatesAvailable = await GitVersioning.updatesAvailableForSongAsync(song);
+            Assert.True(updatesAvailable);
+
+            List<SongVersion> upcomingVersions = await GitVersioning.upcomingVersionsAsync(song);
+
+            SongVersion expectedUpcomingVersion = new SongVersion();
+            expectedUpcomingVersion.Number = "2.0.0";
+            expectedUpcomingVersion.Author = "Aymeric Meindre";
+            expectedUpcomingVersion.Description = "delete file";
+
+            Assert.Contains(expectedUpcomingVersion, upcomingVersions);
+        }
+
+        [Fact]
+        public async Task noUpcomingVersionsTest()
+        {
+            string changeTitle = "Test";
+            string changeDescription = "No Description";
+            string versionNumber = "1.1.1";
+            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+
+            bool updatesAvailable = await GitVersioning.updatesAvailableForSongAsync(song);
+            Assert.False(updatesAvailable);
+
+            List<SongVersion> upcomingVersions = await GitVersioning.upcomingVersionsAsync(song);
+
+            Assert.Empty(upcomingVersions);
+        }
     }
 }

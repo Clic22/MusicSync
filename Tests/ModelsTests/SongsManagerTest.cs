@@ -331,7 +331,23 @@ namespace ModelsTests.SongsManagerTest
             Assert.Contains(songVersion, versions);
             Assert.Contains(songVersion2, versions);
         }
-        
+
+        [Fact]
+        public async Task upcomingVersionsTest()
+        {
+            SongVersion upcomingSongVersion = new SongVersion();
+            upcomingSongVersion.Number = "2.0.1";
+            upcomingSongVersion.Author = "Aymeric Meindre";
+            upcomingSongVersion.Description = "Mastering";
+            List<SongVersion> upcomingSongVersions = new List<SongVersion>();
+            upcomingSongVersions.Add(upcomingSongVersion);
+            version.Setup(m => m.upcomingVersionsAsync(expectedSong)).Returns(Task.FromResult(upcomingSongVersions));
+
+            List<SongVersion> upcomingVersions = await songsManager.upcomingVersionsAsync(expectedSong);
+
+            Assert.Contains(upcomingSongVersion, upcomingVersions);
+        }
+
         [Fact]
         public async Task addSharedSongTest()
         {

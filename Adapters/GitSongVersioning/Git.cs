@@ -148,7 +148,7 @@ namespace GitVersionTool
             }
         }
 
-        public GitTag localLastTag(string repoPath)
+        public GitTag lastLocalTag(string repoPath)
         {
             List<GitTag> tags = localTags(repoPath);
             var lastTag = tags.Last();
@@ -161,23 +161,24 @@ namespace GitVersionTool
             using (var repo = new Repository(repoPath))
             {
                 List<Tag> tags = repo.Tags.ToList();
-                List<Tag> tagsToRemove = new List<Tag>();
-
-                foreach (var tag in tags)
+                List<Tag> tagsMerged = TagsMerged(repo, tags);
+                foreach (var tag in tagsMerged)
                 {
-                    var commits = repo.Branches["master"].Commits;
-                    var tagFound = false;
-                    foreach (var commit in commits)
-                    {
-                        if (tag.Target.Sha == commit.Sha)
-                            tagFound = true;
-                    }
-                    if (!tagFound)
-                    {
-                        tagsToRemove.Add(tag);
-                    }
+                    GitTag newTag = new GitTag(tag);
+                    gitTags.Add(newTag);
                 }
-                foreach (var tag in tagsToRemove)
+            }
+            return gitTags;
+        }
+
+        public List<GitTag> remoteTags(string repoPath)
+        {
+            List<GitTag> gitTags = new List<GitTag>();
+            using (var repo = new Repository(repoPath))
+            {
+                List<Tag> tags = repo.Tags.ToList();
+                List<Tag> tagsMerged = TagsMerged(repo, tags);
+                foreach (var tag in tagsMerged)
                 {
                     tags.Remove(tag);
                 }
@@ -199,6 +200,28 @@ namespace GitVersionTool
                 remoteURL = remote.Url;
             }
             return remoteURL;
+        }
+
+        private static List<Tag> TagsMerged(Repository repo, List<Tag> tags)
+        {
+            List<Tag> tagsMerged = new List<Tag>();
+
+            foreach (var tag in tags)
+            {
+                var commits = repo.Branches["master"].Commits;
+                var tagFound = false;
+                foreach (var commit in commits)
+                {
+                    if (tag.Target.Sha == commit.Sha)
+                        tagFound = true;
+                }
+                if (tagFound)
+                {
+                    tagsMerged.Add(tag);
+                }
+            }
+
+            return tagsMerged;
         }
 
         private readonly ISaver saver;

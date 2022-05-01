@@ -226,6 +226,18 @@ namespace App1.ViewModels
                 versionViewModels.Author = versionModel.Author;
                 songVersioned.Versions.Insert(0, versionViewModels);
             }
+
+            
+            songVersioned.UpcomingVersions.Clear();
+            List<Models.SongVersion> upcomingVersionsModels = await SongsManager.upcomingVersionsAsync(song);
+            foreach (var versionModel in upcomingVersionsModels)
+            {
+                ViewModels.Version versionViewModels = new ViewModels.Version();
+                versionViewModels.Number = versionModel.Number;
+                versionViewModels.Description = versionModel.Description;
+                versionViewModels.Author = versionModel.Author;
+                songVersioned.UpcomingVersions.Insert(0, versionViewModels);
+            }
         }
 
         private async Task refreshSongStatusAsync(SongVersioned songVersioned, Song song)
@@ -242,6 +254,7 @@ namespace App1.ViewModels
             else if (song.Status.state == SongStatus.State.upToDate)
             {
                 songVersioned.Status = string.Empty;
+                songVersioned.EnableStatus = false;
             }
         }
 

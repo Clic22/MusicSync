@@ -87,7 +87,7 @@ namespace GitVersionTool
             {
                 SongVersion currentVersion = new SongVersion();
                 string songMusicSyncPath = getMusicSyncPathForSong(song);
-                GitTag lastTag = git.localLastTag(songMusicSyncPath);
+                GitTag lastTag = git.lastLocalTag(songMusicSyncPath);
                 currentVersion.Number = lastTag.Name;
                 currentVersion.Description = lastTag.Description.Remove(lastTag.Description.Length - 1);
                 currentVersion.Author = lastTag.Author;
@@ -113,6 +113,27 @@ namespace GitVersionTool
                 return versions;
             });
         }
+
+
+        public async Task<List<SongVersion>> upcomingVersionsAsync(Song song)
+        {
+            return await Task.Run(() =>
+            {
+                string songMusicSyncPath = getMusicSyncPathForSong(song);
+                List<SongVersion> upcomingVersions = new List<SongVersion>();
+                var Tags = git.remoteTags(songMusicSyncPath);
+                foreach (var tag in Tags)
+                {
+                    SongVersion version = new SongVersion();
+                    version.Number = tag.Name;
+                    version.Description = tag.Description.Remove(tag.Description.Length - 1);
+                    version.Author = tag.Author;
+                    upcomingVersions.Add(version);
+                }
+                return upcomingVersions;
+            });
+        }
+
 
         public async Task downloadSharedSongAsync(string songFolder, string sharedLink, string downloadLocalPath)
         {

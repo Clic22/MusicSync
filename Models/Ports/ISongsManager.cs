@@ -16,5 +16,6 @@
         public Song findSong(string songTitle);
         public Task<SongVersion> currentVersionAsync(Song song);
         public Task<List<SongVersion>> versionsAsync(Song song);
+        public Task<List<SongVersion>> upcomingVersionsAsync(Song song);
     }
 }

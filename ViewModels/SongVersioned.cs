@@ -12,6 +12,8 @@ namespace App1.ViewModels
             isUploadingSong_ = false;
             isLoading_ = false;
             currentVersion_ = new Version();
+            enableStatus_ = false;
+            UpcomingVersions = new ObservableCollection<Version>();
             Versions = new ObservableCollection<Version>();
         }
 
@@ -34,6 +36,20 @@ namespace App1.ViewModels
             set
             {
                 SetProperty(ref status_, value);
+                EnableStatus = true;
+            }
+        }
+
+        private bool enableStatus_;
+        public bool EnableStatus
+        {
+            get
+            {
+                return enableStatus_;
+            }
+            set
+            {
+                SetProperty(ref enableStatus_, value);
             }
         }
 
@@ -49,6 +65,8 @@ namespace App1.ViewModels
                 SetProperty(ref currentVersion_, value);
             }
         }
+
+        public ObservableCollection<Version> UpcomingVersions;
 
         public ObservableCollection<Version> Versions;
 
