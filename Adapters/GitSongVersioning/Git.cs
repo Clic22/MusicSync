@@ -43,7 +43,6 @@ namespace GitVersionTool
 
         public int? masterBranchIsBehindBy(string repoPath)
         {
-
             int? masterBranchIsBehindBy = 0;
             using (var repo = new Repository(repoPath))
             {
@@ -58,8 +57,6 @@ namespace GitVersionTool
                 masterBranchIsBehindBy = repo.Branches["master"].TrackingDetails.BehindBy;
             }
             return masterBranchIsBehindBy;
-
-
         }
 
         public void addAll(string repoPath)
@@ -151,23 +148,50 @@ namespace GitVersionTool
             }
         }
 
-        public Tag lastTag(string repoPath)
+        public GitTag localLastTag(string repoPath)
         {
-            var repo = new Repository(repoPath);
-            return repo.Tags.Last();
+            List<GitTag> tags = localTags(repoPath);
+            var lastTag = tags.Last();
+            return lastTag;
         }
 
-        public TagCollection tags(string repoPath)
+        public List<GitTag> localTags(string repoPath)
         {
+            List<GitTag> gitTags = new List<GitTag>();
+            using (var repo = new Repository(repoPath))
+            {
+                List<Tag> tags = repo.Tags.ToList();
+                List<Tag> tagsToRemove = new List<Tag>();
 
-            var repo = new Repository(repoPath);
-            return repo.Tags;
-
+                foreach (var tag in tags)
+                {
+                    var commits = repo.Branches["master"].Commits;
+                    var tagFound = false;
+                    foreach (var commit in commits)
+                    {
+                        if (tag.Target.Sha == commit.Sha)
+                            tagFound = true;
+                    }
+                    if (!tagFound)
+                    {
+                        tagsToRemove.Add(tag);
+                    }
+                }
+                foreach (var tag in tagsToRemove)
+                {
+                    tags.Remove(tag);
+                }
+                foreach (var tag in tags)
+                {
+                    GitTag newTag = new GitTag(tag);
+                    gitTags.Add(newTag);
+                }
+            }
+            return gitTags;
         }
 
         public string remoteUrl(string repoPath)
         {
-
             string remoteURL = string.Empty;
             using (var repo = new Repository(repoPath))
             {
@@ -179,5 +203,20 @@ namespace GitVersionTool
 
         private readonly ISaver saver;
         private readonly IFileManager fileManager;
+    }
+
+    public class GitTag
+    {
+        public GitTag(Tag tag)
+        {
+            Name = tag.FriendlyName;
+            var commit = (Commit)tag.Target;
+            Description = commit.Message;
+            Author = commit.Author.Name;
+        }
+
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Author { get; set; }
     }
 }

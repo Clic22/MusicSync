@@ -87,11 +87,10 @@ namespace GitVersionTool
             {
                 SongVersion currentVersion = new SongVersion();
                 string songMusicSyncPath = getMusicSyncPathForSong(song);
-                Tag lastTag = git.lastTag(songMusicSyncPath);
-                currentVersion.Number = lastTag.FriendlyName;
-                Commit commitTagged = (Commit)lastTag.Target;
-                currentVersion.Description = commitTagged.Message.Remove(commitTagged.Message.Length - 1);
-                currentVersion.Author = commitTagged.Author.Name;
+                GitTag lastTag = git.localLastTag(songMusicSyncPath);
+                currentVersion.Number = lastTag.Name;
+                currentVersion.Description = lastTag.Description.Remove(lastTag.Description.Length - 1);
+                currentVersion.Author = lastTag.Author;
                 return currentVersion;
             });       
         }
@@ -102,14 +101,13 @@ namespace GitVersionTool
             {
                 string songMusicSyncPath = getMusicSyncPathForSong(song);
                 List<SongVersion> versions = new List<SongVersion>();
-                TagCollection Tags = git.tags(songMusicSyncPath);
+                var Tags = git.localTags(songMusicSyncPath);
                 foreach (var tag in Tags)
                 {
                     SongVersion version = new SongVersion();
-                    version.Number = tag.FriendlyName;
-                    Commit commitTagged = (Commit)tag.Target;
-                    version.Description = commitTagged.Message.Remove(commitTagged.Message.Length - 1);
-                    version.Author = commitTagged.Author.Name;
+                    version.Number = tag.Name;
+                    version.Description = tag.Description.Remove(tag.Description.Length - 1);
+                    version.Author = tag.Author;
                     versions.Add(version);
                 }
                 return versions;

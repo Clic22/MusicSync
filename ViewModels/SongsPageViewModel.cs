@@ -193,8 +193,8 @@ namespace App1.ViewModels
             try
             {
                 songVersioned.IsRefreshingSong = true;
-                await refreshSongStatusAsync(songVersioned, song);
                 await refreshSongCurrentVersionAsync(songVersioned, song);
+                await refreshSongStatusAsync(songVersioned, song);
                 await refreshSongVersionsAsync(songVersioned, song);
                 songVersioned.IsRefreshingSong = false;
             }
