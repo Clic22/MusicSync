@@ -114,6 +114,27 @@ namespace GitVersionTool
             });
         }
 
+
+        public async Task<List<SongVersion>> upcomingVersionsAsync(Song song)
+        {
+            return await Task.Run(() =>
+            {
+                string songMusicSyncPath = getMusicSyncPathForSong(song);
+                List<SongVersion> upcomingVersions = new List<SongVersion>();
+                var Tags = git.remoteTags(songMusicSyncPath);
+                foreach (var tag in Tags)
+                {
+                    SongVersion version = new SongVersion();
+                    version.Number = tag.Name;
+                    version.Description = tag.Description.Remove(tag.Description.Length - 1);
+                    version.Author = tag.Author;
+                    upcomingVersions.Add(version);
+                }
+                return upcomingVersions;
+            });
+        }
+
+
         public async Task downloadSharedSongAsync(string songFolder, string sharedLink, string downloadLocalPath)
         {
             string songMusicSyncPath = getMusicSyncPathForFolder(songFolder);

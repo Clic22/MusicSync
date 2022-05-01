@@ -190,6 +190,43 @@ namespace GitVersionTool
             return gitTags;
         }
 
+        public List<GitTag> remoteTags(string repoPath)
+        {
+            List<GitTag> gitTags = new List<GitTag>();
+            using (var repo = new Repository(repoPath))
+            {
+                List<Tag> tags = repo.Tags.ToList();
+                List<Tag> tagsToRemove = new List<Tag>();
+
+                foreach (var tag in tags)
+                {
+                    var commits = repo.Branches["master"].Commits;
+                    var tagFound = false;
+                    foreach (var commit in commits)
+                    {
+                        if (tag.Target.Sha == commit.Sha)
+                            tagFound = true;
+                    }
+                    if (tagFound)
+                    {
+                        tagsToRemove.Add(tag);
+                    }
+                }
+                foreach (var tag in tagsToRemove)
+                {
+                    tags.Remove(tag);
+                }
+                foreach (var tag in tags)
+                {
+                    GitTag newTag = new GitTag(tag);
+                    gitTags.Add(newTag);
+                }
+            }
+            return gitTags;
+        }
+
+
+
         public string remoteUrl(string repoPath)
         {
             string remoteURL = string.Empty;

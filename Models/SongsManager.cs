@@ -102,6 +102,11 @@ namespace App1.Models
             return await VersionTool.versionsAsync(song);
         }
 
+        public async Task<List<SongVersion>> upcomingVersionsAsync(Song song)
+        {
+            return await VersionTool.upcomingVersionsAsync(song);
+        }
+
         public async Task<string> shareSongAsync(Song song)
         {
             return await VersionTool.shareSongAsync(song);
