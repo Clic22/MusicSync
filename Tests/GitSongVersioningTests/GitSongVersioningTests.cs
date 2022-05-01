@@ -77,7 +77,7 @@ namespace GitSongVersioningTests
     public class GitSongVersioningTests : TestsBase
     {
         [Fact]
-        public async Task firstSongUploadAndDownloadSong()
+        public async Task uploadAndDownloadSong()
         {
             string changeTitle = "Test";
             string changeDescription = "No Description";
@@ -293,6 +293,47 @@ namespace GitSongVersioningTests
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
             await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+
+            SongVersion currentVersion = await GitVersioning.currentVersionAsync(song);
+
+            Assert.Equal(versionNumber, currentVersion.Number);
+            string expectedDescription = "Test\n\nNo Description";
+            Assert.Equal(expectedDescription, currentVersion.Description);
+            Assert.Equal(user.Username, currentVersion.Author);
+        }
+
+        [Fact]
+        public async Task LocalCurrentVersionAfterRemoteUploadTest()
+        {
+            string changeTitle = "Test";
+            string changeDescription = "No Description";
+            string versionNumber = "1.1.1";
+            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road/repository/files/End%20of%20the%20Road.zip"))
+                {
+                    request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
+                    request.Content = new StringContent("{\"branch\": \"master\", \"author_email\": \"author@example.com\", \"author_name\": \"Firstname Lastname\",\n       \"commit_message\": \"delete file\"}");
+                    request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+
+                    var response = await httpClient.SendAsync(request);
+                }
+            }
+
+            using (var httpClient = new HttpClient())
+            {
+                using (var request = new HttpRequestMessage(new HttpMethod("POST"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road/repository/tags?tag_name=2.0.0&ref=master"))
+                {
+                    request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
+
+                    var response = await httpClient.SendAsync(request);
+                }
+            }
+
+            bool updatesAvailable = await GitVersioning.updatesAvailableForSongAsync(song);
+            Assert.True(updatesAvailable);
 
             SongVersion currentVersion = await GitVersioning.currentVersionAsync(song);
 
