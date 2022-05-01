@@ -148,7 +148,7 @@ namespace GitVersionTool
             }
         }
 
-        public GitTag localLastTag(string repoPath)
+        public GitTag lastLocalTag(string repoPath)
         {
             List<GitTag> tags = localTags(repoPath);
             var lastTag = tags.Last();
@@ -190,8 +190,6 @@ namespace GitVersionTool
             }
             return gitTags;
         }
-
-
 
         public string remoteUrl(string repoPath)
         {

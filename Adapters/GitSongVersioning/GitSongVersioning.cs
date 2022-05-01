@@ -87,7 +87,7 @@ namespace GitVersionTool
             {
                 SongVersion currentVersion = new SongVersion();
                 string songMusicSyncPath = getMusicSyncPathForSong(song);
-                GitTag lastTag = git.localLastTag(songMusicSyncPath);
+                GitTag lastTag = git.lastLocalTag(songMusicSyncPath);
                 currentVersion.Number = lastTag.Name;
                 currentVersion.Description = lastTag.Description.Remove(lastTag.Description.Length - 1);
                 currentVersion.Author = lastTag.Author;
