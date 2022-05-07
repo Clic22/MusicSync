@@ -7,23 +7,26 @@
             Number = string.Empty;
             Description = string.Empty;
             Author = string.Empty;
+            Date = DateOnly.MinValue;
         }
 
-        public SongVersion(string number, string description, string author)
+        public SongVersion(string number, string description, string author, DateOnly date)
         {
             Number = number;
             Description = description;
             Author = author;
+            Date = date;
         }
 
         public override bool Equals(object? obj)
         {
-            var song = obj as SongVersion;
-            if (song == null)
+            var version = obj as SongVersion;
+            if (version == null)
                 return false;
-            if (this.Number != song.Number ||
-               this.Description != song.Description ||
-               this.Author != song.Author)
+            if (this.Number != version.Number ||
+               this.Description != version.Description ||
+               this.Author != version.Author ||
+               this.Date != version.Date)
             {
                 return false;
             }
@@ -38,6 +41,7 @@
         public string Number { get; set; }
         public string Description { get; set; }
         public string Author { get; set; }
+        public DateOnly Date { get; set; }
 
     }
 }

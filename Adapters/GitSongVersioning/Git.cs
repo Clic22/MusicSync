@@ -236,10 +236,13 @@ namespace GitVersionTool
             var commit = (Commit)tag.Target;
             Description = commit.Message;
             Author = commit.Author.Name;
+            DateTimeOffset date = commit.Author.When;
+            Date = DateOnly.FromDateTime(date.Date);
         }
 
         public string Name { get; set; }
         public string Description { get; set; }
         public string Author { get; set; }
+        public DateOnly Date { get; set; }
     }
 }

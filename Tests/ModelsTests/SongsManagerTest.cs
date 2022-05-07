@@ -339,6 +339,7 @@ namespace ModelsTests.SongsManagerTest
             upcomingSongVersion.Number = "2.0.1";
             upcomingSongVersion.Author = "Aymeric Meindre";
             upcomingSongVersion.Description = "Mastering";
+            upcomingSongVersion.Date = new DateOnly(2022,5,10);
             List<SongVersion> upcomingSongVersions = new List<SongVersion>();
             upcomingSongVersions.Add(upcomingSongVersion);
             version.Setup(m => m.upcomingVersionsAsync(expectedSong)).Returns(Task.FromResult(upcomingSongVersions));

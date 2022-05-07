@@ -54,6 +54,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songVersion.Number = "1.0.0";
             songVersion.Author = "Oregano";
             songVersion.Description = "No description";
+            songVersion.Date = new DateOnly(2022, 5, 10);
             List<SongVersion> songsVersion = new List<SongVersion>();
             songsVersion.Add(songVersion);
             Song song = new Song(title, file, localPath);
@@ -66,6 +67,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songVersion2.Number = "2.1.0";
             songVersion2.Author = "Aymeric Meindre";
             songVersion2.Description = "Test new mix";
+            songVersion2.Date = new DateOnly(2022, 5, 11);
             List<SongVersion> songsVersion2 = new List<SongVersion>();
             songsVersion2.Add(songVersion);
             songsVersion2.Add(songVersion2);
@@ -73,6 +75,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             upcomingSongVersion2.Number = "3.1.0";
             upcomingSongVersion2.Author = "Oregano";
             upcomingSongVersion2.Description = "New Composition";
+            upcomingSongVersion2.Date = new DateOnly(2022, 5, 12); ;
             List<SongVersion> upcomingSongsVersion = new List<SongVersion>();
             List<SongVersion> upcomingSongsVersion2 = new List<SongVersion>();
             upcomingSongsVersion2.Add(upcomingSongVersion2);
@@ -104,6 +107,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Assert.Equal("Compo v1", expectedVersion.Number);
             expectedVersion.Author = "Oregano";
             expectedVersion.Description = "No description";
+            expectedVersion.Date = "5/10/2022";
             expectedSong.Status = "Locked by Oregano";
             SongVersioned expectedSong2 = new SongVersioned(title2);
             App1.ViewModels.Version expectedVersion2 = new App1.ViewModels.Version();
@@ -111,6 +115,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Assert.Equal("Compo v2 / Mix v1", expectedVersion2.Number);
             expectedVersion2.Author = "Aymeric Meindre";
             expectedVersion2.Description = "Test new mix";
+            expectedVersion2.Date = "5/11/2022";
             expectedSong2.Status = "Updates Available";
             List<App1.ViewModels.Version> expectedVersions = new List<App1.ViewModels.Version>();
             expectedVersions.Add(expectedVersion);
@@ -121,17 +126,20 @@ namespace ViewModelsTests.SongsPageViewModelTest
             expectedUpcomingVersion2.Number = "3.1.0";
             Assert.Equal("Compo v3 / Mix v1", expectedUpcomingVersion2.Number);
             expectedUpcomingVersion2.Author = "Oregano";
-            expectedUpcomingVersion2.Description = "New COmposition";
+            expectedUpcomingVersion2.Description = "New Composition";
+            expectedUpcomingVersion2.Date = "5/12/2022";
             List<App1.ViewModels.Version> expectedUpcomingVersions2 = new List<App1.ViewModels.Version>();
             expectedUpcomingVersions2.Add(expectedUpcomingVersion2);
 
-            Assert.Equal(expectedVersion, viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).CurrentVersion);
-            Assert.Equal(expectedVersion2, viewModel.SongsVersioned.First(m => m.Equals(expectedSong2)).CurrentVersion);
-            Assert.Equal(expectedVersions, viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).Versions);
-            Assert.Equal(expectedVersions2, viewModel.SongsVersioned.First(m => m.Equals(expectedSong2)).Versions);
-            Assert.Equal(expectedUpcomingVersions2, viewModel.SongsVersioned.First(m => m.Equals(expectedSong2)).UpcomingVersions);
-            Assert.Equal(expectedSong.Status, viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).Status);
-            Assert.Equal(expectedSong2.Status, viewModel.SongsVersioned.First(m => m.Equals(expectedSong2)).Status);
+            SongVersioned songVersioned = viewModel.SongsVersioned.First(m => m.Equals(expectedSong));
+            SongVersioned songVersioned2 = viewModel.SongsVersioned.First(m => m.Equals(expectedSong2));
+            Assert.Equal(expectedVersion, songVersioned.CurrentVersion);
+            Assert.Equal(expectedVersion2, songVersioned2.CurrentVersion);
+            Assert.Equal(expectedVersions, songVersioned.Versions);
+            Assert.Equal(expectedVersions2, songVersioned2.Versions);
+            Assert.Equal(expectedUpcomingVersions2, songVersioned2.UpcomingVersions);
+            Assert.Equal(expectedSong.Status, songVersioned.Status);
+            Assert.Equal(expectedSong2.Status, songVersioned2.Status);
         }
 
         [Fact]
@@ -180,7 +188,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Song song = new Song(title, file, localPath);
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
-            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric");
+            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric", new DateOnly(2022, 5, 11));
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
             List<SongVersion> upcomingSongVersions = new List<SongVersion>();
             songsManagerMock.Setup(m => m.upcomingVersionsAsync(song)).Returns(Task.FromResult(upcomingSongVersions));
@@ -241,7 +249,8 @@ namespace ViewModelsTests.SongsPageViewModelTest
             string expectedDescription = "New Version from an User";
             string expectedNumber = "v2.3.0";
             string expectedAuthor = "Oregano";
-            SongVersion songVersion = new SongVersion(expectedNumber, expectedDescription, expectedAuthor);
+            DateOnly expectedDate = new DateOnly(2022, 5, 11);
+            SongVersion songVersion = new SongVersion(expectedNumber, expectedDescription, expectedAuthor, expectedDate);
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
             List<SongVersion> songVersions = new List<SongVersion>();
             songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songVersions));
@@ -340,7 +349,9 @@ namespace ViewModelsTests.SongsPageViewModelTest
             string expectedNumber = "2.3.0";
             string expectedVersionNumber = "Compo v2 / Mix v3";
             string expectedAuthor = "Oregano";
-            SongVersion songVersion = new SongVersion(expectedNumber, expectedDescription, expectedAuthor);
+            string expectedDate = "5/11/2022";
+            DateOnly date = new DateOnly(2022, 5, 11);
+            SongVersion songVersion = new SongVersion(expectedNumber, expectedDescription, expectedAuthor, date);
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
             List<SongVersion> songVersions = new List<SongVersion>();
             songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songVersions));
@@ -356,6 +367,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Assert.Equal(expectedDescription, expectedSongToBeUpdated.CurrentVersion.Description);
             Assert.Equal(expectedVersionNumber, expectedSongToBeUpdated.CurrentVersion.Number);
             Assert.Equal(expectedAuthor, expectedSongToBeUpdated.CurrentVersion.Author);
+            Assert.Equal(expectedDate, expectedSongToBeUpdated.CurrentVersion.Date);
             songsManagerMock.Verify(m => m.updateSongAsync(song), Times.Once());
             songsManagerMock.Verify(m => m.currentVersionAsync(song), Times.Exactly(2));
             Action action = () => viewModel.updateSongAsync(expectedSongToBeUpdated);
@@ -373,7 +385,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             song.Status.whoLocked = "Oregano";
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
-            SongVersion version = new SongVersion("1.0.0", "No Description", "Aymeric");
+            SongVersion version = new SongVersion("1.0.0", "No Description", "Aymeric", new DateOnly(2022, 5, 11));
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(version));
             List<SongVersion> songVersions = new List<SongVersion>();
             songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songVersions));
@@ -403,7 +415,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
             songsManagerMock.Setup(m => m.updateSongAsync(song)).Throws(new Exception());
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
-            SongVersion version = new SongVersion("1.0.0", "No Description", "Aymeric");
+            SongVersion version = new SongVersion("1.0.0", "No Description", "Aymeric", new DateOnly(2022, 5, 11));
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(version));
             List<SongVersion> songVersions = new List<SongVersion>();
             songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songVersions));
@@ -433,7 +445,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Song song = new Song(title, file, localPath);
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
-            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric");
+            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric", new DateOnly(2022, 5, 11));
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
             List<SongVersion> songVersions = new List<SongVersion>();
             songVersions.Add(songVersion);
@@ -478,7 +490,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
             songsManagerMock.Setup(m => m.openSongAsync(song)).Returns(Task.FromResult(true));
-            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric");
+            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric", new DateOnly(2022, 5, 11));
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
             List<SongVersion> songVersions = new List<SongVersion>();
             songVersions.Add(songVersion);
@@ -508,7 +520,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
             songsManagerMock.Setup(m => m.openSongAsync(song)).Throws(new Exception());
-            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric");
+            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric", new DateOnly(2022, 5, 11));
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
             List<SongVersion> songVersions = new List<SongVersion>();
             songVersions.Add(songVersion);
@@ -536,7 +548,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Song song = new Song(title, file, localPath);
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
-            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric");
+            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric", new DateOnly(2022, 5, 11));
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
             List<SongVersion> songVersions = new List<SongVersion>();
             songVersions.Add(songVersion);
@@ -566,7 +578,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
             songsManagerMock.Setup(m => m.revertSongAsync(song)).Throws(new Exception());
-            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric");
+            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric", new DateOnly(2022, 5, 11));
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
             List<SongVersion> songVersions = new List<SongVersion>();
             songVersions.Add(songVersion);
@@ -596,7 +608,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
             List<SongVersion> songVersions = new List<SongVersion>();
-            SongVersion version = new SongVersion("1.0.0", "No Description", "Oregano");
+            SongVersion version = new SongVersion("1.0.0", "No Description", "Oregano", new DateOnly(2022, 5, 11));
             songVersions.Add(version);
             songsManagerMock.Setup(m => m.versionsAsync(song)).Returns(Task.FromResult(songVersions));
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(version));
@@ -624,7 +636,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Song song = new Song(title, file, localPath);
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
-            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric");
+            SongVersion songVersion = new SongVersion("1.0.0", string.Empty, "Aymeric", new DateOnly(2022, 5, 11));
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
             List<SongVersion> songVersions = new List<SongVersion>();
             songVersions.Add(songVersion);

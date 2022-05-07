@@ -1,6 +1,7 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using WinUIApp;
 
 namespace App1.ViewModels
@@ -209,35 +210,36 @@ namespace App1.ViewModels
         private async Task refreshSongCurrentVersionAsync(SongVersioned songVersioned, Song song)
         {
             SongVersion songVersion = await SongsManager.currentVersionAsync(song);
-            songVersioned.CurrentVersion.Number = songVersion.Number;
-            songVersioned.CurrentVersion.Description = songVersion.Description;
-            songVersioned.CurrentVersion.Author = songVersion.Author;
+            fillVersion(songVersioned.CurrentVersion, songVersion);
         }
 
         private async Task refreshSongVersionsAsync(SongVersioned songVersioned, Song song)
         {
             songVersioned.Versions.Clear();
             List<Models.SongVersion> versionsModels = await SongsManager.versionsAsync(song);
-            foreach (var versionModel in versionsModels)
-            {
-                ViewModels.Version versionViewModels = new ViewModels.Version();
-                versionViewModels.Number = versionModel.Number;
-                versionViewModels.Description = versionModel.Description;
-                versionViewModels.Author = versionModel.Author;
-                songVersioned.Versions.Insert(0, versionViewModels);
-            }
+            fillVersions(songVersioned.Versions, versionsModels);
 
-            
             songVersioned.UpcomingVersions.Clear();
             List<Models.SongVersion> upcomingVersionsModels = await SongsManager.upcomingVersionsAsync(song);
+            fillVersions(songVersioned.UpcomingVersions, upcomingVersionsModels);
+        }
+
+        private static void fillVersions(ObservableCollection<Version> UpcomingVersions, List<SongVersion> upcomingVersionsModels)
+        {
             foreach (var versionModel in upcomingVersionsModels)
             {
                 ViewModels.Version versionViewModels = new ViewModels.Version();
-                versionViewModels.Number = versionModel.Number;
-                versionViewModels.Description = versionModel.Description;
-                versionViewModels.Author = versionModel.Author;
-                songVersioned.UpcomingVersions.Insert(0, versionViewModels);
+                fillVersion(versionViewModels, versionModel);
+                UpcomingVersions.Insert(0, versionViewModels);
             }
+        }
+
+        private static void fillVersion(Version Version, SongVersion songVersion)
+        {
+            Version.Number = songVersion.Number;
+            Version.Description = songVersion.Description;
+            Version.Author = songVersion.Author;
+            Version.Date = songVersion.Date.ToString("d", CultureInfo.GetCultureInfo("en-US"));
         }
 
         private async Task refreshSongStatusAsync(SongVersioned songVersioned, Song song)
