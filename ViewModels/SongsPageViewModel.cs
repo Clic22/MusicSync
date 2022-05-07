@@ -212,6 +212,7 @@ namespace App1.ViewModels
             songVersioned.CurrentVersion.Number = songVersion.Number;
             songVersioned.CurrentVersion.Description = songVersion.Description;
             songVersioned.CurrentVersion.Author = songVersion.Author;
+            songVersioned.CurrentVersion.Date = songVersion.Date.ToString();
         }
 
         private async Task refreshSongVersionsAsync(SongVersioned songVersioned, Song song)
@@ -224,6 +225,7 @@ namespace App1.ViewModels
                 versionViewModels.Number = versionModel.Number;
                 versionViewModels.Description = versionModel.Description;
                 versionViewModels.Author = versionModel.Author;
+                versionViewModels.Date = versionModel.Date.ToString();
                 songVersioned.Versions.Insert(0, versionViewModels);
             }
 
@@ -236,6 +238,7 @@ namespace App1.ViewModels
                 versionViewModels.Number = versionModel.Number;
                 versionViewModels.Description = versionModel.Description;
                 versionViewModels.Author = versionModel.Author;
+                versionViewModels.Date = versionModel.Date.ToString();
                 songVersioned.UpcomingVersions.Insert(0, versionViewModels);
             }
         }

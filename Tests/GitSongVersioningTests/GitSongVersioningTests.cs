@@ -300,6 +300,8 @@ namespace GitSongVersioningTests
             string expectedDescription = "Test\n\nNo Description";
             Assert.Equal(expectedDescription, currentVersion.Description);
             Assert.Equal(user.Username, currentVersion.Author);
+            DateOnly expectedDate = DateOnly.FromDateTime(DateTime.Today);
+            Assert.Equal(expectedDate, currentVersion.Date);
         }
 
         [Fact]
@@ -341,6 +343,8 @@ namespace GitSongVersioningTests
             string expectedDescription = "Test\n\nNo Description";
             Assert.Equal(expectedDescription, currentVersion.Description);
             Assert.Equal(user.Username, currentVersion.Author);
+            DateOnly expectedDate = DateOnly.FromDateTime(DateTime.Today);
+            Assert.Equal(expectedDate, currentVersion.Date);
         }
 
         [Fact]
@@ -388,8 +392,10 @@ namespace GitSongVersioningTests
             List<SongVersion> versions = await GitVersioning.versionsAsync(song);
             
             List<SongVersion> expectedVersions = new List<SongVersion>();
-            SongVersion songVersion1 = new SongVersion(versionNumber, changeTitle + "\n\n" + changeDescription, user.Username);
-            SongVersion songVersion2 = new SongVersion(versionNumber2, changeTitle2 + "\n\n" + changeDescription2, user.Username);
+
+            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+            SongVersion songVersion1 = new SongVersion(versionNumber, changeTitle + "\n\n" + changeDescription, user.Username, today);
+            SongVersion songVersion2 = new SongVersion(versionNumber2, changeTitle2 + "\n\n" + changeDescription2, user.Username, today);
             expectedVersions.Add(songVersion1);
             expectedVersions.Add(songVersion2);
 
@@ -434,6 +440,8 @@ namespace GitSongVersioningTests
             expectedUpcomingVersion.Number = "2.0.0";
             expectedUpcomingVersion.Author = "Aymeric Meindre";
             expectedUpcomingVersion.Description = "delete file";
+            DateOnly expectedDate = DateOnly.FromDateTime(DateTime.Today);
+            expectedUpcomingVersion.Date = expectedDate;
 
             Assert.Contains(expectedUpcomingVersion, upcomingVersions);
         }
