@@ -16,11 +16,12 @@
             <Setter Property="Foreground" Value="Red" />
         </Style>
 
-        <DataTemplate x:Key="SongVersionsListViewTemplate" x:DataType="local1:Version">
+        <DataTemplate x:Key="UpcomingVersionsListViewTemplate" x:DataType="local1:Version">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{x:Bind Number}" x:DefaultBindMode="OneWay" FontWeight="Bold" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4"/>
                     <TextBlock Text="{x:Bind Author}" x:DefaultBindMode="OneWay" FontStyle="Italic" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12"/>
+                    <TextBlock Text="{x:Bind Date}" x:DefaultBindMode="OneWay" FontStyle="Italic" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12"/>
                 </StackPanel>
                 <TextBlock Text="{x:Bind Description}" x:DefaultBindMode="OneWay" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12"/>
             </StackPanel>
@@ -41,6 +42,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{x:Bind CurrentVersion.Number}" x:DefaultBindMode="OneWay" FontWeight="Bold" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4"/>
                                     <TextBlock Text="{x:Bind CurrentVersion.Author}" x:DefaultBindMode="OneWay" FontStyle="Italic" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12"/>
+                                    <TextBlock Text="{x:Bind CurrentVersion.Date}" x:DefaultBindMode="OneWay" FontStyle="Italic" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12"/>
                                 </StackPanel>
                                 <TextBlock Text="{x:Bind CurrentVersion.Description}" x:DefaultBindMode="OneWay" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12"/>
                             </StackPanel>
@@ -51,7 +53,7 @@
                     <Button Content="{x:Bind Status}" Visibility="{x:Bind EnableStatus}" x:DefaultBindMode="OneWay" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0">
                         <Button.Flyout>
                             <Flyout Placement="Bottom">
-                                <ListView ItemsSource="{x:Bind UpcomingVersions}" ItemTemplate="{StaticResource SongVersionsListViewTemplate}" x:DefaultBindMode="OneWay" Margin="12" SelectionMode="None" />
+                                <ListView ItemsSource="{x:Bind UpcomingVersions}" ItemTemplate="{StaticResource UpcomingVersionsListViewTemplate}" x:DefaultBindMode="OneWay" Margin="12" SelectionMode="None" />
                             </Flyout>
                         </Button.Flyout>
                     </Button>

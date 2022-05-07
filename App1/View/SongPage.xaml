@@ -13,7 +13,8 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{x:Bind Number}" x:DefaultBindMode="OneWay" FontWeight="Bold" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4"/>
                         <TextBlock Text="{x:Bind Author}" x:DefaultBindMode="OneWay" FontStyle="Italic" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12"/>
-                    </StackPanel>
+                    <TextBlock Text="{x:Bind Date}" x:DefaultBindMode="OneWay" FontStyle="Italic" FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12"/>
+                </StackPanel>
                 <TextBlock Text="{x:Bind Description}" x:DefaultBindMode="OneWay" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12"/>
             </StackPanel>
         </DataTemplate>

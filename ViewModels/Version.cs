@@ -7,6 +7,7 @@
             number_ = string.Empty;
             description_ = string.Empty;
             author_ = string.Empty;
+            date_ = string.Empty;
         }
 
         private string number_;
@@ -61,14 +62,28 @@
             }
         }
 
+        private string date_;
+        public string Date
+        {
+            get
+            {
+                return date_;
+            }
+            set
+            {
+                SetProperty(ref date_, value);
+            }
+        }
+
         public override bool Equals(object? obj)
         {
-            var song = obj as Version;
-            if (song == null)
+            var version = obj as Version;
+            if (version == null)
                 return false;
-            if (this.Number != song.Number && 
-                this.Author != song.Author &&
-                this.Description != song.Description)
+            if (this.Number != version.Number || 
+                this.Author != version.Author ||
+                this.Description != version.Description ||
+                this.Date != version.Date)
             {
                 return false;
             }
@@ -77,7 +92,7 @@
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(this.Number, this.Author, this.Description);
+            return HashCode.Combine(this.Number, this.Author, this.Description, this.Date);
         }
     }
 }
