@@ -107,7 +107,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Assert.Equal("Compo v1", expectedVersion.Number);
             expectedVersion.Author = "Oregano";
             expectedVersion.Description = "No description";
-            expectedVersion.Date = "10/05/2022";
+            expectedVersion.Date = "5/10/2022";
             expectedSong.Status = "Locked by Oregano";
             SongVersioned expectedSong2 = new SongVersioned(title2);
             App1.ViewModels.Version expectedVersion2 = new App1.ViewModels.Version();
@@ -115,7 +115,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Assert.Equal("Compo v2 / Mix v1", expectedVersion2.Number);
             expectedVersion2.Author = "Aymeric Meindre";
             expectedVersion2.Description = "Test new mix";
-            expectedVersion2.Date = "11/05/2022";
+            expectedVersion2.Date = "5/11/2022";
             expectedSong2.Status = "Updates Available";
             List<App1.ViewModels.Version> expectedVersions = new List<App1.ViewModels.Version>();
             expectedVersions.Add(expectedVersion);
@@ -127,7 +127,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Assert.Equal("Compo v3 / Mix v1", expectedUpcomingVersion2.Number);
             expectedUpcomingVersion2.Author = "Oregano";
             expectedUpcomingVersion2.Description = "New Composition";
-            expectedUpcomingVersion2.Date = "12/05/2022";
+            expectedUpcomingVersion2.Date = "5/12/2022";
             List<App1.ViewModels.Version> expectedUpcomingVersions2 = new List<App1.ViewModels.Version>();
             expectedUpcomingVersions2.Add(expectedUpcomingVersion2);
 
@@ -349,7 +349,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             string expectedNumber = "2.3.0";
             string expectedVersionNumber = "Compo v2 / Mix v3";
             string expectedAuthor = "Oregano";
-            string expectedDate = "11/05/2022";
+            string expectedDate = "5/11/2022";
             DateOnly date = new DateOnly(2022, 5, 11);
             SongVersion songVersion = new SongVersion(expectedNumber, expectedDescription, expectedAuthor, date);
             songsManagerMock.Setup(m => m.currentVersionAsync(song)).Returns(Task.FromResult(songVersion));
