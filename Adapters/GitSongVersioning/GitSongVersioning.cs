@@ -9,9 +9,8 @@ namespace GitVersionTool
     {
         public GitSongVersioning(ISaver newSaver, IFileManager newFileManager) 
         {
-            musicSyncFolder = string.Empty;
             fileManager = newFileManager;
-            createMusicSyncFolder(newSaver.savedMusicSyncFolder());
+            saver = newSaver;
             git = new Git(newSaver, newFileManager);
         }
 
@@ -194,6 +193,7 @@ namespace GitVersionTool
 
         private async Task<string> selectFoldersToBeCompressed(Song song)
         {
+            var musicSyncFolder = saver.savedMusicSyncFolder();
             string tmpDirectory = musicSyncFolder + @"tmpDirectory\";
             if (fileManager.DirectoryExists(tmpDirectory))
             {
@@ -232,24 +232,24 @@ namespace GitVersionTool
 
         private string getMusicSyncPathForSong(Song song)
         {
+            string musicSyncFolder = getMusicSyncFolder();
             return musicSyncFolder + song.Title + @"\";
         }
 
         private string getMusicSyncPathForFolder(string songFolder)
         {
+            string musicSyncFolder = getMusicSyncFolder();
             return musicSyncFolder + songFolder;
         }
 
-        private void createMusicSyncFolder(string askedMusicSyncFolderLocation)
+        private string getMusicSyncFolder()
         {
-            if (!string.IsNullOrEmpty(askedMusicSyncFolderLocation))
-            {
-                musicSyncFolder = askedMusicSyncFolderLocation + @".musicsync\";
-                fileManager.CreateDirectory(ref musicSyncFolder);
-            }
+            var musicSyncFolder = saver.savedMusicSyncFolder() + @".musicsync\";
+            fileManager.CreateDirectory(ref musicSyncFolder);
+            return musicSyncFolder;
         }
 
-        private string musicSyncFolder;
+        private readonly ISaver saver;
         private readonly IFileManager fileManager;
         private readonly Git git;
     }

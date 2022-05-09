@@ -24,7 +24,7 @@ namespace App1.View
             this.InitializeComponent();
         }
 
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        private async void OnPageLoaded(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -331,15 +331,15 @@ namespace App1.View
                 uploadNewSongVersionContentDialog.IsPrimaryButtonEnabled = true;
         }
 
-        private SongsPageViewModel SongsPageViewModel => App.SongsViewModel;
-        private bool compo;
-        private bool mix;
-        private bool mastering;
-
         private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             SongVersioned song = e.ClickedItem as SongVersioned;
             this.Frame.Navigate(typeof(SongPage), song);
         }
+
+        private SongsPageViewModel SongsPageViewModel => App.SongsViewModel;
+        private bool compo;
+        private bool mix;
+        private bool mastering;
     }
 }
