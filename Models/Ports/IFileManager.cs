@@ -9,7 +9,7 @@
         public Task CopyFileAsync(string fileName, string sourceDir, string destinationDir);
         public void DeleteFile(string file, string directoryPath);
         public void RenameFolder(string formerFolderName, string newFolderName);
-        public void RenameFile(string formerFileName, string newFileName, string destinationDir);
+        public void RenameFile(string formerFileName, string newFileName, string directoryPath);
         public void CreateDirectory(ref string directoryPath);
         public bool DirectoryExists(string directoryPath);
         public void DeleteDirectory(string directoryPath);

@@ -187,13 +187,12 @@ namespace GitVersionTool
                 string songMusicSyncPath = getMusicSyncPathForSong(song);
                 git.resetMasterHard(songMusicSyncPath);
             });
-
         }
 
         private async Task compressSongAsync(Song song)
         {
             string musicSyncFolderForSong = getMusicSyncPathForSong(song);
-            string songArchive = await fileManager.findFileNameBasedOnExtensionAsync(musicSyncFolderForSong, ".zip");
+            string? songArchive = await fileManager.findFileNameBasedOnExtensionAsync(musicSyncFolderForSong, ".zip");
             if (songArchive != null)
             {
                 fileManager.DeleteFile(songArchive, musicSyncFolderForSong);
@@ -213,9 +212,12 @@ namespace GitVersionTool
             }
             fileManager.CreateDirectory(ref tmpDirectory);
 
-            string songFile = await fileManager.findFileNameBasedOnExtensionAsync(song.LocalPath, ".song");
-            await fileManager.CopyFileAsync(songFile, song.LocalPath, tmpDirectory);
-
+            string? songFile = await fileManager.findFileNameBasedOnExtensionAsync(song.LocalPath, ".song");
+            if (songFile != null)
+            {
+                await fileManager.CopyFileAsync(songFile, song.LocalPath, tmpDirectory);
+            }
+            
             List<string> foldersToBeCopied = new List<string>();
             string mediaFolder = "Media";
             string melodyneFolder = "Melodyne";
@@ -230,15 +232,16 @@ namespace GitVersionTool
         private async Task uncompressSongAsync(Song song)
         {
             string repoPath = getMusicSyncPathForSong(song);
-            string zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
-            await fileManager.UncompressArchiveAsync(repoPath + zipFile, song.LocalPath);
-            fileManager.SyncFile(repoPath, song.LocalPath, ".lock");
+            await uncompressSongAsync(repoPath, song.LocalPath);
         }
 
         private async Task uncompressSongAsync(string repoPath, string songPath)
         {
-            string zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
-            await fileManager.UncompressArchiveAsync(repoPath + zipFile, songPath );
+            string? zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
+            if (zipFile != null)
+            {
+                await fileManager.UncompressArchiveAsync(repoPath + zipFile, songPath);
+            }
             fileManager.SyncFile(repoPath, songPath, ".lock");
         }
 
@@ -258,7 +261,8 @@ namespace GitVersionTool
         private string getMusicSyncFolder()
         {
             var musicSyncFolder = saver.savedMusicSyncFolder() + @".musicsync\";
-            fileManager.CreateDirectory(ref musicSyncFolder);
+            //TODO do not create musicSyncFolder in a get
+            fileManager.CreateDirectory(ref musicSyncFolder); 
             return musicSyncFolder;
         }
 

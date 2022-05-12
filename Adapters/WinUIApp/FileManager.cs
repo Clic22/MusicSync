@@ -14,7 +14,7 @@ namespace WinUIApp
             {
                 fileName = files.First(file => file.Name.Contains(extension)).Name;
             }
-            catch (Exception ex)
+            catch
             {
                 fileName = null;
             }
