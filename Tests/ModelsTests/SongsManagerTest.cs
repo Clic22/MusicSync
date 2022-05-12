@@ -429,7 +429,7 @@ namespace ModelsTests.SongsManagerTest
         }
         
         [Fact]
-        public async Task refreshStatusForSongUpToDate()
+        public async Task refreshStatusForSongUpToDateTest()
         {
             version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
             
@@ -439,7 +439,7 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
-        public async Task refreshStatusForSongLocked()
+        public async Task refreshStatusForSongLockedTest()
         {
             version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(false));
             version.Setup(m => m.uploadFileForSongAsync(expectedSong, ".lock", "lock")).Returns(Task.FromResult(string.Empty));
@@ -457,7 +457,7 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
-        public async Task refreshStatusForSongUpdatesAvailable()
+        public async Task refreshStatusForSongUpdatesAvailableTest()
         {
             version.Setup(m => m.updatesAvailableForSongAsync(expectedSong)).Returns(Task.FromResult(true));
             
@@ -465,6 +465,17 @@ namespace ModelsTests.SongsManagerTest
 
             Assert.Equal(SongStatus.State.updatesAvailable, expectedSong.Status.state);
         }
-        
+
+        [Fact]
+        public void renameSongTest()
+        {
+            string newTitle = "new Title";
+
+            songsManager.renameSong(expectedSong, newTitle);
+
+            Assert.Equal(expectedSong.Title, newTitle);
+            Assert.Contains(expectedSong, saver.savedSongs());
+        }
+
     }
 }
