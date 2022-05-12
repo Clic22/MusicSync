@@ -118,8 +118,7 @@ namespace GitVersionTool
 
         public async Task downloadSharedSongAsync(string sharedLink, string songPath)
         {
-            string musicSyncPath = getMusicSyncFolder();
-            string songMusicSyncPath = await downloadSharedSongFromRepoAsync(sharedLink, musicSyncPath);
+            string songMusicSyncPath = await downloadSharedSongFromRepoAsync(sharedLink);
             songPath = fileManager.FormatPath(songPath);
             await uncompressSongAsync(songMusicSyncPath,songPath);
         }
@@ -171,7 +170,7 @@ namespace GitVersionTool
             });
         }
 
-        private async Task<string> downloadSharedSongFromRepoAsync(string sharedLink, string musicSyncPath)
+        private async Task<string> downloadSharedSongFromRepoAsync(string sharedLink)
         {
             return await Task.Run(() =>
             {
@@ -253,7 +252,7 @@ namespace GitVersionTool
         {
             string guid = guidFromSharedLink(sharedLink);
             string musicSyncFolder = getMusicSyncFolder();
-            return fileManager.FormatPath(musicSyncFolder + guid) ;
+            return fileManager.FormatPath(musicSyncFolder + guid);
         }
 
         private string getMusicSyncFolder()
