@@ -41,9 +41,9 @@ namespace ModelsTests.SongsManagerTest
 
         public void Dispose()
         {
-            if (Directory.Exists(localPath))
+            if (Directory.Exists(testDirectory))
             {
-                Directory.Delete(localPath, true);
+                Directory.Delete(testDirectory, true);
             }
             songsManager.SongList.Clear();
         }
@@ -470,10 +470,14 @@ namespace ModelsTests.SongsManagerTest
         public void renameSongTest()
         {
             string newTitle = "new Title";
+            string newLocalPath = testDirectory + @"SongsManagerTest\" + newTitle + '\\';
+            string newFile = newTitle + ".song";
 
             songsManager.renameSong(expectedSong, newTitle);
 
             Assert.Equal(expectedSong.Title, newTitle);
+            Assert.Equal(expectedSong.LocalPath, newLocalPath);
+            Assert.Equal(expectedSong.File, newFile);
             Assert.Contains(expectedSong, saver.savedSongs());
         }
 

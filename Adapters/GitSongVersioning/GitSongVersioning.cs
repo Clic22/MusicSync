@@ -193,8 +193,8 @@ namespace GitVersionTool
         private async Task compressSongAsync(Song song)
         {
             string musicSyncFolderForSong = getMusicSyncPathForSong(song);
-            string songArchive = song.Title + ".zip";
-            if (fileManager.FileExists(songArchive, musicSyncFolderForSong))
+            string songArchive = await fileManager.findFileNameBasedOnExtensionAsync(musicSyncFolderForSong, ".zip");
+            if (songArchive != null)
             {
                 fileManager.DeleteFile(songArchive, musicSyncFolderForSong);
             }

@@ -52,7 +52,15 @@ namespace App1.Models
 
         public void renameSong(Song song, string newSongTitle)
         {
+            string formerLocalPath = song.LocalPath;
+            string newLocalPath = FileManager.FormatPath(formerLocalPath.Replace(song.Title + '\\', "") + newSongTitle);
+            FileManager.RenameFolder(formerLocalPath, newLocalPath); 
+            song.LocalPath = newLocalPath;
             song.Title = newSongTitle;
+            string formerFile = song.File;
+            string newFile = newSongTitle + ".song";
+            FileManager.RenameFile(formerFile, newFile, song.LocalPath);
+            song.File = newSongTitle + ".song";
             Saver.saveSong(song);
         }
 
