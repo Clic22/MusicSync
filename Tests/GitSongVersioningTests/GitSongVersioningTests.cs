@@ -57,14 +57,14 @@ namespace GitSongVersioningTests
         public IFileManager FileManager;
         public IVersionTool GitVersioning;
 
-        private static async Task deleteGitlabProject()
+        private async Task deleteGitlabProject()
         {
             HttpResponseMessage response = new HttpResponseMessage();
             while(response.StatusCode != System.Net.HttpStatusCode.NotFound)
             {
                 using (var httpClient = new HttpClient())
                 {
-                    using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road"))
+                    using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2F" + songGuid))
                     {
                         request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
                         response = await httpClient.SendAsync(request);
