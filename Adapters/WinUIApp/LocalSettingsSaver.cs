@@ -67,14 +67,15 @@ namespace WinUIApp
         public void saveSong(Song song)
         {
             Windows.Storage.ApplicationDataCompositeValue composite = new Windows.Storage.ApplicationDataCompositeValue();
+            composite["title"] = song.Title;
             composite["file"] = song.File;
             composite["localPath"] = song.LocalPath;
-            SongContainer.Values[song.Title] = composite;
+            SongContainer.Values[song.Guid.ToString()] = composite;
         }
 
         public void unsaveSong(Song song)
         {
-            SongContainer.Values.Remove(song.Title);
+            SongContainer.Values.Remove(song.Guid.ToString());
         }
 
         public List<Song> savedSongs()
@@ -82,15 +83,17 @@ namespace WinUIApp
             List<Song> savedSongs = new List<Song>();
             string? file;
             string? localPath;
+            string? title;
 
             foreach (var item in SongContainer.Values)
             {
                 Windows.Storage.ApplicationDataCompositeValue composite = (Windows.Storage.ApplicationDataCompositeValue)item.Value;
+                title = composite["title"] as string;
                 file = composite["file"] as string;
                 localPath = composite["localPath"] as string;
-                if (localPath != null && file != null)
+                if (localPath != null && file != null && title != null)
                 {
-                    Song song = new Song(item.Key, file, localPath);
+                    Song song = new Song(title, file, localPath, item.Key);
                     savedSongs.Add(song);
                 }
             }

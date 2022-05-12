@@ -21,7 +21,7 @@ namespace App1.Models
                 createLockFile(song, user);
                 try
                 {
-                    await VersionTool.uploadSongAsync(song, @".lock", "lock");
+                    await VersionTool.uploadFileForSongAsync(song, @".lock", "lock");
                 }
                 catch
                 {
@@ -40,7 +40,7 @@ namespace App1.Models
                 if (isLockedByUser(song, user))
                 {
                     deleteLockFile(song);
-                    await VersionTool.uploadSongAsync(song, @".lock", "unlock");
+                    await VersionTool.uploadFileForSongAsync(song, @".lock", "unlock");
                     return true;
                 }
                 return false;

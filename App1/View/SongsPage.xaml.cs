@@ -164,6 +164,27 @@ namespace App1.View
             }
         }
 
+        private async void renameSongClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ContentDialogResult result = await renameSongContentDialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                    SongVersioned song = (sender as Button).DataContext as SongVersioned;
+                    SongsPageViewModel.renameSong(song, newSongName.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                await displayErrorDialog(ex.Message);
+            }
+            finally
+            {
+                newSongName.Text = string.Empty;
+            }
+        }
+
         private async void updateSongClick(object sender, RoutedEventArgs e)
         {
             try

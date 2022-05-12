@@ -5,23 +5,28 @@ namespace WinUIApp
 {
     public class FileManager : IFileManager
     {
-        public async Task<string> findFileNameBasedOnExtensionAsync(string directoryPath, string extension)
+        public async Task<string?> findFileNameBasedOnExtensionAsync(string directoryPath, string extension)
         {
             var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(directoryPath);
             var files = await folder.GetFilesAsync();
-            string fileName = files.First(file => file.Name.Contains(extension)).Name;
-            if (fileName == null)
+            string? fileName = string.Empty;
+            try
             {
-                throw new FileManagerException("No file with extension " + extension + " in " + directoryPath);
+                fileName = files.First(file => file.Name.Contains(extension)).Name;
             }
+            catch
+            {
+                fileName = null;
+            }
+            
             return fileName;
         }
 
         public void CopyDirectories(List<string> directoriesToCopied, string directorySrc, string directoryDst)
         {
-            foreach(var directory in directoriesToCopied.Where(x => Directory.Exists(directorySrc + x)))
+            foreach (var directory in directoriesToCopied.Where(x => Directory.Exists(directorySrc + x)))
             {
-              CopyDirectory(directorySrc + directory, directoryDst + directory);
+                CopyDirectory(directorySrc + directory, directoryDst + directory);
             }
         }
 
@@ -93,8 +98,8 @@ namespace WinUIApp
         {
             return File.ReadAllText(directoryPath + file);
         }
-        
-        
+
+
 
         public void DeleteDirectory(string directoryPath)
         {
@@ -110,7 +115,7 @@ namespace WinUIApp
 
         public void DeleteFile(string file, string directoryPath)
         {
-           File.Delete(directoryPath + file);
+            File.Delete(directoryPath + file);
         }
 
         public string FormatPath(string path)
@@ -150,6 +155,17 @@ namespace WinUIApp
                 return true;
             }
             return false;
+        }
+
+        public void RenameFolder(string formerFolderName, string newFolderName)
+        {
+            Directory.Move(formerFolderName, newFolderName);
+
+        }
+
+        public void RenameFile(string formerFileName, string newFileName, string directoryPath)
+        {
+            File.Move(directoryPath + formerFileName, directoryPath + newFileName);
         }
     }
 }

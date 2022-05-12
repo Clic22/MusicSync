@@ -14,6 +14,7 @@
         public Task revertSongAsync(Song song);
         public Task refreshSongStatusAsync(Song song);
         public Song findSong(string songTitle);
+        public void renameSong(Song song, string newSongTitle);
         public Task<SongVersion> currentVersionAsync(Song song);
         public Task<List<SongVersion>> versionsAsync(Song song);
         public Task<List<SongVersion>> upcomingVersionsAsync(Song song);

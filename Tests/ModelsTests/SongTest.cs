@@ -1,4 +1,5 @@
 ﻿using App1.Models;
+using System;
 using Xunit;
 
 namespace ModelsTests.SongTest
@@ -37,8 +38,9 @@ namespace ModelsTests.SongTest
             string expected_title = "title";
             string expected_localPath = "path";
             string expected_file = "file";
-            Song song1 = new Song(expected_title, expected_file, expected_localPath);
-            Song song2 = new Song(expected_title, expected_file, expected_localPath);
+            string guid = Guid.NewGuid().ToString();
+            Song song1 = new Song(expected_title, expected_file, expected_localPath, guid);
+            Song song2 = new Song(expected_title, expected_file, expected_localPath, guid);
 
             Assert.Equal(song1, song2);
         }

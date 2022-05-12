@@ -23,7 +23,8 @@ namespace GitSongVersioningTests
             songFile = "file.song";           
 
             FileManager = new FileManager();
-            song = new Song(songTitle, songFile, songLocalPath);
+            song = new Song(songTitle, songFile, songLocalPath, Guid.NewGuid().ToString());
+            songGuid = song.Guid.ToString();
             user = new User("MusicSyncTool", "HelloWorld12", "Clic", "musicsynctool@gmail.com");
             SaverMock = new Mock<ISaver>();
             SaverMock.Setup(m => m.savedUser()).Returns(user);
@@ -48,6 +49,7 @@ namespace GitSongVersioningTests
         public string songTitle;
         public string songLocalPath;
         public string songFile;
+        public string songGuid;
 
         public User user;
         public Song song;
@@ -95,19 +97,24 @@ namespace GitSongVersioningTests
             await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
             string shareLink = await GitVersioning.shareSongAsync(song);
-            string expectedShareLink = "https://gitlab.com/MusicSyncTool/end-of-the-road.git";
+            string expectedShareLink = "https://gitlab.com/MusicSyncTool/" + song.Guid.ToString() + @".git";
             Assert.Equal(expectedShareLink,shareLink);
 
-            string songFolder = @"SongDownloaded\";
+            FileManager.DeleteDirectory(song.LocalPath);
+            string musicSyncSongFolder = testDirectory + ".musicsync/" + song.Guid + @"/";
+            FileManager.DeleteDirectory(musicSyncSongFolder);
 
-            string downloadDestination = testDirectory;
-            await GitVersioning.downloadSharedSongAsync(songFolder, shareLink, downloadDestination);
+            string songPath = FileManager.FormatPath(testDirectory + song.Title);
+            await GitVersioning.downloadSharedSongAsync(shareLink, songPath);
 
-            string expectedSongFile = downloadDestination +  songFolder +  songFile;
+            string expectedRepoPath = testDirectory + @".musicsync\" + song.Guid + @"\";
+            Assert.True(Directory.Exists(expectedRepoPath));
+
+            string expectedSongFile = songPath +  songFile;
             Assert.True(File.Exists(expectedSongFile));
-            string expectedMediaFile = downloadDestination +  songFolder + @"Media\" + mediaFile;
+            string expectedMediaFile = songPath + @"Media\" + mediaFile;
             Assert.True(File.Exists(expectedMediaFile));
-            string expectedMelodyneFile = downloadDestination +  songFolder + @"Melodyne\Transfer\" + MelodyneFile;
+            string expectedMelodyneFile = songPath + @"Melodyne\Transfer\" + MelodyneFile;
             Assert.True(File.Exists(expectedMelodyneFile));
         }
 
@@ -123,16 +130,15 @@ namespace GitSongVersioningTests
             string lockFile = ".lock";
             FileManager.CreateFile(lockFile,songLocalPath);
 
-            await GitVersioning.uploadSongAsync(song, lockFile, changeTitle);
-
+            await GitVersioning.uploadFileForSongAsync(song, lockFile, changeTitle);
             string shareLink = await GitVersioning.shareSongAsync(song);
 
-            string songFolder = @"SongDownloaded\";
+            string musicSyncFolder = testDirectory + ".musicsync/" + song.Guid.ToString();
+            FileManager.DeleteDirectory(musicSyncFolder);
+            string songPath = testDirectory + @"SongDownloaded\";
+            await GitVersioning.downloadSharedSongAsync(shareLink, songPath);
 
-            string downloadDestination = testDirectory;
-            await GitVersioning.downloadSharedSongAsync(songFolder, shareLink, downloadDestination);
-
-            string expectedLockFile = downloadDestination +  songFolder +  lockFile;
+            string expectedLockFile = songPath +  lockFile;
             Assert.True(File.Exists(expectedLockFile));
         }
 
@@ -148,7 +154,7 @@ namespace GitSongVersioningTests
             string lockFile = ".lock";
             FileManager.CreateFile(lockFile, songLocalPath);
 
-            await GitVersioning.uploadSongAsync(song, lockFile, changeTitle);
+            await GitVersioning.uploadFileForSongAsync(song, lockFile, changeTitle);
 
             File.Delete(song.LocalPath + lockFile);
             File.Delete(song.LocalPath +  song.File);
@@ -171,11 +177,11 @@ namespace GitSongVersioningTests
             string lockFile = ".lock";
             FileManager.CreateFile(lockFile,songLocalPath);
 
-            await GitVersioning.uploadSongAsync(song, lockFile, changeTitle);
+            await GitVersioning.uploadFileForSongAsync(song, lockFile, changeTitle);
 
             using (var httpClient = new HttpClient())
             {
-                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road/repository/files/.lock"))
+                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2F" + song.Guid + "/repository/files/.lock"))
                 {
                     request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
                     request.Content = new StringContent("{\"branch\": \"master\", \"author_email\": \"author@example.com\", \"author_name\": \"Firstname Lastname\",\n       \"commit_message\": \"delete file\"}");
@@ -206,11 +212,11 @@ namespace GitSongVersioningTests
             string lockFile = ".lock";
             FileManager.CreateFile(lockFile, songLocalPath);
 
-            await GitVersioning.uploadSongAsync(song, lockFile, changeTitle);
+            await GitVersioning.uploadFileForSongAsync(song, lockFile, changeTitle);
 
             using (var httpClient = new HttpClient())
             {
-                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road/repository/files/.lock"))
+                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2F" + song.Guid + "/repository/files/.lock"))
                 {
                     request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
                     request.Content = new StringContent("{\"branch\": \"master\", \"author_email\": \"author@example.com\", \"author_name\": \"Firstname Lastname\",\n       \"commit_message\": \"delete file\"}");
@@ -252,11 +258,11 @@ namespace GitSongVersioningTests
             string lockFile = ".lock";
             FileManager.CreateFile(lockFile, songLocalPath);
 
-            await GitVersioning.uploadSongAsync(song, lockFile, changeTitle);
+            await GitVersioning.uploadFileForSongAsync(song, lockFile, changeTitle);
 
             using (var httpClient = new HttpClient())
             {
-                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road/repository/files/.lock"))
+                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2F" + song.Guid + "/repository/files/.lock"))
                 {
                     request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
                     request.Content = new StringContent("{\"branch\": \"master\", \"author_email\": \"author@example.com\", \"author_name\": \"Firstname Lastname\",\n       \"commit_message\": \"delete file\"}");
@@ -314,7 +320,7 @@ namespace GitSongVersioningTests
 
             using (var httpClient = new HttpClient())
             {
-                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road/repository/files/End%20of%20the%20Road.zip"))
+                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2F"+ song.Guid + "/repository/files/End%20of%20the%20Road.zip"))
                 {
                     request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
                     request.Content = new StringContent("{\"branch\": \"master\", \"author_email\": \"author@example.com\", \"author_name\": \"Firstname Lastname\",\n       \"commit_message\": \"delete file\"}");
@@ -326,7 +332,7 @@ namespace GitSongVersioningTests
 
             using (var httpClient = new HttpClient())
             {
-                using (var request = new HttpRequestMessage(new HttpMethod("POST"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road/repository/tags?tag_name=2.0.0&ref=master"))
+                using (var request = new HttpRequestMessage(new HttpMethod("POST"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2F" + song.Guid + "/repository/tags?tag_name=2.0.0&ref=master"))
                 {
                     request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
 
@@ -412,7 +418,7 @@ namespace GitSongVersioningTests
 
             using (var httpClient = new HttpClient())
             {
-                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road/repository/files/End%20of%20the%20Road.zip"))
+                using (var request = new HttpRequestMessage(new HttpMethod("DELETE"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2F" + song.Guid + "/repository/files/End%20of%20the%20Road.zip"))
                 {
                     request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
                     request.Content = new StringContent("{\"branch\": \"master\", \"author_email\": \"author@example.com\", \"author_name\": \"Aymeric Meindre\",\n       \"commit_message\": \"delete file\\n\"}");
@@ -424,7 +430,7 @@ namespace GitSongVersioningTests
 
             using (var httpClient = new HttpClient())
             {
-                using (var request = new HttpRequestMessage(new HttpMethod("POST"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2Fend-of-the-road/repository/tags?tag_name=2.0.0&ref=master"))
+                using (var request = new HttpRequestMessage(new HttpMethod("POST"), "https://gitlab.com/api/v4/projects/MusicSyncTool%2F" + song.Guid + "/repository/tags?tag_name=2.0.0&ref=master"))
                 {
                     request.Headers.TryAddWithoutValidation("PRIVATE-TOKEN", "glpat-qwrrhK53iz4_mmSsx8h8");
 
