@@ -35,7 +35,7 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{x:Bind Title}" x:DefaultBindMode="OneTime" FontSize="20" Margin="12" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
+                <TextBlock Text="{x:Bind Title}" x:DefaultBindMode="OneWay" FontSize="20" Margin="12" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
                 <SplitButton Content="{x:Bind CurrentVersion.Number}" x:DefaultBindMode="OneWay" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0">
                     <SplitButton.Flyout>
                         <Flyout Placement="Bottom">
@@ -82,6 +82,7 @@
                         </AppBarButton>
                         <CommandBar.SecondaryCommands>
                             <AppBarButton Label="Share" Icon="Share"  Click="shareSongClick"/>
+                            <AppBarButton Label="Rename" Icon="Rename"  Click="renameSongClick"/>
                             <AppBarButton Label="Delete" Click="deleteSongClick">
                                 <AppBarButton.Icon>
                                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#59213;"/>
@@ -166,6 +167,18 @@
                     <CheckBox x:Name="Mix" Content="Mix" Checked="Mix_Checked" Unchecked="Mix_Unchecked"/>
                     <CheckBox x:Name="Mastering" Content="Mastering" Checked="Mastering_Checked" Unchecked="Mastering_Unchecked"/>
                 </StackPanel>
+            </StackPanel>
+        </ContentDialog>
+
+        <ContentDialog
+        x:Name="renameSongContentDialog"
+        Title="Rename Song"
+        PrimaryButtonText="Save"  
+        CloseButtonText="Close"
+        DefaultButton="Primary">
+            <StackPanel>
+                <TextBlock x:Name="newSongNameLabel" Text="New Song Name" Height="20" Margin="12"/>
+                <TextBox x:Name="newSongName" AutomationProperties.Name="simple text editor" Margin="12" TextChanged="title_TextChanged"/>
             </StackPanel>
         </ContentDialog>
 

@@ -38,7 +38,6 @@ namespace GitVersionTool
             var options = new CloneOptions();
             options.CredentialsProvider = (_url, _user, _cred) => new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
             Repository.Clone(sharedLink, downloadPath, options);
-
         }
 
         public int? masterBranchIsBehindBy(string repoPath)

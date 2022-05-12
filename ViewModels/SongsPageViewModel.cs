@@ -177,6 +177,13 @@ namespace App1.ViewModels
             }
         }
 
+        public void renameSong(SongVersioned songVersioned, string newTitle)
+        {
+            Song song = SongsManager.findSong(songVersioned.Title);
+            SongsManager.renameSong(song,newTitle);
+            songVersioned.Title = newTitle;
+        }
+
         private void intializeSongsVersioned()
         {
             if (SongsManager.SongList != null)
@@ -188,6 +195,8 @@ namespace App1.ViewModels
                 }
             }
         }
+
+
 
         private async Task refreshSongVersionedAsync(SongVersioned songVersioned, Song song)
         {

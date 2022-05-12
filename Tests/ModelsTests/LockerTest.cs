@@ -165,7 +165,7 @@ namespace ModelsTests.LockerTest
             Assert.False(locker.isLockedByUser(song, user2));
 
             user1.BandName = "WrongUsername";
-            version.Setup(m => m.uploadSongAsync(song, ".lock", "lock")).Throws(new Exception());
+            version.Setup(m => m.uploadFileForSongAsync(song, ".lock", "lock")).Throws(new Exception());
 
             await Assert.ThrowsAnyAsync<Exception>(async () => await locker.lockSongAsync(song, user1));
             Assert.False(locker.isLocked(song));
@@ -190,7 +190,7 @@ namespace ModelsTests.LockerTest
             Assert.False(locker.isLockedByUser(song, user2));
 
             user1.BandPassword = "WrongPassword";
-            version.Setup(m => m.uploadSongAsync(song, ".lock", "unlock")).Throws(new Exception());
+            version.Setup(m => m.uploadFileForSongAsync(song, ".lock", "unlock")).Throws(new Exception());
 
             await Assert.ThrowsAnyAsync<Exception>(async () => await locker.unlockSongAsync(song, user1));
             Assert.False(locker.isLocked(song));

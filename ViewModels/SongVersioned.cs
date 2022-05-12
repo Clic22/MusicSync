@@ -17,12 +17,16 @@ namespace App1.ViewModels
             Versions = new ObservableCollection<Version>();
         }
 
-        private readonly string title_;
+        private string title_;
         public string Title
         {
             get
             {
                 return title_;
+            }
+            set
+            {
+                SetProperty(ref title_, value);
             }
         }
 

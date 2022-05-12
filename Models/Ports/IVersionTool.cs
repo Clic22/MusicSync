@@ -3,8 +3,9 @@
     public interface IVersionTool
     {
         public Task uploadSongAsync(Song song, string title, string description, string versionNumber);
-        public Task uploadSongAsync(Song song, string file, string title);
-        public Task downloadSharedSongAsync(string songFolder, string sharedLink, string downloadLocalPath);
+        public Task uploadFileForSongAsync(Song song, string file, string title);
+        public Task downloadSharedSongAsync(string sharedLink, string songPath);
+        public string guidFromSharedLink(string sharedLink);
         public Task<string> shareSongAsync(Song song);
         public Task updateSongAsync(Song song);
         public Task<bool> updatesAvailableForSongAsync(Song song);

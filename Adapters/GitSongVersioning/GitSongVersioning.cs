@@ -19,7 +19,7 @@ namespace GitVersionTool
             string songMusicSyncPath = getMusicSyncPathForSong(song);
             if (!git.initiated(songMusicSyncPath))
             {
-                git.init(songMusicSyncPath, song.Title);
+                git.init(songMusicSyncPath, song.Guid.ToString());
             }
             await compressSongAsync(song);
             await Task.Run(() =>
@@ -32,7 +32,7 @@ namespace GitVersionTool
 
         }
 
-        public async Task uploadSongAsync(Song song, string file, string title)
+        public async Task uploadFileForSongAsync(Song song, string file, string title)
         {
             await Task.Run(() =>
             {
@@ -116,12 +116,12 @@ namespace GitVersionTool
             });
         }
 
-        public async Task downloadSharedSongAsync(string songFolder, string sharedLink, string downloadLocalPath)
+        public async Task downloadSharedSongAsync(string sharedLink, string songPath)
         {
-            string songMusicSyncPath = getMusicSyncPathForFolder(songFolder);
-            await downloadSharedSongFromRepoAsync(sharedLink, songMusicSyncPath);
-            downloadLocalPath = fileManager.FormatPath(downloadLocalPath);
-            await uncompressSongAsync(songFolder, downloadLocalPath, songMusicSyncPath);
+            string musicSyncPath = getMusicSyncFolder();
+            string songMusicSyncPath = await downloadSharedSongFromRepoAsync(sharedLink, musicSyncPath);
+            songPath = fileManager.FormatPath(songPath);
+            await uncompressSongAsync(songMusicSyncPath,songPath);
         }
 
         public async Task<string> shareSongAsync(Song song)
@@ -131,6 +131,17 @@ namespace GitVersionTool
                 string songMusicSyncPath = getMusicSyncPathForSong(song);
                 return git.remoteUrl(songMusicSyncPath);
             });
+        }
+
+        public string guidFromSharedLink(string sharedLink)
+        {
+            User user = saver.savedUser();
+            string UrlStart = "https://gitlab.com/" + user.BandName.Replace(" ", "-") + "/";
+            string UrlEnd = ".git";
+            int startPos = sharedLink.LastIndexOf(UrlStart) + UrlStart.Length;
+            int length = sharedLink.IndexOf(UrlEnd) - startPos;
+            string sub = sharedLink.Substring(startPos, length);
+            return sub;
         }
 
         private static void fillSongVersionsFromTags(List<SongVersion> versions, List<GitTag> Tags)
@@ -160,11 +171,13 @@ namespace GitVersionTool
             });
         }
 
-        private async Task downloadSharedSongFromRepoAsync(string sharedLink, string downloadPath)
+        private async Task<string> downloadSharedSongFromRepoAsync(string sharedLink, string musicSyncPath)
         {
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
-                git.clone(sharedLink, downloadPath);
+                string musicSyncSongPath = getMusicSyncPathFromSharedLink(sharedLink);
+                git.clone(sharedLink, musicSyncSongPath);
+                return musicSyncSongPath;
             });
         }
 
@@ -223,23 +236,24 @@ namespace GitVersionTool
             fileManager.SyncFile(repoPath, song.LocalPath, ".lock");
         }
 
-        private async Task uncompressSongAsync(string songFolder, string downloadLocalPath, string repoPath)
+        private async Task uncompressSongAsync(string repoPath, string songPath)
         {
             string zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
-            await fileManager.UncompressArchiveAsync(repoPath + zipFile, downloadLocalPath + songFolder );
-            fileManager.SyncFile(repoPath, downloadLocalPath + songFolder, ".lock");
+            await fileManager.UncompressArchiveAsync(repoPath + zipFile, songPath );
+            fileManager.SyncFile(repoPath, songPath, ".lock");
         }
 
         private string getMusicSyncPathForSong(Song song)
         {
             string musicSyncFolder = getMusicSyncFolder();
-            return musicSyncFolder + song.Title + @"\";
+            return fileManager.FormatPath(musicSyncFolder + song.Guid);
         }
 
-        private string getMusicSyncPathForFolder(string songFolder)
+        private string getMusicSyncPathFromSharedLink(string sharedLink)
         {
+            string guid = guidFromSharedLink(sharedLink);
             string musicSyncFolder = getMusicSyncFolder();
-            return musicSyncFolder + songFolder;
+            return fileManager.FormatPath(musicSyncFolder + guid) ;
         }
 
         private string getMusicSyncFolder()

@@ -35,18 +35,25 @@ namespace App1.Models
 
         public async Task addLocalSongAsync(string songTitle, string songFile, string songLocalPath)
         {
-            Song song = addSong(songTitle, songFile, songLocalPath);
+            string songGuid = Guid.NewGuid().ToString();
+            Song song = addSong(songTitle, songFile, songLocalPath, songGuid);
             await VersionTool.uploadSongAsync(song, "First Upload", String.Empty, "1.0.0");
         }
 
         public async Task addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
         {
-            string songFolder = FileManager.FormatPath(songTitle);
-            await VersionTool.downloadSharedSongAsync(songFolder, sharedLink, downloadLocalPath);
-            string localPath = downloadLocalPath + songFolder;
-            string songFile = await FileManager.findFileNameBasedOnExtensionAsync(localPath,".song");
-            addSong(songTitle, songFile, localPath);
+            string songPath = FileManager.FormatPath(downloadLocalPath + songTitle);
+            await VersionTool.downloadSharedSongAsync(sharedLink, songPath);
+            string songGuid = VersionTool.guidFromSharedLink(sharedLink);
+            string songFile = await FileManager.findFileNameBasedOnExtensionAsync(songPath, ".song");
+            addSong(songTitle, songFile, songPath, songGuid);
             await refreshSongStatusAsync(findSong(songTitle));
+        }
+
+        public void renameSong(Song song, string newSongTitle)
+        {
+            song.Title = newSongTitle;
+            Saver.saveSong(song);
         }
 
         public async Task deleteSongAsync(Song song)
@@ -129,9 +136,9 @@ namespace App1.Models
             }
         }
 
-        private Song addSong(string songTitle, string songFile, string songLocalPath)
+        private Song addSong(string songTitle, string songFile, string songLocalPath, string songGuid)
         {
-            Song song = new Song(songTitle, songFile, songLocalPath);
+            Song song = new Song(songTitle, songFile, songLocalPath, songGuid);
             SongList.addNewSong(song);
             return song;
         }
