@@ -18,7 +18,7 @@ namespace App1.Models
             {
                 transport.init(songWorkspace, song.Guid.ToString());
             } 
-            await compressSongAsync(song, songWorkspace);
+            await compressSongAsync(song);
             await transport.uploadAllFilesAsync(songWorkspace, title, description);
             transport.tag(songWorkspace, versionNumber);
         }
@@ -143,7 +143,7 @@ namespace App1.Models
             return versionNumber;
         }
 
-        private async Task compressSongAsync(Song song, string destinationPath)
+        private async Task compressSongAsync(Song song)
         {
             string songWorkspace = workspace.workspaceForSong(song);
             string? songArchive = await fileManager.findFileNameBasedOnExtensionAsync(songWorkspace, ".zip");
@@ -185,10 +185,10 @@ namespace App1.Models
         private async Task uncompressSongAsync(Song song)
         {
             string songWorkspace = workspace.workspaceForSong(song);
-            await uncompressSongAsync(songWorkspace, song.LocalPath, song.Title);
+            await uncompressSongAsync(songWorkspace, song.LocalPath);
         }
 
-        private async Task uncompressSongAsync(string repoPath, string songPath, string songTitle)
+        private async Task uncompressSongAsync(string repoPath, string songPath)
         {
             string? zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
             if (zipFile != null)
@@ -198,22 +198,6 @@ namespace App1.Models
                 {
                     fileManager.DeleteFile(songFile, songPath);
                 }
-                await fileManager.UncompressArchiveAsync(repoPath + zipFile, songPath);
-                /*string? formerSongFile = await fileManager.findFileNameBasedOnExtensionAsync(songPath, ".song");
-                if (formerSongFile != null)
-                {
-                    string newSongFile = songTitle + ".song";
-                    fileManager.RenameFile(formerSongFile, newSongFile, songPath);
-                }*/
-            }
-            fileManager.SyncFile(repoPath, songPath, ".lock");
-        }
-
-        private async Task uncompressSongAsync(string repoPath, string songPath)
-        {
-            string? zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
-            if (zipFile != null)
-            {
                 await fileManager.UncompressArchiveAsync(repoPath + zipFile, songPath);
             }
             fileManager.SyncFile(repoPath, songPath, ".lock");

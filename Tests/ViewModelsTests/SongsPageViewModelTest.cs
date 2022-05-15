@@ -296,7 +296,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
         }
 
         [Fact]
-        public async Task shareLinkSongTest()
+        public void shareLinkSongTest()
         {
             //Setup
             Song song = new Song("title", "file.Song", "LocalPath");
@@ -315,11 +315,11 @@ namespace ViewModelsTests.SongsPageViewModelTest
             songsManagerMock.Verify(m => m.shareSong(song), Times.Once());
         }
 
-        [Theory]
-        [InlineData("title")]
-        public async Task shareLinkSongErrorTest(string title)
+        [Fact]
+        public void shareLinkSongErrorTest()
         {
             //Setup
+            var title = "title";
             Song song = new Song(title, "file.Song", "LocalPath");
             SongVersioned songVersioned = new SongVersioned(title);
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
