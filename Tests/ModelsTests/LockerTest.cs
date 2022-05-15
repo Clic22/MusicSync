@@ -1,5 +1,6 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
+using App1Tests.Mock;
 using Moq;
 using System;
 using System.IO;
@@ -31,9 +32,14 @@ namespace ModelsTests.LockerTest
             string BandEmail2 = "erratum12@gmail.com";
             user2 = new User(BandName2, BandPassword2, Username2, BandEmail2);
 
-            version = new Mock<IVersionTool>();
+            transport = new Mock<ITransport>();
+            saver = new SaverMock();
+            string testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
+            saver.saveSettings(user1, testDirectory);
             fileManager = new FileManager();
-            locker = new Locker(version.Object, fileManager);
+            workspace = new MusicSyncWorkspace(saver, fileManager);
+            version = new Versioning(saver, fileManager, transport.Object);
+            locker = new Locker(saver, fileManager, version);
         }
 
         public void Dispose()
@@ -48,8 +54,11 @@ namespace ModelsTests.LockerTest
         public User user2;
         public Song song;
         public Locker locker;
-        public Mock<IVersionTool> version;
+        public Mock<ITransport> transport;
+        public SaverMock saver;
         public FileManager fileManager;
+        public MusicSyncWorkspace workspace;
+        public Versioning version;
     }
 
 
@@ -165,7 +174,8 @@ namespace ModelsTests.LockerTest
             Assert.False(locker.isLockedByUser(song, user2));
 
             user1.BandName = "WrongUsername";
-            version.Setup(m => m.uploadFileForSongAsync(song, ".lock", "lock")).Throws(new Exception());
+            var SongWorkspace = workspace.workspaceForSong(song);
+            transport.Setup(m => m.uploadFileAsync(SongWorkspace, ".lock", "lock")).Throws(new Exception());
 
             await Assert.ThrowsAnyAsync<Exception>(async () => await locker.lockSongAsync(song, user1));
             Assert.False(locker.isLocked(song));
@@ -190,7 +200,7 @@ namespace ModelsTests.LockerTest
             Assert.False(locker.isLockedByUser(song, user2));
 
             user1.BandPassword = "WrongPassword";
-            version.Setup(m => m.uploadFileForSongAsync(song, ".lock", "unlock")).Throws(new Exception());
+            transport.Setup(m => m.uploadFileAsync(workspace.workspaceForSong(song), ".lock", "unlock")).Throws(new Exception());
 
             await Assert.ThrowsAnyAsync<Exception>(async () => await locker.unlockSongAsync(song, user1));
             Assert.False(locker.isLocked(song));

@@ -58,7 +58,7 @@ namespace GitVersionTool
             return masterBranchIsBehindBy;
         }
 
-        public void addAll(string repoPath)
+        public void addAllFiles(string repoPath)
         {
             using (var repo = new Repository(repoPath))
             {

@@ -147,12 +147,12 @@ namespace App1.ViewModels
             }
         }
 
-        public async Task<string> shareSongAsync(SongVersioned songVersioned)
+        public string shareSong(SongVersioned songVersioned)
         {
             try
             {
                 Song song = SongsManager.findSong(songVersioned.Title);
-                return await SongsManager.shareSongAsync(song);
+                return SongsManager.shareSong(song);
             }
             catch
             {
@@ -195,8 +195,6 @@ namespace App1.ViewModels
                 }
             }
         }
-
-
 
         private async Task refreshSongVersionedAsync(SongVersioned songVersioned, Song song)
         {

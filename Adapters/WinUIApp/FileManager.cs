@@ -99,8 +99,6 @@ namespace WinUIApp
             return File.ReadAllText(directoryPath + file);
         }
 
-
-
         public void DeleteDirectory(string directoryPath)
         {
             var directory = new DirectoryInfo(directoryPath) { Attributes = System.IO.FileAttributes.Normal };

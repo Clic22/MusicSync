@@ -4,10 +4,11 @@ namespace App1.Models
 {
     public class Locker
     {
-        public Locker(IVersionTool NewVersionTool, IFileManager NewFileManager)
+        public Locker(ISaver Saver, IFileManager FileManager, Versioning version)
         {
-            VersionTool = NewVersionTool;
-            FileManager = NewFileManager;
+            this.version = version;
+            this.FileManager = FileManager;
+            workspace = new MusicSyncWorkspace(Saver, FileManager);
         }
 
         public async Task<bool> lockSongAsync(Song song, User user)
@@ -21,7 +22,7 @@ namespace App1.Models
                 createLockFile(song, user);
                 try
                 {
-                    await VersionTool.uploadFileForSongAsync(song, @".lock", "lock");
+                    await version.uploadFileForSongAsync(song, @".lock", "lock");
                 }
                 catch
                 {
@@ -40,7 +41,7 @@ namespace App1.Models
                 if (isLockedByUser(song, user))
                 {
                     deleteLockFile(song);
-                    await VersionTool.uploadFileForSongAsync(song, @".lock", "unlock");
+                    await version.uploadFileForSongAsync(song, @".lock", "unlock");
                     return true;
                 }
                 return false;
@@ -104,7 +105,8 @@ namespace App1.Models
             return FileManager.FileExists(@".lock",song.LocalPath);
         }
 
-        private readonly IVersionTool VersionTool;
         private readonly IFileManager FileManager;
+        private readonly Versioning version;
+        private readonly MusicSyncWorkspace workspace;
     }
 }

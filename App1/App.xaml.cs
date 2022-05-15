@@ -25,8 +25,9 @@ namespace App1
             this.InitializeComponent();
             FileManager = new FileManager();
             Saver = new LocalSettingsSaver();
-            VersionTool = new GitSongVersioning(Saver, FileManager);
-            SongsManager = new SongsManager(VersionTool, Saver, FileManager);
+            
+            Transport = new GitTransport(Saver, FileManager);
+            SongsManager = new SongsManager(Transport, Saver, FileManager);
             SongsViewModel = new SongsPageViewModel(SongsManager);
         }
 
@@ -47,7 +48,7 @@ namespace App1
         public static IntPtr WindowHandle { get; private set; }
         public static IFileManager FileManager;
         public static ISaver Saver;
-        public static IVersionTool VersionTool;
+        public static ITransport Transport;
         public static ISongsManager SongsManager;
         public static SongsPageViewModel SongsViewModel;
     }
