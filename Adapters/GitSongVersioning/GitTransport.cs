@@ -13,17 +13,6 @@ namespace GitVersionTool
             git = new Git(Saver, FileManager);
         }
 
-        public string guidFromSharedLink(string sharedLink)
-        {
-            User user = saver.savedUser();
-            string UrlStart = "https://gitlab.com/" + user.BandName.Replace(" ", "-") + "/";
-            string UrlEnd = ".git";
-            int startPos = sharedLink.LastIndexOf(UrlStart) + UrlStart.Length;
-            int length = sharedLink.IndexOf(UrlEnd) - startPos;
-            string sub = sharedLink.Substring(startPos, length);
-            return sub;
-        }
-
         public void init(string path, string name)
         {
             git.init(path, name);
