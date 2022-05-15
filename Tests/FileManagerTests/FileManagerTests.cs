@@ -17,7 +17,7 @@ namespace WinUIAppTests.FileManagerTests
         public async Task findFileBaseOnExtensionTest(string extensionRequested)
         {
             string extension = extensionRequested;
-            string fileName = "file";
+            string? fileName = "file";
             string directoryPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
 
             Directory.CreateDirectory(directoryPath);

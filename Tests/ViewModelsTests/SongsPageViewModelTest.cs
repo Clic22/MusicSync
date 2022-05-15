@@ -296,7 +296,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
         }
 
         [Fact]
-        public async Task shareLinkSongTest()
+        public void shareLinkSongTest()
         {
             //Setup
             Song song = new Song("title", "file.Song", "LocalPath");
@@ -304,35 +304,35 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong("title")).Returns(song);
             string expectedShareLink = @"https://www.gitlab.com/test.git";
-            songsManagerMock.Setup(m => m.shareSongAsync(song)).Returns(Task.FromResult(expectedShareLink));
+            songsManagerMock.Setup(m => m.shareSong(song)).Returns(expectedShareLink);
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
 
             //Add a new song
-            string shareLink = await viewModel.shareSongAsync(songVersioned);
+            string shareLink = viewModel.shareSong(songVersioned);
 
             Assert.Equal(expectedShareLink, shareLink);
             //We expect to have called the addSharedSongAsync method in the songsManager
-            songsManagerMock.Verify(m => m.shareSongAsync(song), Times.Once());
+            songsManagerMock.Verify(m => m.shareSong(song), Times.Once());
         }
 
-        [Theory]
-        [InlineData("title")]
-        public async Task shareLinkSongErrorTest(string title)
+        [Fact]
+        public void shareLinkSongErrorTest()
         {
             //Setup
+            var title = "title";
             Song song = new Song(title, "file.Song", "LocalPath");
             SongVersioned songVersioned = new SongVersioned(title);
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.findSong(title)).Returns(song);
-            songsManagerMock.Setup(m => m.shareSongAsync(song)).Throws(new Exception());
+            songsManagerMock.Setup(m => m.shareSong(song)).Throws(new Exception());
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
 
             //Add a new song
-            await Assert.ThrowsAnyAsync<Exception>(async () => await viewModel.shareSongAsync(songVersioned));
+            Assert.ThrowsAny<Exception>(() => viewModel.shareSong(songVersioned));
 
             Assert.Equal("Error", songVersioned.Status);     
             //We expect to have called the addSharedSongAsync method in the songsManager
-            songsManagerMock.Verify(m => m.shareSongAsync(song), Times.Once());
+            songsManagerMock.Verify(m => m.shareSong(song), Times.Once());
         }
 
         [Theory]

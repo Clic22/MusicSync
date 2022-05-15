@@ -148,7 +148,7 @@ namespace App1.View
             try
             {
                 SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                string shareLink = await SongsPageViewModel.shareSongAsync(song);
+                string shareLink = SongsPageViewModel.shareSong(song);
                 ContentDialogResult result = await displayShareLinkDialog(shareLink);
                 if (result == ContentDialogResult.Primary)
                 {

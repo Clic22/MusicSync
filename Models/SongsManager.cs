@@ -5,13 +5,14 @@ namespace App1.Models
 {
     public class SongsManager : ISongsManager
     {
-        public SongsManager(IVersionTool NewVersionTool, ISaver NewSaver, IFileManager NewFileManager)
+        public SongsManager(ITransport NewTransport, ISaver NewSaver, IFileManager NewFileManager)
         {
-            VersionTool = NewVersionTool;
             Saver = NewSaver;
             FileManager = NewFileManager;
+            Workspace = new MusicSyncWorkspace(NewSaver, NewFileManager);
+            VersionTool = new Versioning(Saver, FileManager, NewTransport);
             SongList = new SongsStorage(Saver);
-            Locker = new Locker(VersionTool,FileManager);
+            Locker = new Locker(Saver, FileManager, VersionTool);
         }
 
         public async Task updateSongAsync(Song song)
@@ -19,8 +20,8 @@ namespace App1.Models
             if (await VersionTool.updatesAvailableForSongAsync(song))
             {
                 await VersionTool.updateSongAsync(song);
-                await refreshSongStatusAsync(song);
             }
+            await refreshSongStatusAsync(song);
         }
 
         public async Task uploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
@@ -29,7 +30,6 @@ namespace App1.Models
             {
                 string versionNumber = await VersionTool.newVersionNumberAsync(song, compo, mix, mastering);
                 await VersionTool.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
-                await refreshSongStatusAsync(song);
             }
         }
 
@@ -44,27 +44,26 @@ namespace App1.Models
         {
             string songPath = FileManager.FormatPath(downloadLocalPath + songTitle);
             await VersionTool.downloadSharedSongAsync(sharedLink, songPath);
-            string songGuid = VersionTool.guidFromSharedLink(sharedLink);
+            string songGuid = Workspace.guidFromSharedLink(sharedLink);
             string? songFile = await FileManager.findFileNameBasedOnExtensionAsync(songPath, ".song");
             if (songFile != null)
             {
                 addSong(songTitle, songFile, songPath, songGuid);
             }
-            await refreshSongStatusAsync(findSong(songTitle));
         }
 
         public void renameSong(Song song, string newSongTitle)
         {
-            string formerLocalPath = song.LocalPath;
-            string newLocalPath = FileManager.FormatPath(formerLocalPath.Replace(song.Title + '\\', "") + newSongTitle);
-            FileManager.RenameFolder(formerLocalPath, newLocalPath); 
-            song.LocalPath = newLocalPath;
-            song.Title = newSongTitle;
-            string formerFile = song.File;
-            string newFile = newSongTitle + ".song";
-            FileManager.RenameFile(formerFile, newFile, song.LocalPath);
-            song.File = newSongTitle + ".song";
-            Saver.saveSong(song);
+                string formerLocalPath = song.LocalPath;
+                string newLocalPath = FileManager.FormatPath(formerLocalPath.Replace(song.Title + '\\', "") + newSongTitle);
+                FileManager.RenameFolder(formerLocalPath, newLocalPath);
+                song.LocalPath = newLocalPath;
+                song.Title = newSongTitle;
+                string formerFile = song.File;
+                string newFile = newSongTitle + ".song";
+                FileManager.RenameFile(formerFile, newFile, song.LocalPath);
+                song.File = newSongTitle + ".song";
+                Saver.saveSong(song);  
         }
 
         public async Task deleteSongAsync(Song song)
@@ -81,7 +80,6 @@ namespace App1.Models
             if (lockedByUser)
             {
                 openSongWithDAW(song);
-                await refreshSongStatusAsync(song);
             }
             else
             {
@@ -125,9 +123,9 @@ namespace App1.Models
             return await VersionTool.upcomingVersionsAsync(song);
         }
 
-        public async Task<string> shareSongAsync(Song song)
+        public string shareSong(Song song)
         {
-            return await VersionTool.shareSongAsync(song);
+            return VersionTool.shareSong(song);
         }
 
         public async Task refreshSongStatusAsync(Song song)
@@ -165,8 +163,9 @@ namespace App1.Models
         }
 
         public SongsStorage SongList { get; private set; }
-        private readonly IVersionTool VersionTool;
+        private readonly Versioning VersionTool;
         private readonly Locker Locker;
+        private readonly MusicSyncWorkspace Workspace;
         private readonly ISaver Saver;
         private readonly IFileManager FileManager;
     }
