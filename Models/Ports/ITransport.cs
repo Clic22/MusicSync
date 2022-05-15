@@ -10,7 +10,7 @@
         Task<bool> updatesAvailbleAsync(string songMusicSyncPath);
         Task downloadLastUpdateAsync(string songMusicSyncPath);
         Task revertToLastLocalVersionAsync(string songMusicSyncPath);
-        Task<SongVersion>? lastLocalVersionAsync(string songMusicSyncPath);
+        Task<SongVersion>? lastLocalVersionAsync(string musicSyncSongPath);
         bool initiated(string songMusicSyncPath);
         Task<List<SongVersion>>? localVersionsAsync(string songMusicSyncPath);
         Task<List<SongVersion>>? upcomingVersionsAsync(string songMusicSyncPath);

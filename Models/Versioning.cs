@@ -2,7 +2,7 @@
 
 namespace App1.Models
 {
-    public class Versioning : IVersionTool
+    public class Versioning
     {
         public Versioning(ISaver Saver, IFileManager FileManager, ITransport Transport) 
         {
