@@ -8,7 +8,6 @@ namespace App1.Models
         {
             this.version = version;
             this.FileManager = FileManager;
-            workspace = new MusicSyncWorkspace(Saver, FileManager);
         }
 
         public async Task<bool> lockSongAsync(Song song, User user)

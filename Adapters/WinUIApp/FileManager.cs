@@ -7,11 +7,11 @@ namespace WinUIApp
     {
         public async Task<string?> findFileNameBasedOnExtensionAsync(string directoryPath, string extension)
         {
-            var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(directoryPath);
-            var files = await folder.GetFilesAsync();
             string? fileName = string.Empty;
             try
             {
+                var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(directoryPath);
+                var files = await folder.GetFilesAsync();
                 fileName = files.First(file => file.Name.Contains(extension)).Name;
             }
             catch

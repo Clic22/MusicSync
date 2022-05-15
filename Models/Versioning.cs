@@ -95,48 +95,26 @@ namespace App1.Models
         {
             SongVersion currentVersion = await currentVersionAsync(song);
 
-            string versionNumber = currentVersion.Number;
-            int compoNumber = 0;
-            int mixNumber = 0;
-            int masteringNumber = 0;
-            if (versionNumber != string.Empty)
+            var numbers = currentVersion.Number.Split('.').Select(int.Parse).ToList();
+            int compoNumber = numbers[0];
+            int mixNumber = numbers[1];
+            int masteringNumber = numbers[2];
+            if (compo)
             {
-                var numbers = versionNumber.Split('.').Select(int.Parse).ToList();
-                compoNumber = numbers[0];
-                mixNumber = numbers[1];
-                masteringNumber = numbers[2];
-                if (compo)
-                {
-                    compoNumber++;
-                    mixNumber = 0;
-                    masteringNumber = 0;
-                }
-                if (mix)
-                {
-                    mixNumber++;
-                    masteringNumber = 0;
-                }
-                if (mastering)
-                {
-                    masteringNumber++;
-                }
+                compoNumber++;
+                mixNumber = 0;
+                masteringNumber = 0;
             }
-            else
+            if (mix)
             {
-                if (compo)
-                {
-                    compoNumber++;
-                }
-                if (mix)
-                {
-                    mixNumber++;
-                }
-                if (mastering)
-                {
-                    masteringNumber++;
-                }
+                mixNumber++;
+                masteringNumber = 0;
             }
-            versionNumber = compoNumber + "." + mixNumber + "." + masteringNumber;
+            if (mastering)
+            {
+                masteringNumber++;
+            }
+            string versionNumber = compoNumber + "." + mixNumber + "." + masteringNumber;
             return versionNumber;
         }
 
