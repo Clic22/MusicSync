@@ -12,22 +12,22 @@ namespace GitVersionTool
             git = new Git(Saver, FileManager);
         }
 
-        public void init(string path, string name)
+        public void init(string songMusicSyncPath, string name)
         {
-            git.init(path, name);
+            git.init(songMusicSyncPath, name);
         }
 
-        public async Task initAsync(string musicSyncSongPath, string sharedLink)
+        public async Task initAsync(string songMusicSyncPath, string sharedLink)
         {
             await Task.Run(() =>
             {
-                git.clone(sharedLink, musicSyncSongPath);
+                git.clone(sharedLink, songMusicSyncPath);
             });
         }
 
-        public bool initiated(string musicSyncSongPath)
+        public bool initiated(string songMusicSyncPath)
         {
-            return git.initiated(musicSyncSongPath);
+            return git.initiated(songMusicSyncPath);
         }
 
         public async Task uploadAllFilesAsync(string songMusicSyncPath, string title, string description)
