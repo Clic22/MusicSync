@@ -9,7 +9,6 @@ namespace GitVersionTool
     {
         public GitTransport(ISaver Saver, IFileManager FileManager) 
         {
-            saver = Saver;
             git = new Git(Saver, FileManager);
         }
 
@@ -151,7 +150,6 @@ namespace GitVersionTool
             version.Date = lastTag.Date;
         }
 
-        private readonly ISaver saver;
         private readonly Git git;
     }
 }
