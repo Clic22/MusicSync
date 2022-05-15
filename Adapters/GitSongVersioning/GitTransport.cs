@@ -37,9 +37,9 @@ namespace GitVersionTool
             });
         }
 
-        public bool initiated(string path)
+        public bool initiated(string musicSyncSongPath)
         {
-            return git.initiated(path);
+            return git.initiated(musicSyncSongPath);
         }
 
         public async Task uploadAllFilesAsync(string songMusicSyncPath, string title, string description)

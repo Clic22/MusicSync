@@ -47,7 +47,7 @@ namespace App1.Models
             }
             private set
             {
-                
+                throw new InvalidOperationException();
             }
         }
         private readonly IFileManager fileManager;

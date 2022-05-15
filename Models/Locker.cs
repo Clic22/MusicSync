@@ -107,6 +107,5 @@ namespace App1.Models
 
         private readonly IFileManager FileManager;
         private readonly Versioning version;
-        private readonly MusicSyncWorkspace workspace;
     }
 }

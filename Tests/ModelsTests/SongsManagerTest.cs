@@ -244,8 +244,9 @@ namespace ModelsTests.SongsManagerTest
                                                                                                           .Returns(Task.FromResult(false));
             fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(workspace.workspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult(workspace.workspaceForSong(expectedSong) + expectedSong.Title + ".zip"));
 
-            await songsManager.openSongAsync(expectedSong);
+            var exception = await Record.ExceptionAsync(async () => await songsManager.openSongAsync(expectedSong));
 
+            Assert.Null(exception);
             transport.Verify(m => m.downloadLastUpdateAsync(workspace.workspaceForSong(expectedSong)), Times.Once());
             CheckSongWasUncompress();
             CheckSongIsLocked();   
@@ -256,8 +257,9 @@ namespace ModelsTests.SongsManagerTest
         {
             SongLockForUser(user.Username);
 
-            await songsManager.openSongAsync(expectedSong);
-            
+            var exception = await Record.ExceptionAsync(async () => await songsManager.openSongAsync(expectedSong));
+
+            Assert.Null(exception);
         }
         
         [Fact]
