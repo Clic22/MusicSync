@@ -7,11 +7,10 @@ namespace App1.Models
     {
         public SongsManager(ITransport NewTransport, ISaver NewSaver, IFileManager NewFileManager)
         {
-            Transport = NewTransport;
             Saver = NewSaver;
             FileManager = NewFileManager;
             Workspace = new MusicSyncWorkspace(NewSaver, NewFileManager);
-            VersionTool = new Versioning(Saver, FileManager, Transport);
+            VersionTool = new Versioning(Saver, FileManager, NewTransport);
             SongList = new SongsStorage(Saver);
             Locker = new Locker(Saver, FileManager, VersionTool);
         }
@@ -169,6 +168,5 @@ namespace App1.Models
         private readonly MusicSyncWorkspace Workspace;
         private readonly ISaver Saver;
         private readonly IFileManager FileManager;
-        private readonly ITransport Transport;
     }
 }

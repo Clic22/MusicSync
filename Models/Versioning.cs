@@ -54,7 +54,6 @@ namespace App1.Models
         {
             return await Task.Run(() =>
             {
-                SongVersion currentVersion = new SongVersion();
                 string songWorkspace = workspace.workspaceForSong(song);
                 return transport.lastLocalVersionAsync(songWorkspace);
             });       
@@ -65,7 +64,6 @@ namespace App1.Models
             return await Task.Run(() =>
             {
                 string songWorkspace = workspace.workspaceForSong(song);
-                List<SongVersion> versions = new List<SongVersion>();
                 return transport.localVersionsAsync(songWorkspace);
             });
         }
@@ -75,7 +73,6 @@ namespace App1.Models
             return await Task.Run(() =>
             {
                 string songWorkspace = workspace.workspaceForSong(song);
-                List<SongVersion> upcomingVersions = new List<SongVersion>();
                 return transport.upcomingVersionsAsync(songWorkspace);
             });
         }
