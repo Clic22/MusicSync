@@ -169,7 +169,8 @@ namespace ModelsTests.SongsManagerTest
         {
             transport.SetupSequence(m => m.updatesAvailbleAsync(workspace.workspaceForSong(expectedSong))).Returns(Task.FromResult(true))
                                                                                                         .Returns(Task.FromResult(false));
-            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(workspace.workspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult(workspace.workspaceForSong(expectedSong) + expectedSong.Title + ".zip"));
+            string? songArchive = workspace.workspaceForSong(expectedSong) + expectedSong.Title + ".zip";
+            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(workspace.workspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult<string?>(songArchive));
 
             await songsManager.updateSongAsync(expectedSong);
 
@@ -188,7 +189,8 @@ namespace ModelsTests.SongsManagerTest
             SongLockForUser(user2.Username); 
             transport.SetupSequence(m => m.updatesAvailbleAsync(workspace.workspaceForSong(expectedSong))).Returns(Task.FromResult(true))
                                                                                                           .Returns(Task.FromResult(false));
-            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(workspace.workspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult(workspace.workspaceForSong(expectedSong) + expectedSong.Title + ".zip"));
+            string? songArchive = workspace.workspaceForSong(expectedSong) + expectedSong.Title + ".zip";
+            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(workspace.workspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult<string?>(songArchive));
 
             await songsManager.updateSongAsync(expectedSong);
 
@@ -199,7 +201,8 @@ namespace ModelsTests.SongsManagerTest
         [Fact]
         public async Task revertSongTest()
         {
-            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(workspace.workspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult(workspace.workspaceForSong(expectedSong) + expectedSong.Title + ".zip"));
+            string? songArchive = workspace.workspaceForSong(expectedSong) + expectedSong.Title + ".zip";
+            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(workspace.workspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult<string?>(songArchive));
 
             await songsManager.revertSongAsync(expectedSong);
 
@@ -210,7 +213,8 @@ namespace ModelsTests.SongsManagerTest
         [Fact]
         public async Task revertSongLockedByUserTest()
         {
-            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(workspace.workspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult(workspace.workspaceForSong(expectedSong) + expectedSong.Title + ".zip"));
+            string? songArchive = workspace.workspaceForSong(expectedSong) + expectedSong.Title + ".zip";
+            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(workspace.workspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult<string?>(songArchive));
             SongLockForUser(user.Username);
 
             await songsManager.revertSongAsync(expectedSong);
@@ -242,7 +246,8 @@ namespace ModelsTests.SongsManagerTest
         {
             transport.SetupSequence(m => m.updatesAvailbleAsync(workspace.workspaceForSong(expectedSong))).Returns(Task.FromResult(true))
                                                                                                           .Returns(Task.FromResult(false));
-            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(workspace.workspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult(workspace.workspaceForSong(expectedSong) + expectedSong.Title + ".zip"));
+            string? songArchive = workspace.workspaceForSong(expectedSong) + expectedSong.Title + ".zip";
+            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(workspace.workspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult<string?>(songArchive));
 
             var exception = await Record.ExceptionAsync(async () => await songsManager.openSongAsync(expectedSong));
 
@@ -345,7 +350,7 @@ namespace ModelsTests.SongsManagerTest
             Song expectedSong = new Song(songTitle, file, localPath, guid);
             fileManagerMock.Setup(m => m.FormatPath(localPath + songTitle)).Returns(localPath);
             transport.Setup(m => m.init(sharedLink, localPath));
-            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(localPath, ".song")).Returns(Task.FromResult(file));
+            fileManagerMock.Setup(m => m.findFileNameBasedOnExtensionAsync(localPath, ".song")).Returns(Task.FromResult<string?>(file));
 
 
             await songsManager.addSharedSongAsync(songTitle, sharedLink, localPath);
