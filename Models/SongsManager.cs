@@ -146,17 +146,19 @@ namespace App1.Models
 
         private Song AddSong(string songTitle, string songFile, string songLocalPath, string songGuid)
         {
-            Song song = new Song(songTitle, songFile, songLocalPath, songGuid);
+            var song = new Song(songTitle, songFile, songLocalPath, songGuid);
             SongList.AddNewSong(song);
             return song;
         }
 
         private static void OpenSongWithDAW(Song song)
         {
-            var p = new Process();
-            p.StartInfo = new ProcessStartInfo(song.LocalPath + @"\" + song.File)
+            var p = new Process
             {
-                UseShellExecute = true
+                StartInfo = new ProcessStartInfo(song.LocalPath + @"\" + song.File)
+                {
+                    UseShellExecute = true
+                }
             };
             p.Start();
         }

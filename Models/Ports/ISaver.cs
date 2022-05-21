@@ -2,11 +2,11 @@
 {
     public interface ISaver
     {
-        public void saveSettings(User user, string musicSyncFolder);
+        public void SaveSettings(User user, string musicSyncFolder);
         public void SaveSong(Song song);
-        public void unsaveSong(Song song);
+        public void UnsaveSong(Song song);
         public User SavedUser();
-        public List<Song> savedSongs();
-        public string savedMusicSyncFolder();
+        public List<Song> SavedSongs();
+        public string SavedMusicSyncFolder();
     }
 }

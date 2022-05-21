@@ -12,7 +12,7 @@ namespace WinUIApp
             UserContainer = LocalSettings.CreateContainer("user", Windows.Storage.ApplicationDataCreateDisposition.Always);
         }
 
-        public void saveSettings(User user, string musicSyncFolder)
+        public void SaveSettings(User user, string musicSyncFolder)
         {
             saveUserValue("BandName", user.BandName);
             saveUserValue("BandPassword", user.BandPassword);
@@ -73,12 +73,12 @@ namespace WinUIApp
             SongContainer.Values[song.Guid.ToString()] = composite;
         }
 
-        public void unsaveSong(Song song)
+        public void UnsaveSong(Song song)
         {
             SongContainer.Values.Remove(song.Guid.ToString());
         }
 
-        public List<Song> savedSongs()
+        public List<Song> SavedSongs()
         {
             List<Song> savedSongs = new List<Song>();
             string? file;
@@ -100,7 +100,7 @@ namespace WinUIApp
             return savedSongs;
         }
 
-        public string savedMusicSyncFolder()
+        public string SavedMusicSyncFolder()
         {
             string? MusicSyncFolder = LocalSettings.Values["MusicSyncFolder"] as string;
             if (MusicSyncFolder != null)

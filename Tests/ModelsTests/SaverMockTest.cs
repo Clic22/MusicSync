@@ -19,11 +19,11 @@ namespace ModelsTests.SaverMockTest
             string expectedMusicSyncFolder = "TestFolder";
 
             ISaver saver = new SaverMock();
-            saver.saveSettings(expectedUser, expectedMusicSyncFolder);
+            saver.SaveSettings(expectedUser, expectedMusicSyncFolder);
             User userSaved = saver.SavedUser();
 
             Assert.Equal(expectedUser, userSaved);
-            string musicSyncFolderSaved = saver.savedMusicSyncFolder();
+            string musicSyncFolderSaved = saver.SavedMusicSyncFolder();
             Assert.Equal(expectedMusicSyncFolder, musicSyncFolderSaved);
         }
 
@@ -37,7 +37,7 @@ namespace ModelsTests.SaverMockTest
 
             ISaver saver = new SaverMock();
             saver.SaveSong(expectedSong);
-            List<Song> Songs = saver.savedSongs();
+            List<Song> Songs = saver.SavedSongs();
 
             Assert.Contains(expectedSong, Songs);
         }

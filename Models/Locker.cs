@@ -12,7 +12,7 @@ namespace App1.Models
 
         public async Task<bool> LockSongAsync(Song song, User user)
         {
-            if(isLockedByUser(song,user))
+            if(IsLockedByUser(song,user))
             {
                 return true;
             }
@@ -25,7 +25,7 @@ namespace App1.Models
                 }
                 catch
                 {
-                    deleteLockFile(song);
+                    DeleteLockFile(song);
                     throw;
                 }
                 return true;
@@ -37,9 +37,9 @@ namespace App1.Models
         {
             if (LockFileExist(song))
             {
-                if (isLockedByUser(song, user))
+                if (IsLockedByUser(song, user))
                 {
-                    deleteLockFile(song);
+                    DeleteLockFile(song);
                     await _version.UploadFileForSongAsync(song, @".lock", "unlock");
                     return true;
                 }
@@ -60,9 +60,9 @@ namespace App1.Models
             return false;
         }
 
-        public bool isLockedByUser(Song song, User user)
+        public bool IsLockedByUser(Song song, User user)
         {
-            if (LockFileExist(song) && songLockedByUser(song, user))
+            if (LockFileExist(song) && SongLockedByUser(song, user))
             {
                 return true;
             }
@@ -78,7 +78,7 @@ namespace App1.Models
             return String.Empty;
         }
 
-        private bool songLockedByUser(Song song, User user)
+        private bool SongLockedByUser(Song song, User user)
         {
             if (WhoLocked(song) == user.Username)
             {
@@ -94,7 +94,7 @@ namespace App1.Models
             _fileManager.WriteFile(user.Username, fileName, song.LocalPath);
         }
 
-        private void deleteLockFile(Song song)
+        private void DeleteLockFile(Song song)
         {
             _fileManager.DeleteFile(".lock", song.LocalPath);
         }

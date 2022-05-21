@@ -4,10 +4,10 @@ namespace App1.Models
 {
     public class SongsStorage : List<Song>
     {
-        public SongsStorage(ISaver NewSaver)
+        public SongsStorage(ISaver saver)
         {
-            Saver = NewSaver;
-            foreach (Song song in Saver.savedSongs())
+            _saver = saver;
+            foreach (Song song in _saver.SavedSongs())
             {
                 this.Add(song);
             }
@@ -16,16 +16,16 @@ namespace App1.Models
         public void AddNewSong(Song newSong)
         {
             this.Add(newSong);
-            Saver.SaveSong(newSong);
+            _saver.SaveSong(newSong);
 
         }
 
         public void DeleteSong(Song song)
         {
             this.Remove(song);
-            Saver.unsaveSong(song);
+            _saver.UnsaveSong(song);
         }
 
-        private readonly ISaver Saver;
+        private readonly ISaver _saver;
     }
 }

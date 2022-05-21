@@ -28,7 +28,7 @@ namespace GitSongVersioningTests
             user = new User("MusicSyncTool", "HelloWorld12", "Clic", "musicsynctool@gmail.com");
             SaverMock = new Mock<ISaver>();
             SaverMock.Setup(m => m.SavedUser()).Returns(user);
-            SaverMock.Setup(m => m.savedMusicSyncFolder()).Returns(testDirectory);
+            SaverMock.Setup(m => m.SavedMusicSyncFolder()).Returns(testDirectory);
             string gitServerUrl = "https://gitlab.com";
             ITransport gitTransport = new GitTransport(gitServerUrl, SaverMock.Object, FileManager);
             GitVersioning = new Versioning(SaverMock.Object, FileManager, gitTransport);

@@ -8,33 +8,33 @@ namespace App1.ViewModels
     {
         public SettingsPageViewModel(ISaver saver, IFileManager fileManager)
         {
-            this.saver = saver;
-            this.fileManager = fileManager;
+            this._saver = saver;
+            this._fileManager = fileManager;
             User = new UserViewModel(saver.SavedUser());
-            musicSyncFolder_ = saver.savedMusicSyncFolder();
+            _musicSyncFolder = saver.SavedMusicSyncFolder();
         }
 
         public void saveSettings(string BandName, string BandPassword, string Username, string BandEmail)
         {
             User userModel = new User(BandName,BandPassword,Username,BandEmail);
-            saver.saveSettings(userModel, MusicSyncFolder);
+            _saver.SaveSettings(userModel, MusicSyncFolder);
         }
 
         public UserViewModel User { get; set; }
-        private string musicSyncFolder_;
+        private string _musicSyncFolder;
         public string MusicSyncFolder
         {
             get
             {
-                return musicSyncFolder_;
+                return _musicSyncFolder;
             }
             set
             {
-                value = fileManager.FormatPath(value);
-                SetProperty(ref musicSyncFolder_, value);
+                value = _fileManager.FormatPath(value);
+                SetProperty(ref _musicSyncFolder, value);
             }
         }
-        private readonly ISaver saver;
-        private readonly IFileManager fileManager;
+        private readonly ISaver _saver;
+        private readonly IFileManager _fileManager;
     }
 }

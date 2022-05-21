@@ -34,7 +34,7 @@ namespace ModelsTests.SongsManagerTest
             fileManagerMock = new Mock<IFileManager>();
             IFileManager fileManager = fileManagerMock.Object;
             saver = new SaverMock();
-            saver.saveSettings(user, testDirectory);
+            saver.SaveSettings(user, testDirectory);
             songsManager = new SongsManager(transport.Object, saver, fileManager);
             versioning = new Versioning(saver, fileManager, transport.Object);
             locker = new Locker(fileManager, versioning);
@@ -97,7 +97,7 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
-        public async void addLocalSongAsyncTest()
+        public async void AddLocalSongAsyncTest()
         {
             await songsManager.AddLocalSongAsync(title, file, localPath);
             Song song = songsManager.FindSong(title);
@@ -106,20 +106,20 @@ namespace ModelsTests.SongsManagerTest
             Assert.Equal(localPath, song.LocalPath);
             Assert.Equal(file, song.File);
             Assert.Contains(song, songsManager.SongList);
-            Assert.Contains(song, saver.savedSongs());
+            Assert.Contains(song, saver.SavedSongs());
             transport.Verify(m => m.UploadAllFilesAsync(workspace.GetWorkspaceForSong(song), "First Upload", string.Empty), Times.Once());
             transport.Verify(m => m.Tag(workspace.GetWorkspaceForSong(song), "1.0.0"), Times.Once());
 
         }
 
         [Fact]
-        public void tryFindNullSongTest()
+        public void TryFindNullSongTest()
         {
             Assert.Throws<SongsManagerException>(() => songsManager.FindSong(title));
         }
 
         [Fact]
-        public async Task deleteSongTest()
+        public async Task DeleteSongTest()
         {
             await songsManager.AddLocalSongAsync(title, file, localPath);
             expectedSong = songsManager.FindSong(title);
@@ -127,18 +127,18 @@ namespace ModelsTests.SongsManagerTest
             await songsManager.DeleteSongAsync(expectedSong);
 
             Assert.DoesNotContain(expectedSong, songsManager.SongList);
-            Assert.DoesNotContain(expectedSong, saver.savedSongs());
+            Assert.DoesNotContain(expectedSong, saver.SavedSongs());
         }
 
         
         [Fact]
-        public async Task deleteSongLockedbyAnotherUserTest()
+        public async Task DeleteSongLockedbyAnotherUserTest()
         {
             string Username = "Second User";
             string BandPassword = "12df546@";
             string BandName = "Clic5456";
             string BandEmail = "testdklsjfhg@yahoo.com";
-            User user2 = new User(BandName, BandPassword, Username, BandEmail);
+            var user2 = new User(BandName, BandPassword, Username, BandEmail);
             SongLockForUser(user2.Username);
 
             //WHEN we want to delete the song
@@ -146,26 +146,26 @@ namespace ModelsTests.SongsManagerTest
 
             //THEN we expect the song being removed from song storage and save. We expect 
             //lock file not being removed from local and version workspace.
-            Assert.DoesNotContain(expectedSong, saver.savedSongs());
+            Assert.DoesNotContain(expectedSong, saver.SavedSongs());
             Assert.DoesNotContain(expectedSong, songsManager.SongList);
             transport.VerifyNoOtherCalls();
             fileManagerMock.Verify(m => m.DeleteFile(".lock", expectedSong.LocalPath), Times.Never());
         }
 
         [Fact]
-        public async Task deleteSongLockedbyUserTest()
+        public async Task DeleteSongLockedbyUserTest()
         {
             SongLockForUser(user.Username);
 
             await songsManager.DeleteSongAsync(expectedSong);
 
-            Assert.DoesNotContain(expectedSong, saver.savedSongs());
+            Assert.DoesNotContain(expectedSong, saver.SavedSongs());
             Assert.DoesNotContain(expectedSong, songsManager.SongList);
             CheckSongIsUnlocked();
         }
         
         [Fact]
-        public async Task updateSongTest()
+        public async Task UpdateSongTest()
         {
             transport.SetupSequence(m => m.UpdatesAvailbleAsync(workspace.GetWorkspaceForSong(expectedSong))).Returns(Task.FromResult(true))
                                                                                                         .Returns(Task.FromResult(false));
@@ -179,13 +179,13 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
-        public async Task updateSongLockedTest()
+        public async Task UpdateSongLockedTest()
         { 
             string Username = "Second User";
             string BandPassword = "12df546@";
             string BandName = "Clic5456";
             string BandEmail = "testdklsjfhg@yahoo.com";
-            User user2 = new User(BandName, BandPassword, Username, BandEmail);
+            var user2 = new User(BandName, BandPassword, Username, BandEmail);
             SongLockForUser(user2.Username); 
             transport.SetupSequence(m => m.UpdatesAvailbleAsync(workspace.GetWorkspaceForSong(expectedSong))).Returns(Task.FromResult(true))
                                                                                                           .Returns(Task.FromResult(false));
@@ -199,7 +199,7 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
-        public async Task revertSongTest()
+        public async Task RevertSongtest()
         {
             string? songArchive = workspace.GetWorkspaceForSong(expectedSong) + expectedSong.Title + ".zip";
             fileManagerMock.Setup(m => m.FindFileNameBasedOnExtensionAsync(workspace.GetWorkspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult<string?>(songArchive));
@@ -211,7 +211,7 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
-        public async Task revertSongLockedByUserTest()
+        public async Task RevertSongLockedByUserTest()
         {
             string? songArchive = workspace.GetWorkspaceForSong(expectedSong) + expectedSong.Title + ".zip";
             fileManagerMock.Setup(m => m.FindFileNameBasedOnExtensionAsync(workspace.GetWorkspaceForSong(expectedSong), ".zip")).Returns(Task.FromResult<string?>(songArchive));
@@ -225,13 +225,13 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
-        public async Task uploadNewSongVersionTest()
+        public async Task UploadNewSongVersionTest()
         {
             SongLockForUser(user.Username);
             var title = "New Version";
             var description = "No description";
             transport.Setup(m => m.UploadAllFilesAsync(workspace.GetWorkspaceForSong(expectedSong), title, description));
-            SongVersion lastLocalVersion = new SongVersion("1.0.0", "No Description", user.Username, DateOnly.FromDateTime(DateTime.Now));
+            var lastLocalVersion = new SongVersion("1.0.0", "No Description", user.Username, DateOnly.FromDateTime(DateTime.Now));
             transport.Setup(m => m.LastLocalVersionAsync(workspace.GetWorkspaceForSong(expectedSong))).Returns(Task.FromResult(lastLocalVersion));
 
             await songsManager.UploadNewSongVersionAsync(expectedSong, title, description, true, false, false);
@@ -242,7 +242,7 @@ namespace ModelsTests.SongsManagerTest
         }
         
         [Fact]
-        public async Task openSongTest()
+        public async Task OpenSongTest()
         {
             transport.SetupSequence(m => m.UpdatesAvailbleAsync(workspace.GetWorkspaceForSong(expectedSong))).Returns(Task.FromResult(true))
                                                                                                           .Returns(Task.FromResult(false));
@@ -258,7 +258,7 @@ namespace ModelsTests.SongsManagerTest
         }
 
         [Fact]
-        public async Task openSongAlreadyLockedByUserTest()
+        public async Task OpenSongAlreadyLockedByUserTest()
         {
             SongLockForUser(user.Username);
 
@@ -268,13 +268,13 @@ namespace ModelsTests.SongsManagerTest
         }
         
         [Fact]
-        public async Task tryOpeningSongLockedByAnotherUserTest()
+        public async Task TryOpeningSongLockedByAnotherUserTest()
         {
             string Username = "Second User";
             string BandPassword = "12df546@";
             string BandName = "Clic5456";
             string BandEmail = "testdklsjfhg@yahoo.com";
-            User user2 = new User(BandName, BandPassword, Username, BandEmail);
+            var user2 = new User(BandName, BandPassword, Username, BandEmail);
             SongLockForUser(user2.Username);
 
             Exception exception = await Assert.ThrowsAnyAsync<Exception>(async () => await songsManager.OpenSongAsync(expectedSong));
@@ -284,15 +284,17 @@ namespace ModelsTests.SongsManagerTest
         }
         
         [Fact]
-        public async Task currentVersionTest()
+        public async Task CurrentVersionTest()
         {
-            SongVersion songVersion = new SongVersion();
-            songVersion.Number = "1.0.0";
-            songVersion.Author = "Oregano";
-            songVersion.Description = "No Description";
+            var songVersion = new SongVersion
+            {
+                Number = "1.0.0",
+                Author = "Oregano",
+                Description = "No Description"
+            };
             transport.Setup(m => m.LastLocalVersionAsync(workspace.GetWorkspaceForSong(expectedSong))).Returns(Task.FromResult(songVersion));
 
-            SongVersion currentVersion = await songsManager.CurrentVersionAsync(expectedSong);
+            var currentVersion = await songsManager.CurrentVersionAsync(expectedSong);
 
             string expectedVersionDescription = "No Description";
             string expectedVersionNumber = "1.0.0";
@@ -303,19 +305,25 @@ namespace ModelsTests.SongsManagerTest
         }
         
         [Fact]
-        public async Task versionsTest()
+        public async Task VersionsTest()
         {
-            SongVersion songVersion = new SongVersion();
-            songVersion.Number = "1.0.0";
-            songVersion.Author = "Oregano";
-            songVersion.Description = "No Description";
-            SongVersion songVersion2 = new SongVersion();
-            songVersion2.Number = "2.0.1";
-            songVersion2.Author = "Aymeric Meindre";
-            songVersion2.Description = "Mastering";
-            List<SongVersion> songVersions = new List<SongVersion>();
-            songVersions.Add(songVersion);
-            songVersions.Add(songVersion2);
+            var songVersion = new SongVersion
+            {
+                Number = "1.0.0",
+                Author = "Oregano",
+                Description = "No Description"
+            };
+            var songVersion2 = new SongVersion
+            {
+                Number = "2.0.1",
+                Author = "Aymeric Meindre",
+                Description = "Mastering"
+            };
+            var songVersions = new List<SongVersion>
+            {
+                songVersion,
+                songVersion2
+            };
             transport.Setup(m => m.LocalVersionsAsync(workspace.GetWorkspaceForSong(expectedSong))).Returns(Task.FromResult(songVersions));
 
             List<SongVersion> versions = await songsManager.VersionsAsync(expectedSong);
@@ -325,15 +333,19 @@ namespace ModelsTests.SongsManagerTest
         }
         
         [Fact]
-        public async Task upcomingVersionsTest()
+        public async Task UpcomingVersionsTest()
         {
-            SongVersion upcomingSongVersion = new SongVersion();
-            upcomingSongVersion.Number = "2.0.1";
-            upcomingSongVersion.Author = "Aymeric Meindre";
-            upcomingSongVersion.Description = "Mastering";
-            upcomingSongVersion.Date = new DateOnly(2022,5,10);
-            List<SongVersion> upcomingSongVersions = new List<SongVersion>();
-            upcomingSongVersions.Add(upcomingSongVersion);
+            var upcomingSongVersion = new SongVersion
+            {
+                Number = "2.0.1",
+                Author = "Aymeric Meindre",
+                Description = "Mastering",
+                Date = new DateOnly(2022, 5, 10)
+            };
+            var upcomingSongVersions = new List<SongVersion>
+            {
+                upcomingSongVersion
+            };
             transport.Setup(m => m.UpcomingVersionsAsync(workspace.GetWorkspaceForSong(expectedSong))).Returns(Task.FromResult(upcomingSongVersions));
 
             List<SongVersion> upcomingVersions = await songsManager.UpcomingVersionsAsync(expectedSong);
@@ -342,12 +354,12 @@ namespace ModelsTests.SongsManagerTest
         }
         
         [Fact]
-        public async Task addSharedSongTest()
+        public async Task AddSharedSongTest()
         {
             string songTitle = "End of the Road";
             string guid = Guid.NewGuid().ToString();
             string sharedLink = "http://gitlab.com/" + user.BandName.Replace(" ", "-") + "/" + guid + ".git";
-            Song expectedSong = new Song(songTitle, file, localPath, guid);
+            var expectedSong = new Song(songTitle, file, localPath, guid);
             fileManagerMock.Setup(m => m.FormatPath(localPath + songTitle)).Returns(localPath);
             transport.Setup(m => m.Init(sharedLink, localPath));
             fileManagerMock.Setup(m => m.FindFileNameBasedOnExtensionAsync(localPath, ".song")).Returns(Task.FromResult<string?>(file));
@@ -360,12 +372,12 @@ namespace ModelsTests.SongsManagerTest
             Assert.Equal(songTitle, song.Title);
             Assert.Equal(localPath, song.LocalPath);
             Assert.Equal(file, song.File);
-            Assert.Contains(song, saver.savedSongs());
+            Assert.Contains(song, saver.SavedSongs());
             Assert.Contains(song, songsManager.SongList);
         }
   
         [Fact]
-        public void getShareLinkTest()
+        public void GetShareLinkTest()
         {
             transport.Setup(m => m.ShareLink(workspace.GetWorkspaceForSong(expectedSong))).Returns("https://gitlab.com/end-of-the-road");
             
@@ -375,7 +387,7 @@ namespace ModelsTests.SongsManagerTest
         }
         
         [Fact]
-        public async Task refreshStatusForSongUpToDateTest()
+        public async Task RefreshStatusForSongUpToDateTest()
         {
             transport.Setup(m => m.UpdatesAvailbleAsync(workspace.GetWorkspaceForSong(expectedSong))).Returns(Task.FromResult(false));
             
@@ -385,7 +397,7 @@ namespace ModelsTests.SongsManagerTest
         }
         
         [Fact]
-        public async Task refreshStatusForSongLockedTest()
+        public async Task RefreshStatusForSongLockedTest()
         {
             SongLockForUser(user.Username);
 
@@ -396,7 +408,7 @@ namespace ModelsTests.SongsManagerTest
         }
         
         [Fact]
-        public async Task refreshStatusForSongUpdatesAvailableTest()
+        public async Task RefreshStatusForSongUpdatesAvailableTest()
         {
             transport.Setup(m => m.UpdatesAvailbleAsync(workspace.GetWorkspaceForSong(expectedSong))).Returns(Task.FromResult(true));
             
@@ -406,7 +418,7 @@ namespace ModelsTests.SongsManagerTest
         }
         
         [Fact]
-        public void renameSongTest()
+        public void RenameSongTest()
         {
             string newTitle = "new Title";
             string newLocalPath = expectedSong.LocalPath.Replace(expectedSong.Title + '\\', "") + newTitle;
@@ -418,7 +430,7 @@ namespace ModelsTests.SongsManagerTest
             Assert.Equal(expectedSong.Title, newTitle);
             Assert.Equal(expectedSong.LocalPath, newLocalPath);
             Assert.Equal(expectedSong.File, newFile);
-            Assert.Contains(expectedSong, saver.savedSongs());
+            Assert.Contains(expectedSong, saver.SavedSongs());
         }
       
     }

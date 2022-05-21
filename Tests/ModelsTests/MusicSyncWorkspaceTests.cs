@@ -18,13 +18,13 @@ namespace ModelsTests.MusicSyncWorkspaceTest
             string BandPassword = "12df546@";
             string BandName = "Clic5456";
             string BandEmail = "testdklsjfhg@yahoo.com";
-            User user = new User(BandName, BandPassword, Username, BandEmail);
+            var user = new User(BandName, BandPassword, Username, BandEmail);
             musicSyncPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\MusicSyncWorkspaceTest\";
 
             transportMock = new Mock<ITransport>();
             fileManager = new FileManager();
             saver = new SaverMock();
-            saver.saveSettings(user, musicSyncPath);
+            saver.SaveSettings(user, musicSyncPath);
         }
 
         public void Dispose()
@@ -48,37 +48,37 @@ namespace ModelsTests.MusicSyncWorkspaceTest
         public void GetMusicSyncWorskpace()
         {
 
-            MusicSyncWorkspace workspace = new MusicSyncWorkspace(saver, fileManager);
-            string musicSyncFolder = workspace.musicSyncFolder;
+            var workspace = new MusicSyncWorkspace(saver, fileManager);
+            string musicSyncFolder = workspace.MusicSyncFolder;
 
-            string expectedMusicSyncFolder = saver.savedMusicSyncFolder() + ".musicsync" + Path.DirectorySeparatorChar;
+            string expectedMusicSyncFolder = saver.SavedMusicSyncFolder() + ".musicsync" + Path.DirectorySeparatorChar;
             Assert.Equal(expectedMusicSyncFolder, musicSyncFolder);
         }
 
         [Fact]
         public void CreateWorkspaceForSong()
         {
-            Song song = new Song("Title", "file.song", @"test\Path\");
+            var song = new Song("Title", "file.song", @"test\Path\");
 
-            MusicSyncWorkspace workspace = new MusicSyncWorkspace(saver, fileManager);
+            var workspace = new MusicSyncWorkspace(saver, fileManager);
             string songWorkspace = workspace.GetWorkspaceForSong(song);
 
-            string expectedWorkspace = workspace.musicSyncFolder + song.Guid + Path.DirectorySeparatorChar;
-            Assert.True(fileManager.DirectoryExists(workspace.musicSyncFolder + song.Guid));
+            string expectedWorkspace = workspace.MusicSyncFolder + song.Guid + Path.DirectorySeparatorChar;
+            Assert.True(fileManager.DirectoryExists(workspace.MusicSyncFolder + song.Guid));
             Assert.Equal(expectedWorkspace, songWorkspace);
         }
 
         [Fact]
         public void GetAlreadyCreatedWorkspaceForSong()
         {
-            Song song = new Song("Title", "file.song", @"test\Path\");
+            var song = new Song("Title", "file.song", @"test\Path\");
             Directory.CreateDirectory(musicSyncPath + song.Guid);
 
-            MusicSyncWorkspace workspace = new MusicSyncWorkspace(saver, fileManager);
+            var workspace = new MusicSyncWorkspace(saver, fileManager);
             string songWorkspace = workspace.GetWorkspaceForSong(song);
 
-            string expectedWorkspace = workspace.musicSyncFolder + song.Guid + Path.DirectorySeparatorChar;
-            Assert.True(fileManager.DirectoryExists(workspace.musicSyncFolder + song.Guid));
+            string expectedWorkspace = workspace.MusicSyncFolder + song.Guid + Path.DirectorySeparatorChar;
+            Assert.True(fileManager.DirectoryExists(workspace.MusicSyncFolder + song.Guid));
             Assert.Equal(expectedWorkspace, songWorkspace);
         }
 
@@ -87,11 +87,11 @@ namespace ModelsTests.MusicSyncWorkspaceTest
         {
             string guid = Guid.NewGuid().ToString();
 
-            MusicSyncWorkspace musicSync = new MusicSyncWorkspace(saver, fileManager);
+            var musicSync = new MusicSyncWorkspace(saver, fileManager);
             string specificWorkspace = musicSync.GetWorkspace(guid);
 
-            string expectedWorkspace = musicSync.musicSyncFolder + guid + Path.DirectorySeparatorChar;
-            Assert.True(fileManager.DirectoryExists(musicSync.musicSyncFolder + guid));
+            string expectedWorkspace = musicSync.MusicSyncFolder + guid + Path.DirectorySeparatorChar;
+            Assert.True(fileManager.DirectoryExists(musicSync.MusicSyncFolder + guid));
             Assert.Equal(expectedWorkspace, specificWorkspace);
         }
 
@@ -101,11 +101,11 @@ namespace ModelsTests.MusicSyncWorkspaceTest
             string guid = Guid.NewGuid().ToString();
             Directory.CreateDirectory(musicSyncPath + guid);
 
-            MusicSyncWorkspace musicSync = new MusicSyncWorkspace(saver, fileManager);
+            var musicSync = new MusicSyncWorkspace(saver, fileManager);
             string specificWorkspace = musicSync.GetWorkspace(guid);
 
-            string expectedWorkspace = musicSync.musicSyncFolder + guid + Path.DirectorySeparatorChar;
-            Assert.True(fileManager.DirectoryExists(musicSync.musicSyncFolder + guid));
+            string expectedWorkspace = musicSync.MusicSyncFolder + guid + Path.DirectorySeparatorChar;
+            Assert.True(fileManager.DirectoryExists(musicSync.MusicSyncFolder + guid));
             Assert.Equal(expectedWorkspace, specificWorkspace); ;
         }
 

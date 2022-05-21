@@ -6,67 +6,67 @@ namespace App1.ViewModels
     {
         public SongVersioned(string title)
         {
-            title_ = title;
-            status_ = string.Empty;
-            isUpdatingSong_ = false;
-            isUploadingSong_ = false;
-            isLoading_ = false;
-            currentVersion_ = new Version();
-            enableStatus_ = false;
+            _title = title;
+            _status = string.Empty;
+            _isUpdatingSong = false;
+            _isUploadingSong = false;
+            _isLoading = false;
+            _currentVersion = new Version();
+            _enableStatus = false;
             UpcomingVersions = new ObservableCollection<Version>();
             Versions = new ObservableCollection<Version>();
         }
 
-        private string title_;
+        private string _title;
         public string Title
         {
             get
             {
-                return title_;
+                return _title;
             }
             set
             {
-                SetProperty(ref title_, value);
+                SetProperty(ref _title, value);
             }
         }
 
-        private string status_;
+        private string _status;
         public string Status
         {
             get
             {
-                return status_;
+                return _status;
             }
             set
             {
-                SetProperty(ref status_, value);
+                SetProperty(ref _status, value);
                 EnableStatus = true;
             }
         }
 
-        private bool enableStatus_;
+        private bool _enableStatus;
         public bool EnableStatus
         {
             get
             {
-                return enableStatus_;
+                return _enableStatus;
             }
             set
             {
-                SetProperty(ref enableStatus_, value);
+                SetProperty(ref _enableStatus, value);
             }
         }
 
-        private Version currentVersion_;
+        private Version _currentVersion;
         public Version CurrentVersion
         {
             get
             {
-                return currentVersion_;
+                return _currentVersion;
             }
             set
             {
-                SetProperty(ref currentVersion_, value);
+                SetProperty(ref _currentVersion, value);
             }
         }
 
@@ -74,12 +74,12 @@ namespace App1.ViewModels
 
         public ObservableCollection<Version> Versions;
 
-        private bool isRefreshingSong_;
+        private bool _isRefreshingSong;
         public bool IsRefreshingSong
         {
             get
             {
-                return isRefreshingSong_;
+                return _isRefreshingSong;
             }
             set
             {
@@ -87,17 +87,17 @@ namespace App1.ViewModels
                 {
                     Status = "Refreshing...";
                 }
-                SetProperty(ref isRefreshingSong_, value);
+                SetProperty(ref _isRefreshingSong, value);
                 IsLoading = value;
             }
         }
 
-        private bool isUpdatingSong_;
+        private bool _isUpdatingSong;
         public bool IsUpdatingSong
         {
             get
             {
-                return isUpdatingSong_;
+                return _isUpdatingSong;
             }
             set
             {
@@ -105,17 +105,17 @@ namespace App1.ViewModels
                 {
                     Status = "Updating...";
                 }
-                SetProperty(ref isUpdatingSong_, value);
+                SetProperty(ref _isUpdatingSong, value);
                 IsLoading = value;
             }
         }
 
-        private bool isUploadingSong_;
+        private bool _isUploadingSong;
         public bool IsUploadingSong
         {
             get
             {
-                return isUploadingSong_;
+                return _isUploadingSong;
             }
             set
             {
@@ -123,17 +123,17 @@ namespace App1.ViewModels
                 {
                     Status = "Uploading...";
                 }
-                SetProperty(ref isUploadingSong_, value);
+                SetProperty(ref _isUploadingSong, value);
                 IsLoading = value;
             }
         }
 
-        private bool isRevertingSong_;
+        private bool _isRevertingSong;
         public bool IsRevertingSong
         {
             get
             {
-                return isRevertingSong_;
+                return _isRevertingSong;
             }
             set
             {
@@ -141,17 +141,17 @@ namespace App1.ViewModels
                 {
                     Status = "Reverting...";
                 }
-                SetProperty(ref isRevertingSong_, value);
+                SetProperty(ref _isRevertingSong, value);
                 IsLoading = value;
             }
         }
 
-        private bool isOpeningSong_;
+        private bool _isOpeningSong;
         public bool IsOpeningSong
         {
             get
             {
-                return isOpeningSong_;
+                return _isOpeningSong;
             }
             set
             {
@@ -159,22 +159,22 @@ namespace App1.ViewModels
                 {
                     Status = "Opening...";
                 }
-                SetProperty(ref isOpeningSong_, value);
+                SetProperty(ref _isOpeningSong, value);
                 IsLoading = value;
             }
         }
 
-        private bool isLoading_;
+        private bool _isLoading;
         public bool IsLoading
         {
             get
             {
-                return isLoading_;
+                return _isLoading;
             }
             set
             {
-                isLoading_ = value;
-                SetProperty(ref isLoading_, value);
+                _isLoading = value;
+                SetProperty(ref _isLoading, value);
             }
         }
 

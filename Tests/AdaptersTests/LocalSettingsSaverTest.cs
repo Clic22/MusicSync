@@ -38,13 +38,13 @@ namespace WinUIAppTests.LocalSettingsSaverTest
         {
             foreach (Song song in songsToBeSaved)
             {
-                saver.unsaveSong(song);
+                saver.UnsaveSong(song);
             }
             string expectedTitle = "title";
             string expectedLocalPath = "path";
             string expectedFile = "file";
             Song songDefault = new Song(expectedTitle, expectedFile, expectedLocalPath);
-            saver.unsaveSong(songDefault);
+            saver.UnsaveSong(songDefault);
             songsToBeSaved.Clear();
         }
 
@@ -62,11 +62,11 @@ namespace WinUIAppTests.LocalSettingsSaverTest
         {
             string expectedMusicSyncFolder = "TestFolder";
 
-            saver.saveSettings(user1, expectedMusicSyncFolder);
+            saver.SaveSettings(user1, expectedMusicSyncFolder);
 
             User userSaved = saver.SavedUser();
             Assert.AreEqual(user1, userSaved);
-            string musicSyncFolderSaved = saver.savedMusicSyncFolder();
+            string musicSyncFolderSaved = saver.SavedMusicSyncFolder();
             Assert.AreEqual(expectedMusicSyncFolder, musicSyncFolderSaved);
         }
 
@@ -75,11 +75,11 @@ namespace WinUIAppTests.LocalSettingsSaverTest
         {
             string expectedMusicSyncFolder = "TestFolder";
 
-            saver.saveSettings(user2, expectedMusicSyncFolder);
+            saver.SaveSettings(user2, expectedMusicSyncFolder);
 
             User userSaved = saver.SavedUser();
             Assert.AreEqual(user2, userSaved);
-            string musicSyncFolderSaved = saver.savedMusicSyncFolder();
+            string musicSyncFolderSaved = saver.SavedMusicSyncFolder();
             Assert.AreEqual(expectedMusicSyncFolder, musicSyncFolderSaved);
         }
 
@@ -89,7 +89,7 @@ namespace WinUIAppTests.LocalSettingsSaverTest
             Song songToBeSaved = songsToBeSaved[0];
             saver.SaveSong(songToBeSaved);
 
-            List<Song> savedSongs = saver.savedSongs();
+            List<Song> savedSongs = saver.SavedSongs();
 
             CollectionAssert.Contains(savedSongs, songToBeSaved);
         }
@@ -102,7 +102,7 @@ namespace WinUIAppTests.LocalSettingsSaverTest
                 saver.SaveSong(song);
             }
 
-            List<Song> savedSongs = saver.savedSongs();
+            List<Song> savedSongs = saver.SavedSongs();
 
             foreach (Song song in songsToBeSaved)
             {
@@ -119,8 +119,8 @@ namespace WinUIAppTests.LocalSettingsSaverTest
             }
 
             Song songToBeUnsaved = songsToBeSaved[5];
-            saver.unsaveSong(songToBeUnsaved);
-            List<Song> savedSongs = saver.savedSongs();
+            saver.UnsaveSong(songToBeUnsaved);
+            List<Song> savedSongs = saver.SavedSongs();
 
             CollectionAssert.DoesNotContain(savedSongs, songToBeUnsaved);
         }

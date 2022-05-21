@@ -11,22 +11,22 @@ namespace App1.ViewModels
         public SongsPageViewModel(ISongsManager songsManager)
         {
             SongsVersioned = new ObservableCollection<SongVersioned>();
-            SongsManager = songsManager;
-            FileManager = new FileManager();
-            intializeSongsVersioned();
+            _songsManager = songsManager;
+            _fileManager = new FileManager();
+            IntializeSongsVersioned();
         }
 
-        public async Task<SongVersioned> addLocalSongAsync(string songTitle, string songFile, string songLocalPath)
+        public async Task<SongVersioned> AddLocalSongAsync(string songTitle, string songFile, string songLocalPath)
         {
             try
             {
                 IsAddingSong = true;
-                songLocalPath = FileManager.FormatPath(songLocalPath);
-                await SongsManager.AddLocalSongAsync(songTitle, songFile, songLocalPath);
+                songLocalPath = _fileManager.FormatPath(songLocalPath);
+                await _songsManager.AddLocalSongAsync(songTitle, songFile, songLocalPath);
                 SongVersioned songVersioned = new SongVersioned(songTitle);
                 SongsVersioned.Add(songVersioned);
-                Song song = SongsManager.FindSong(songVersioned.Title);
-                await refreshSongVersionedAsync(songVersioned, song);
+                Song song = _songsManager.FindSong(songVersioned.Title);
+                await RefreshSongVersionedAsync(songVersioned, song);
                 IsAddingSong = false;
                 return songVersioned;
             }
@@ -38,16 +38,16 @@ namespace App1.ViewModels
             
         }
 
-        public async Task addSharedSongAsync(string songTitle, string sharedLink, string songLocalPath)
+        public async Task AddSharedSongAsync(string songTitle, string sharedLink, string songLocalPath)
         {
             try
             {
                 IsAddingSong = true;
-                songLocalPath = FileManager.FormatPath(songLocalPath);
-                await SongsManager.AddSharedSongAsync(songTitle, sharedLink, songLocalPath);
+                songLocalPath = _fileManager.FormatPath(songLocalPath);
+                await _songsManager.AddSharedSongAsync(songTitle, sharedLink, songLocalPath);
                 SongVersioned songVersioned = new SongVersioned(songTitle);
                 SongsVersioned.Add(songVersioned);
-                await updateSongAsync(songVersioned);
+                await UpdateSongAsync(songVersioned);
                 IsAddingSong = false;
             }
             catch
@@ -57,12 +57,12 @@ namespace App1.ViewModels
             }
         }
 
-        public async Task deleteSongAsync(SongVersioned songVersioned)
+        public async Task DeleteSongAsync(SongVersioned songVersioned)
         {
             try
             {
-                Song song = SongsManager.FindSong(songVersioned.Title);
-                await SongsManager.DeleteSongAsync(song);
+                Song song = _songsManager.FindSong(songVersioned.Title);
+                await _songsManager.DeleteSongAsync(song);
                 SongsVersioned.Remove(songVersioned);
             }
             catch
@@ -73,14 +73,14 @@ namespace App1.ViewModels
               
         }
 
-        public async Task updateSongAsync(SongVersioned songVersioned)
+        public async Task UpdateSongAsync(SongVersioned songVersioned)
         {
             try
             {
                 songVersioned.IsUpdatingSong = true;
-                Song song = SongsManager.FindSong(songVersioned.Title);
-                await SongsManager.UpdateSongAsync(song);
-                await refreshSongVersionedAsync(songVersioned, song);
+                Song song = _songsManager.FindSong(songVersioned.Title);
+                await _songsManager.UpdateSongAsync(song);
+                await RefreshSongVersionedAsync(songVersioned, song);
                 songVersioned.IsUpdatingSong = false;
             }
             catch
@@ -91,15 +91,15 @@ namespace App1.ViewModels
             }
         }
 
-        public async Task openSongAsync(SongVersioned songVersioned)
+        public async Task OpenSongAsync(SongVersioned songVersioned)
         {
             try
             {
                 songVersioned.IsOpeningSong = true;
-                Song song = SongsManager.FindSong(songVersioned.Title);
-                await SongsManager.OpenSongAsync(song);
+                Song song = _songsManager.FindSong(songVersioned.Title);
+                await _songsManager.OpenSongAsync(song);
                 songVersioned.IsOpeningSong = false;
-                await refreshSongStatusAsync(songVersioned, song);
+                await RefreshSongStatusAsync(songVersioned, song);
             }
             catch
             {
@@ -110,14 +110,14 @@ namespace App1.ViewModels
             
         }
 
-        public async Task revertSongAsync(SongVersioned songVersioned)
+        public async Task RevertSongAsync(SongVersioned songVersioned)
         {
             try
             {
                 songVersioned.IsRevertingSong = true;
-                Song song = SongsManager.FindSong(songVersioned.Title);
-                await SongsManager.RevertSongAsync(song);
-                await refreshSongStatusAsync(songVersioned, song);
+                Song song = _songsManager.FindSong(songVersioned.Title);
+                await _songsManager.RevertSongAsync(song);
+                await RefreshSongStatusAsync(songVersioned, song);
                 songVersioned.IsRevertingSong = false;
             }
             catch
@@ -129,14 +129,14 @@ namespace App1.ViewModels
             
         }
 
-        public async Task uploadNewSongVersionAsync(SongVersioned songVersioned, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
+        public async Task UploadNewSongVersionAsync(SongVersioned songVersioned, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
         {
             try
             {
                 songVersioned.IsUploadingSong = true;
-                Song song = SongsManager.FindSong(songVersioned.Title);
-                await SongsManager.UploadNewSongVersionAsync(song, changeTitle, changeDescription, compo, mix, mastering);
-                await refreshSongVersionedAsync(songVersioned, song);
+                Song song = _songsManager.FindSong(songVersioned.Title);
+                await _songsManager.UploadNewSongVersionAsync(song, changeTitle, changeDescription, compo, mix, mastering);
+                await RefreshSongVersionedAsync(songVersioned, song);
                 songVersioned.IsUploadingSong = false;
             }
             catch
@@ -147,12 +147,12 @@ namespace App1.ViewModels
             }
         }
 
-        public string shareSong(SongVersioned songVersioned)
+        public string ShareSong(SongVersioned songVersioned)
         {
             try
             {
-                Song song = SongsManager.FindSong(songVersioned.Title);
-                return SongsManager.ShareSong(song);
+                Song song = _songsManager.FindSong(songVersioned.Title);
+                return _songsManager.ShareSong(song);
             }
             catch
             {
@@ -162,13 +162,13 @@ namespace App1.ViewModels
                       
         }
 
-        public async Task refreshSongsVersionedAsync()
+        public async Task RefreshSongsVersionedAsync()
         {
-            List<Task> refreshSongVersionedTasks = new List<Task>();
+           var refreshSongVersionedTasks = new List<Task>();
             foreach (var songVersioned in SongsVersioned)
             {
-                Song song = SongsManager.FindSong(songVersioned.Title);
-                Task refreshSongVersionedTask = refreshSongVersionedAsync(songVersioned, song);
+                Song song = _songsManager.FindSong(songVersioned.Title);
+                Task refreshSongVersionedTask = RefreshSongVersionedAsync(songVersioned, song);
                 refreshSongVersionedTasks.Add(refreshSongVersionedTask);
             }
             foreach(var task in refreshSongVersionedTasks)
@@ -177,18 +177,18 @@ namespace App1.ViewModels
             }
         }
 
-        public void renameSong(SongVersioned songVersioned, string newTitle)
+        public void RenameSong(SongVersioned songVersioned, string title)
         {
-            Song song = SongsManager.FindSong(songVersioned.Title);
-            SongsManager.RenameSong(song,newTitle);
-            songVersioned.Title = newTitle;
+            Song song = _songsManager.FindSong(songVersioned.Title);
+            _songsManager.RenameSong(song,title);
+            songVersioned.Title = title;
         }
 
-        private void intializeSongsVersioned()
+        private void IntializeSongsVersioned()
         {
-            if (SongsManager.SongList != null)
+            if (_songsManager.SongList != null)
             {
-                foreach (Song song in SongsManager.SongList)
+                foreach (Song song in _songsManager.SongList)
                 {
                     SongVersioned songVersioned = new SongVersioned(song.Title);
                     SongsVersioned.Add(songVersioned);
@@ -196,14 +196,14 @@ namespace App1.ViewModels
             }
         }
 
-        private async Task refreshSongVersionedAsync(SongVersioned songVersioned, Song song)
+        private async Task RefreshSongVersionedAsync(SongVersioned songVersioned, Song song)
         {
             try
             {
                 songVersioned.IsRefreshingSong = true;
-                await refreshSongCurrentVersionAsync(songVersioned, song);
-                await refreshSongStatusAsync(songVersioned, song);
-                await refreshSongVersionsAsync(songVersioned, song);
+                await RefreshSongCurrentVersionAsync(songVersioned, song);
+                await RefreshSongStatusAsync(songVersioned, song);
+                await RefreshSongVersionsAsync(songVersioned, song);
                 songVersioned.IsRefreshingSong = false;
             }
             catch
@@ -214,34 +214,34 @@ namespace App1.ViewModels
             }
         }
 
-        private async Task refreshSongCurrentVersionAsync(SongVersioned songVersioned, Song song)
+        private async Task RefreshSongCurrentVersionAsync(SongVersioned songVersioned, Song song)
         {
-            SongVersion songVersion = await SongsManager.CurrentVersionAsync(song);
-            fillVersion(songVersioned.CurrentVersion, songVersion);
+            SongVersion songVersion = await _songsManager.CurrentVersionAsync(song);
+            FillVersion(songVersioned.CurrentVersion, songVersion);
         }
 
-        private async Task refreshSongVersionsAsync(SongVersioned songVersioned, Song song)
+        private async Task RefreshSongVersionsAsync(SongVersioned songVersioned, Song song)
         {
             songVersioned.Versions.Clear();
-            List<Models.SongVersion> versionsModels = await SongsManager.VersionsAsync(song);
-            fillVersions(songVersioned.Versions, versionsModels);
+            List<Models.SongVersion> versionsModels = await _songsManager.VersionsAsync(song);
+            FillVersions(songVersioned.Versions, versionsModels);
 
             songVersioned.UpcomingVersions.Clear();
-            List<Models.SongVersion> upcomingVersionsModels = await SongsManager.UpcomingVersionsAsync(song);
-            fillVersions(songVersioned.UpcomingVersions, upcomingVersionsModels);
+            List<Models.SongVersion> upcomingVersionsModels = await _songsManager.UpcomingVersionsAsync(song);
+            FillVersions(songVersioned.UpcomingVersions, upcomingVersionsModels);
         }
 
-        private static void fillVersions(ObservableCollection<Version> UpcomingVersions, List<SongVersion> upcomingVersionsModels)
+        private static void FillVersions(ObservableCollection<Version> UpcomingVersions, List<SongVersion> upcomingVersionsModels)
         {
             foreach (var versionModel in upcomingVersionsModels)
             {
                 ViewModels.Version versionViewModels = new ViewModels.Version();
-                fillVersion(versionViewModels, versionModel);
+                FillVersion(versionViewModels, versionModel);
                 UpcomingVersions.Insert(0, versionViewModels);
             }
         }
 
-        private static void fillVersion(Version Version, SongVersion songVersion)
+        private static void FillVersion(Version Version, SongVersion songVersion)
         {
             Version.Number = songVersion.Number;
             Version.Description = songVersion.Description;
@@ -249,9 +249,9 @@ namespace App1.ViewModels
             Version.Date = songVersion.Date.ToString("d", CultureInfo.GetCultureInfo("en-US"));
         }
 
-        private async Task refreshSongStatusAsync(SongVersioned songVersioned, Song song)
+        private async Task RefreshSongStatusAsync(SongVersioned songVersioned, Song song)
         {
-            await SongsManager.RefreshSongStatusAsync(song);
+            await _songsManager.RefreshSongStatusAsync(song);
             if (song.Status.state == SongStatus.State.locked)
             {
                 songVersioned.Status = "Locked by " + song.Status.whoLocked;
@@ -268,20 +268,20 @@ namespace App1.ViewModels
         }
 
         public ObservableCollection<SongVersioned> SongsVersioned;
-        private bool isAddingSong_;
+        private bool _isAddingSong;
         public bool IsAddingSong
         {
             get
             {
-                return isAddingSong_;
+                return _isAddingSong;
             }
             set
             {
-                SetProperty(ref isAddingSong_, value);
+                SetProperty(ref _isAddingSong, value);
             }
         }
 
-        private readonly IFileManager FileManager;
-        private readonly ISongsManager SongsManager;
+        private readonly IFileManager _fileManager;
+        private readonly ISongsManager _songsManager;
     }
 }

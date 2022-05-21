@@ -4,11 +4,11 @@ namespace App1.Models
 {
     public class Versioning
     {
-        public Versioning(ISaver Saver, IFileManager FileManager, ITransport Transport) 
+        public Versioning(ISaver saver, IFileManager fileManager, ITransport transport) 
         {
-            _fileManager = FileManager;
-            _transport = Transport;
-            _musicSyncWorkspace = new MusicSyncWorkspace(Saver, FileManager);
+            _fileManager = fileManager;
+            _transport = transport;
+            _musicSyncWorkspace = new MusicSyncWorkspace(saver, fileManager);
         }
 
         public async Task UploadSongAsync(Song song, string title, string description, string versionNumber)
@@ -138,7 +138,7 @@ namespace App1.Models
 
         private async Task<string> SelectFoldersToBeCompressed(Song song)
         {
-            string tmpDirectory = _musicSyncWorkspace.musicSyncFolder + @"tmpDirectory\";
+            string tmpDirectory = _musicSyncWorkspace.MusicSyncFolder + @"tmpDirectory\";
             if (_fileManager.DirectoryExists(tmpDirectory))
             {
                 _fileManager.DeleteDirectory(tmpDirectory);
@@ -153,7 +153,7 @@ namespace App1.Models
 
             string mediaFolder = "Media";
             string melodyneFolder = "Melodyne";
-            List<string> foldersToBeCopied = new List<string>() { mediaFolder, melodyneFolder };
+            var foldersToBeCopied = new List<string>() { mediaFolder, melodyneFolder };
 
             _fileManager.CopyDirectories(foldersToBeCopied,song.LocalPath,tmpDirectory);
 

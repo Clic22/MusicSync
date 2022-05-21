@@ -27,7 +27,7 @@ namespace ModelsTests.SongStorageTest
             Assert.Contains(song, songsStorage);
             Assert.Contains(song2, songsStorage);
 
-            List<Song> savedSongs = saver.savedSongs();
+            List<Song> savedSongs = saver.SavedSongs();
             Assert.Contains(song, savedSongs);
             Assert.Contains(song2, savedSongs);
 
@@ -49,7 +49,7 @@ namespace ModelsTests.SongStorageTest
             songsStorage.AddNewSong(song);
             Assert.Contains(song, songsStorage);
 
-            List<Song> savedSongs = saver.savedSongs();
+            List<Song> savedSongs = saver.SavedSongs();
             Assert.Contains(song, savedSongs);
         }
 
@@ -67,7 +67,7 @@ namespace ModelsTests.SongStorageTest
 
             songsStorage.DeleteSong(song);
             Assert.DoesNotContain(song, songsStorage);
-            List<Song> savedSongs = saver.savedSongs();
+            List<Song> savedSongs = saver.SavedSongs();
             Assert.DoesNotContain(song, savedSongs);
         }
     }

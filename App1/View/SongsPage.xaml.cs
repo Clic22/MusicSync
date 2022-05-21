@@ -28,7 +28,7 @@ namespace App1.View
         {
             try
             {
-                await SongsPageViewModel.refreshSongsVersionedAsync();
+                await SongsPageViewModel.RefreshSongsVersionedAsync();
             }
             catch (Exception ex)
             {
@@ -40,7 +40,7 @@ namespace App1.View
         {
             try
             {
-                await SongsPageViewModel.refreshSongsVersionedAsync();
+                await SongsPageViewModel.RefreshSongsVersionedAsync();
             }
             catch (Exception ex)
             {
@@ -57,11 +57,11 @@ namespace App1.View
                 {
                     if (songTitle.Text != string.Empty && songFile.Text != string.Empty && songLocalPath.Text != string.Empty)
                     {
-                        await SongsPageViewModel.addLocalSongAsync(songTitle.Text, songFile.Text, songLocalPath.Text);
+                        await SongsPageViewModel.AddLocalSongAsync(songTitle.Text, songFile.Text, songLocalPath.Text);
                     }
                     else if (songSharedTitle.Text != string.Empty && sharedLink.Text != string.Empty && songSharedLocalPath.Text != string.Empty)
                     {
-                        await SongsPageViewModel.addSharedSongAsync(songSharedTitle.Text, sharedLink.Text, songSharedLocalPath.Text);
+                        await SongsPageViewModel.AddSharedSongAsync(songSharedTitle.Text, sharedLink.Text, songSharedLocalPath.Text);
                     }
                     else
                     {
@@ -135,7 +135,7 @@ namespace App1.View
             try
             {
                 SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                await SongsPageViewModel.deleteSongAsync(song);
+                await SongsPageViewModel.DeleteSongAsync(song);
             }
             catch (Exception ex)
             {
@@ -148,7 +148,7 @@ namespace App1.View
             try
             {
                 SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                string shareLink = SongsPageViewModel.shareSong(song);
+                string shareLink = SongsPageViewModel.ShareSong(song);
                 ContentDialogResult result = await displayShareLinkDialog(shareLink);
                 if (result == ContentDialogResult.Primary)
                 {
@@ -172,7 +172,7 @@ namespace App1.View
                 if (result == ContentDialogResult.Primary)
                 {
                     SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                    SongsPageViewModel.renameSong(song, newSongName.Text);
+                    SongsPageViewModel.RenameSong(song, newSongName.Text);
                 }
             }
             catch (Exception ex)
@@ -190,7 +190,7 @@ namespace App1.View
             try
             {
                 SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                await SongsPageViewModel.updateSongAsync(song);
+                await SongsPageViewModel.UpdateSongAsync(song);
                 await displayContentDialog($"Song '{song.Title}' Updated");
             }
             catch (Exception ex)
@@ -207,7 +207,7 @@ namespace App1.View
                 if (result == ContentDialogResult.Primary)
                 {
                     SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                    await SongsPageViewModel.uploadNewSongVersionAsync(song, title.Text, description.Text, compo, mix, mastering);
+                    await SongsPageViewModel.UploadNewSongVersionAsync(song, title.Text, description.Text, compo, mix, mastering);
                     await displayContentDialog($"New Version of '{song.Title}' Uploaded");
                 }
             }
@@ -230,7 +230,7 @@ namespace App1.View
             try
             {
                 SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                await SongsPageViewModel.openSongAsync(song);
+                await SongsPageViewModel.OpenSongAsync(song);
             }
             catch (Exception ex)
             {
@@ -243,7 +243,7 @@ namespace App1.View
             try
             {
                 SongVersioned song = (sender as Button).DataContext as SongVersioned;
-                await SongsPageViewModel.revertSongAsync(song);
+                await SongsPageViewModel.RevertSongAsync(song);
                 await displayContentDialog($"'{song.Title}' Reverted");
             }
             catch (Exception ex)
