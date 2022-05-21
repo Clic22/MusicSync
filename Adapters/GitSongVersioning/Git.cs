@@ -12,26 +12,26 @@ namespace GitVersionTool
             fileManager = fileMnager;
         }
 
-        public void init(string repoPath, string repoName)
+        public void Init(string repoPath, string gitServerUrl, string repoName)
         {
             User user = saver.savedUser();
             Repository.Init(repoPath);
             var repo = new Repository(repoPath);
             var bandNameFormatedForUrl = user.BandName.Replace(" ", "-");
             var repoNameFormatedForUrl = repoName.ToLower().Replace(" ", "-").Replace("(", null).Replace(")", null);
-            string url = $"https://gitlab.com/{ bandNameFormatedForUrl }/{ repoNameFormatedForUrl }.git";
+            string url = $"{gitServerUrl}/{ bandNameFormatedForUrl }/{ repoNameFormatedForUrl }.git";
             Remote remote = repo.Network.Remotes.Add("origin", url);
             repo.Branches.Update(repo.Head,
                 b => b.Remote = remote.Name,
                 b => b.UpstreamBranch = repo.Head.CanonicalName);
         }
 
-        public bool initiated(string repoPath)
+        public bool Initiated(string repoPath)
         {
             return fileManager.DirectoryExists(repoPath + @".git");
         }
 
-        public void clone(string sharedLink, string downloadPath)
+        public void Clone(string sharedLink, string downloadPath)
         {
 
             User user = saver.savedUser();
@@ -40,7 +40,7 @@ namespace GitVersionTool
             Repository.Clone(sharedLink, downloadPath, options);
         }
 
-        public int? masterBranchIsBehindBy(string repoPath)
+        public int? MasterBranchIsBehindBy(string repoPath)
         {
             int? masterBranchIsBehindBy = 0;
             using (var repo = new Repository(repoPath))
@@ -58,7 +58,7 @@ namespace GitVersionTool
             return masterBranchIsBehindBy;
         }
 
-        public void addAllFiles(string repoPath)
+        public void AddAllFiles(string repoPath)
         {
             using (var repo = new Repository(repoPath))
             {
@@ -66,7 +66,7 @@ namespace GitVersionTool
             }
         }
 
-        public void add(string repoPath, string file)
+        public void Add(string repoPath, string file)
         {
             using (var repo = new Repository(repoPath))
             {
@@ -74,7 +74,7 @@ namespace GitVersionTool
             }
         }
 
-        public void commit(string repoPath, string title, string description)
+        public void Commit(string repoPath, string title, string description)
         {
             User user = saver.savedUser();
             using (var repo = new Repository(repoPath))
@@ -94,7 +94,7 @@ namespace GitVersionTool
 
         }
 
-        public void push(string repoPath)
+        public void Push(string repoPath)
         {
             User user = saver.savedUser();
             using (var repo = new Repository(repoPath))
@@ -107,7 +107,7 @@ namespace GitVersionTool
             }
         }
 
-        public void pull(string repoPath)
+        public void Pull(string repoPath)
         {
             User user = saver.savedUser();
             using (var repo = new Repository(repoPath))
@@ -123,7 +123,7 @@ namespace GitVersionTool
             }
         }
 
-        public void resetMasterHard(string repoPath)
+        public void ResetMasterHard(string repoPath)
         {
             using (var repo = new Repository(repoPath))
             {
@@ -133,7 +133,7 @@ namespace GitVersionTool
 
         }
 
-        public void tag(string repoPath, string tag)
+        public void Tag(string repoPath, string tag)
         {
             User user = saver.savedUser();
             using (var repo = new Repository(repoPath))
@@ -147,14 +147,14 @@ namespace GitVersionTool
             }
         }
 
-        public GitTag lastLocalTag(string repoPath)
+        public GitTag LastLocalTag(string repoPath)
         {
-            List<GitTag> tags = localTags(repoPath);
+            List<GitTag> tags = LocalTags(repoPath);
             var lastTag = tags.Last();
             return lastTag;
         }
 
-        public List<GitTag> localTags(string repoPath)
+        public List<GitTag> LocalTags(string repoPath)
         {
             List<GitTag> gitTags = new List<GitTag>();
             using (var repo = new Repository(repoPath))
@@ -170,7 +170,7 @@ namespace GitVersionTool
             return gitTags;
         }
 
-        public List<GitTag> remoteTags(string repoPath)
+        public List<GitTag> RemoteTags(string repoPath)
         {
             List<GitTag> gitTags = new List<GitTag>();
             using (var repo = new Repository(repoPath))
@@ -190,7 +190,7 @@ namespace GitVersionTool
             return gitTags;
         }
 
-        public string remoteUrl(string repoPath)
+        public string RemoteUrl(string repoPath)
         {
             string remoteURL = string.Empty;
             using (var repo = new Repository(repoPath))

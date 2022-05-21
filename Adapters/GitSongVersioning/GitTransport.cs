@@ -5,16 +5,16 @@ namespace GitVersionTool
 {
     public class GitTransport : ITransport
     {
-        public GitTransport(string GitServerUrl, ISaver Saver, IFileManager FileManager) 
+        public GitTransport(string gitServerUrl, ISaver saver, IFileManager fileManager) 
         {
-            gitServerUrl = GitServerUrl;
-            saver = Saver;
-            git = new Git(Saver, FileManager);
+            GitServerUrl = gitServerUrl;
+            _saver = saver;
+            _git = new Git(saver, fileManager);
         }
 
         public void Init(string songMusicSyncPath, string name)
         {
-            git.init(songMusicSyncPath, name);
+            _git.Init(songMusicSyncPath, GitServerUrl, name);
         }
 
         public async Task InitAsync(string songMusicSyncPath, string sharedLink)
@@ -22,22 +22,22 @@ namespace GitVersionTool
             
             await Task.Run(() =>
             {
-                git.clone(sharedLink, songMusicSyncPath);
+                _git.Clone(sharedLink, songMusicSyncPath);
             });
         }
 
         public bool Initiated(string songMusicSyncPath)
         {
-            return git.initiated(songMusicSyncPath);
+            return _git.Initiated(songMusicSyncPath);
         }
 
         public async Task UploadAllFilesAsync(string songMusicSyncPath, string title, string description)
         {
             await Task.Run(() =>
             {
-                git.addAllFiles(songMusicSyncPath);
-                git.commit(songMusicSyncPath, title, description);
-                git.push(songMusicSyncPath);
+                _git.AddAllFiles(songMusicSyncPath);
+                _git.Commit(songMusicSyncPath, title, description);
+                _git.Push(songMusicSyncPath);
             });
         }
 
@@ -45,22 +45,22 @@ namespace GitVersionTool
         {
             await Task.Run(() =>
             {
-                git.add(songMusicSyncPath, file);
-                git.commit(songMusicSyncPath, title, string.Empty);
-                git.push(songMusicSyncPath);
+                _git.Add(songMusicSyncPath, file);
+                _git.Commit(songMusicSyncPath, title, string.Empty);
+                _git.Push(songMusicSyncPath);
             });
         }
 
         public void Tag(string songMusicSyncPath, string versionNumber)
         {
-            git.tag(songMusicSyncPath, versionNumber);
+            _git.Tag(songMusicSyncPath, versionNumber);
         }
 
         public async Task<bool> UpdatesAvailbleAsync(string songMusicSyncPath)
         {
             return await Task.Run(() =>
             {
-                int? behind = git.masterBranchIsBehindBy(songMusicSyncPath);
+                int? behind = _git.MasterBranchIsBehindBy(songMusicSyncPath);
                 if (behind != null)
                 {
                     if (behind != 0)
@@ -83,7 +83,7 @@ namespace GitVersionTool
         {
             await Task.Run(() =>
             {
-                git.pull(songMusicSyncPath);
+                _git.Pull(songMusicSyncPath);
             });
         }
 
@@ -91,7 +91,7 @@ namespace GitVersionTool
         {
             await Task.Run(() =>
             {
-                git.resetMasterHard(songMusicSyncPath);
+                _git.ResetMasterHard(songMusicSyncPath);
             });
         }
 
@@ -100,7 +100,7 @@ namespace GitVersionTool
             return await Task.Run(() =>
             {
                 SongVersion currentVersion = new SongVersion();
-                GitTag lastTag = git.lastLocalTag(songMusicSyncPath);
+                GitTag lastTag = _git.LastLocalTag(songMusicSyncPath);
                 TagToSongVersion(lastTag, currentVersion);
                 return currentVersion;
             });
@@ -111,7 +111,7 @@ namespace GitVersionTool
             return await Task.Run(() =>
             {
                 List<SongVersion> versions = new List<SongVersion>();
-                var tags = git.localTags(songMusicSyncPath);
+                var tags = _git.LocalTags(songMusicSyncPath);
                 TagsToSongVersions(tags, versions);
                 return versions;
             });
@@ -122,7 +122,7 @@ namespace GitVersionTool
             return await Task.Run(() =>
             {
                 List<SongVersion> upcomingVersions = new List<SongVersion>();
-                var tags = git.remoteTags(songMusicSyncPath);
+                var tags = _git.RemoteTags(songMusicSyncPath);
                 TagsToSongVersions(tags, upcomingVersions);
                 return upcomingVersions;
             });
@@ -130,14 +130,14 @@ namespace GitVersionTool
 
         public string ShareLink(string songMusicSyncPath)
         {
-            return git.remoteUrl(songMusicSyncPath);
+            return _git.RemoteUrl(songMusicSyncPath);
         }
 
         public string GuidFromSharedLink(string sharedLink)
         {
-            User user = saver.savedUser();
+            User user = _saver.savedUser();
             string bandNameFormatedForUrl = user.BandName.Replace(" ", "-");
-            string UrlStart = $"{gitServerUrl}/{bandNameFormatedForUrl}/";
+            string UrlStart = $"{GitServerUrl}/{bandNameFormatedForUrl}/";
             string UrlEnd = ".git";
             int startPos = sharedLink.LastIndexOf(UrlStart) + UrlStart.Length;
             int length = sharedLink.IndexOf(UrlEnd) - startPos;
@@ -163,8 +163,8 @@ namespace GitVersionTool
             version.Date = lastTag.Date;
         }
 
-        public readonly string gitServerUrl;
-        private readonly ISaver saver;
-        private readonly Git git;
+        public readonly string GitServerUrl;
+        private readonly ISaver _saver;
+        private readonly Git _git;
     }
 }

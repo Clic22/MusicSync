@@ -176,7 +176,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             SongVersioned expectedSong = new SongVersioned(title);
             Assert.Equal("Error", viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).Status);
             Assert.False(viewModel.SongsVersioned.First(m => m.Equals(expectedSong)).IsRefreshingSong);
-            
+
         }
 
         [Theory]
@@ -210,7 +210,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Assert.False(viewModel.IsAddingSong);
             //We expect to have called the await addLocalSongAsync method in the songsManager
             songsManagerMock.Verify(m => m.addLocalSongAsync(title, file, localPath + '\\'), Times.Once());
-            Action action = async () => await  viewModel.addLocalSongAsync(title, file, localPath);
+            Action action = async () => await viewModel.addLocalSongAsync(title, file, localPath);
             Assert.PropertyChanged(viewModel, "IsAddingSong", action);
         }
 
@@ -225,7 +225,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
 
             //Add a new song
-            Assert.ThrowsAsync<Exception>(() => viewModel. addLocalSongAsync(title, file, localPath));
+            Assert.ThrowsAsync<Exception>(() => viewModel.addLocalSongAsync(title, file, localPath));
 
             //We expect a songVersioned created with the title
             SongVersioned expectedSongVersioned = new SongVersioned(title);
@@ -330,7 +330,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             //Add a new song
             Assert.ThrowsAny<Exception>(() => viewModel.shareSong(songVersioned));
 
-            Assert.Equal("Error", songVersioned.Status);     
+            Assert.Equal("Error", songVersioned.Status);
             //We expect to have called the addSharedSongAsync method in the songsManager
             songsManagerMock.Verify(m => m.shareSong(song), Times.Once());
         }
@@ -393,7 +393,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             SongVersioned expectedSongToBeUpdated = new SongVersioned(title);
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
             await viewModel.addLocalSongAsync(title, file, localPath);
-            
+
 
             await viewModel.updateSongAsync(expectedSongToBeUpdated);
 
@@ -664,7 +664,7 @@ namespace ViewModelsTests.SongsPageViewModelTest
             Mock<ISaver> saverMock = new Mock<ISaver>();
             List<Song> songsList = new List<Song>();
             songsList.Add(song);
-            
+
             string newTitle = "new Title";
             Song newSong = new Song(newTitle, file, localPath);
             List<Song> songsList2 = new List<Song>();
@@ -673,11 +673,11 @@ namespace ViewModelsTests.SongsPageViewModelTest
             SongsStorage songs = new SongsStorage(saverMock.Object);
             Mock<ISongsManager> songsManagerMock = new Mock<ISongsManager>();
             songsManagerMock.Setup(m => m.SongList).Returns(songs);
-            
+
             SongsPageViewModel viewModel = new SongsPageViewModel(songsManagerMock.Object);
 
             SongVersioned songVersioned = new SongVersioned(title);
-            
+
             viewModel.renameSong(songVersioned, newTitle);
 
             Assert.Equal(newTitle, songVersioned.Title);
