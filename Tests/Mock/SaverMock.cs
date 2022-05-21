@@ -12,12 +12,12 @@ namespace App1Tests.Mock
             MusicSyncFolder = string.Empty;
         }
 
-        public User savedUser()
+        public User SavedUser()
         {
             return User;
         }
 
-        public void saveSong(Song song)
+        public void SaveSong(Song song)
         {
             Songs.Add(song);
         }

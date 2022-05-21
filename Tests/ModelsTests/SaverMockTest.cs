@@ -20,7 +20,7 @@ namespace ModelsTests.SaverMockTest
 
             ISaver saver = new SaverMock();
             saver.saveSettings(expectedUser, expectedMusicSyncFolder);
-            User userSaved = saver.savedUser();
+            User userSaved = saver.SavedUser();
 
             Assert.Equal(expectedUser, userSaved);
             string musicSyncFolderSaved = saver.savedMusicSyncFolder();
@@ -36,7 +36,7 @@ namespace ModelsTests.SaverMockTest
             expectedSong.LocalPath = @"C:\Documents\Test\White Road";
 
             ISaver saver = new SaverMock();
-            saver.saveSong(expectedSong);
+            saver.SaveSong(expectedSong);
             List<Song> Songs = saver.savedSongs();
 
             Assert.Contains(expectedSong, Songs);

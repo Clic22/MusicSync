@@ -22,8 +22,8 @@ namespace ModelsTests.SongStorageTest
             expected_file = "file2";
             Song song2 = new Song(expected_title, expected_file, expected_localPath);
 
-            songsStorage.addNewSong(song);
-            songsStorage.addNewSong(song2);
+            songsStorage.AddNewSong(song);
+            songsStorage.AddNewSong(song2);
             Assert.Contains(song, songsStorage);
             Assert.Contains(song2, songsStorage);
 
@@ -46,7 +46,7 @@ namespace ModelsTests.SongStorageTest
             string expected_file = "file";
             Song song = new Song(expected_title, expected_file, expected_localPath);
 
-            songsStorage.addNewSong(song);
+            songsStorage.AddNewSong(song);
             Assert.Contains(song, songsStorage);
 
             List<Song> savedSongs = saver.savedSongs();
@@ -63,9 +63,9 @@ namespace ModelsTests.SongStorageTest
             string expected_file = "file";
             Song song = new Song(expected_title, expected_file, expected_localPath);
 
-            songsStorage.addNewSong(song);
+            songsStorage.AddNewSong(song);
 
-            songsStorage.deleteSong(song);
+            songsStorage.DeleteSong(song);
             Assert.DoesNotContain(song, songsStorage);
             List<Song> savedSongs = saver.savedSongs();
             Assert.DoesNotContain(song, savedSongs);

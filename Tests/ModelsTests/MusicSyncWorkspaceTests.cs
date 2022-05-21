@@ -19,7 +19,7 @@ namespace ModelsTests.MusicSyncWorkspaceTest
             string BandName = "Clic5456";
             string BandEmail = "testdklsjfhg@yahoo.com";
             User user = new User(BandName, BandPassword, Username, BandEmail);
-            musicSyncPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
+            musicSyncPath = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\MusicSyncWorkspaceTest\";
 
             transportMock = new Mock<ITransport>();
             fileManager = new FileManager();

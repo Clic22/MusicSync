@@ -135,7 +135,7 @@ namespace GitVersionTool
 
         public string GuidFromSharedLink(string sharedLink)
         {
-            User user = _saver.savedUser();
+            User user = _saver.SavedUser();
             string bandNameFormatedForUrl = user.BandName.Replace(" ", "-");
             string UrlStart = $"{GitServerUrl}/{bandNameFormatedForUrl}/";
             string UrlEnd = ".git";

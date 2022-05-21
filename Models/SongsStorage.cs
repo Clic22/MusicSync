@@ -13,14 +13,14 @@ namespace App1.Models
             }
         }
 
-        public void addNewSong(Song newSong)
+        public void AddNewSong(Song newSong)
         {
             this.Add(newSong);
-            Saver.saveSong(newSong);
+            Saver.SaveSong(newSong);
 
         }
 
-        public void deleteSong(Song song)
+        public void DeleteSong(Song song)
         {
             this.Remove(song);
             Saver.unsaveSong(song);

@@ -27,7 +27,7 @@ namespace WinUIAppTests.FileManagerTests
             string expectedFileName = fileName + extension;
 
             IFileManager fileManager = new FileManager();
-            fileName = await fileManager.findFileNameBasedOnExtensionAsync(directoryPath, extension);
+            fileName = await fileManager.FindFileNameBasedOnExtensionAsync(directoryPath, extension);
 
             Assert.Equal(expectedFileName, fileName);
 

@@ -14,7 +14,7 @@ namespace GitVersionTool
 
         public void Init(string repoPath, string gitServerUrl, string repoName)
         {
-            User user = saver.savedUser();
+            User user = saver.SavedUser();
             Repository.Init(repoPath);
             var repo = new Repository(repoPath);
             var bandNameFormatedForUrl = user.BandName.Replace(" ", "-");
@@ -34,7 +34,7 @@ namespace GitVersionTool
         public void Clone(string sharedLink, string downloadPath)
         {
 
-            User user = saver.savedUser();
+            User user = saver.SavedUser();
             var options = new CloneOptions();
             options.CredentialsProvider = (_url, _user, _cred) => new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
             Repository.Clone(sharedLink, downloadPath, options);
@@ -48,7 +48,7 @@ namespace GitVersionTool
                 string logMessage = string.Empty;
                 var remote = repo.Network.Remotes["origin"];
                 var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
-                User user = saver.savedUser();
+                User user = saver.SavedUser();
                 FetchOptions options = new FetchOptions();
                 options.CredentialsProvider = (_url, _user, _cred) =>
                      new UsernamePasswordCredentials { Username = user.BandEmail, Password = user.BandPassword, };
@@ -76,7 +76,7 @@ namespace GitVersionTool
 
         public void Commit(string repoPath, string title, string description)
         {
-            User user = saver.savedUser();
+            User user = saver.SavedUser();
             using (var repo = new Repository(repoPath))
             {
                 var signature = new Signature(
@@ -96,7 +96,7 @@ namespace GitVersionTool
 
         public void Push(string repoPath)
         {
-            User user = saver.savedUser();
+            User user = saver.SavedUser();
             using (var repo = new Repository(repoPath))
             {
                 Remote remote = repo.Network.Remotes["origin"];
@@ -109,7 +109,7 @@ namespace GitVersionTool
 
         public void Pull(string repoPath)
         {
-            User user = saver.savedUser();
+            User user = saver.SavedUser();
             using (var repo = new Repository(repoPath))
             {
                 PullOptions options = new PullOptions();
@@ -135,7 +135,7 @@ namespace GitVersionTool
 
         public void Tag(string repoPath, string tag)
         {
-            User user = saver.savedUser();
+            User user = saver.SavedUser();
             using (var repo = new Repository(repoPath))
             {
                 Remote remote = repo.Network.Remotes["origin"];

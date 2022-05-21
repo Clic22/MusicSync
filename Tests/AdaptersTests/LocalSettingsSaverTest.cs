@@ -64,7 +64,7 @@ namespace WinUIAppTests.LocalSettingsSaverTest
 
             saver.saveSettings(user1, expectedMusicSyncFolder);
 
-            User userSaved = saver.savedUser();
+            User userSaved = saver.SavedUser();
             Assert.AreEqual(user1, userSaved);
             string musicSyncFolderSaved = saver.savedMusicSyncFolder();
             Assert.AreEqual(expectedMusicSyncFolder, musicSyncFolderSaved);
@@ -77,7 +77,7 @@ namespace WinUIAppTests.LocalSettingsSaverTest
 
             saver.saveSettings(user2, expectedMusicSyncFolder);
 
-            User userSaved = saver.savedUser();
+            User userSaved = saver.SavedUser();
             Assert.AreEqual(user2, userSaved);
             string musicSyncFolderSaved = saver.savedMusicSyncFolder();
             Assert.AreEqual(expectedMusicSyncFolder, musicSyncFolderSaved);
@@ -87,7 +87,7 @@ namespace WinUIAppTests.LocalSettingsSaverTest
         public void SaveSongTest()
         {
             Song songToBeSaved = songsToBeSaved[0];
-            saver.saveSong(songToBeSaved);
+            saver.SaveSong(songToBeSaved);
 
             List<Song> savedSongs = saver.savedSongs();
 
@@ -99,7 +99,7 @@ namespace WinUIAppTests.LocalSettingsSaverTest
         {
             foreach (Song song in songsToBeSaved)
             {
-                saver.saveSong(song);
+                saver.SaveSong(song);
             }
 
             List<Song> savedSongs = saver.savedSongs();
@@ -115,7 +115,7 @@ namespace WinUIAppTests.LocalSettingsSaverTest
         {
             foreach (Song song in songsToBeSaved)
             {
-                saver.saveSong(song);
+                saver.SaveSong(song);
             }
 
             Song songToBeUnsaved = songsToBeSaved[5];

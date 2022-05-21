@@ -27,13 +27,13 @@ namespace ViewModelsTests.SettingsPageViewModelTests
             UserViewModel expectedUserViewModel = new UserViewModel(user);
             Mock<ISaver> saverMock = new Mock<ISaver>();
             saverMock.Setup(m => m.savedMusicSyncFolder()).Returns(expectedMusicSyncFolder);
-            saverMock.Setup(m => m.savedUser()).Returns(user);
+            saverMock.Setup(m => m.SavedUser()).Returns(user);
 
             IFileManager fileManager = new FileManager();
             SettingsPageViewModel viewModel = new SettingsPageViewModel(saverMock.Object, fileManager);
 
             saverMock.Verify(m => m.savedMusicSyncFolder(), Times.Once());
-            saverMock.Verify(m => m.savedUser(), Times.Once());
+            saverMock.Verify(m => m.SavedUser(), Times.Once());
             Assert.Equal(expectedUserViewModel, viewModel.User);
             Assert.Equal(expectedMusicSyncFolder, viewModel.MusicSyncFolder);
         }
@@ -51,7 +51,7 @@ namespace ViewModelsTests.SettingsPageViewModelTests
             UserViewModel expectedUserViewModel = new UserViewModel(user);
             Mock<ISaver> saverMock = new Mock<ISaver>();
             saverMock.Setup(m => m.savedMusicSyncFolder()).Returns(expectedMusicSyncFolder);
-            saverMock.Setup(m => m.savedUser()).Returns(user);
+            saverMock.Setup(m => m.SavedUser()).Returns(user);
             IFileManager fileManager = new FileManager();
             SettingsPageViewModel viewModel = new SettingsPageViewModel(saverMock.Object, fileManager);
 

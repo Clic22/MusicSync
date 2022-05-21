@@ -34,19 +34,23 @@ namespace ModelsTests.LockerTest
 
             transport = new Mock<ITransport>();
             saver = new SaverMock();
-            string testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
+            string testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\LockerTest\";
             saver.saveSettings(user1, testDirectory);
             fileManager = new FileManager();
             workspace = new MusicSyncWorkspace(saver, fileManager);
             version = new Versioning(saver, fileManager, transport.Object);
-            locker = new Locker(saver, fileManager, version);
+            locker = new Locker(fileManager, version);
         }
 
         public void Dispose()
         {
-            if (song.LocalPath != null)
+            if (Directory.Exists(song.LocalPath))
             {
                 Directory.Delete(song.LocalPath, true);
+            }
+            if (Directory.Exists(saver.savedMusicSyncFolder()))
+            {
+                Directory.Delete(saver.savedMusicSyncFolder(), true);
             }
         }
 
@@ -67,24 +71,24 @@ namespace ModelsTests.LockerTest
         [Fact]
         public async Task LockSongTest()
         {
-            bool result = await locker.lockSongAsync(song, user1);
+            bool result = await locker.LockSongAsync(song, user1);
 
             Assert.True(result);
-            Assert.True(locker.isLocked(song));
+            Assert.True(locker.IsLocked(song));
             Assert.True(locker.isLockedByUser(song, user1));
         }
 
         [Fact]
         public async Task UnlockSongTest()
         {
-            await locker.lockSongAsync(song, user1);
-            Assert.True(locker.isLocked(song));
+            await locker.LockSongAsync(song, user1);
+            Assert.True(locker.IsLocked(song));
             Assert.True(locker.isLockedByUser(song, user1));
 
-            bool result = await locker.unlockSongAsync(song, user1);
+            bool result = await locker.UnlockSongAsync(song, user1);
 
             Assert.True(result);
-            Assert.False(locker.isLocked(song));
+            Assert.False(locker.IsLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
         }
 
@@ -92,13 +96,13 @@ namespace ModelsTests.LockerTest
         public async Task UnlockSongUnlockedTest()
         {
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);
-            Assert.False(locker.isLocked(song));
+            Assert.False(locker.IsLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
 
-            bool result = await locker.unlockSongAsync(song, user1);
+            bool result = await locker.UnlockSongAsync(song, user1);
 
             Assert.True(result);
-            Assert.False(locker.isLocked(song));
+            Assert.False(locker.IsLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
             
         }
@@ -107,18 +111,18 @@ namespace ModelsTests.LockerTest
         public async Task TryUnlockSongWithDifferentUserTest()
         {
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);
-            Assert.False(locker.isLocked(song));
+            Assert.False(locker.IsLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
 
-            bool lockResult = await locker.lockSongAsync(song, user1);
+            bool lockResult = await locker.LockSongAsync(song, user1);
             Assert.True(lockResult);
             Assert.True(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
 
-            bool unlockResult = await locker.unlockSongAsync(song, user2);
+            bool unlockResult = await locker.UnlockSongAsync(song, user2);
             Assert.False(unlockResult);
-            Assert.True(locker.isLocked(song));
+            Assert.True(locker.IsLocked(song));
             Assert.True(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
         }
@@ -127,19 +131,19 @@ namespace ModelsTests.LockerTest
         public async Task TryLockSongAlreadyLockedTest()
         {
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);
-            Assert.False(locker.isLocked(song));
+            Assert.False(locker.IsLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
 
-            bool lockResult = await locker.lockSongAsync(song, user1);
+            bool lockResult = await locker.LockSongAsync(song, user1);
             Assert.True(lockResult);
-            Assert.True(locker.isLocked(song));
+            Assert.True(locker.IsLocked(song));
             Assert.True(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
 
-            lockResult = await locker.lockSongAsync(song, user2);
+            lockResult = await locker.LockSongAsync(song, user2);
             Assert.False(lockResult);
-            Assert.True(locker.isLocked(song));
+            Assert.True(locker.IsLocked(song));
             Assert.True(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
         }
@@ -148,19 +152,19 @@ namespace ModelsTests.LockerTest
         public async Task TryLockSongAlreadyLockedByUserTest()
         {
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);
-            Assert.False(locker.isLocked(song));
+            Assert.False(locker.IsLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
 
-            bool lockResult = await locker.lockSongAsync(song, user1);
+            bool lockResult = await locker.LockSongAsync(song, user1);
             Assert.True(lockResult);
-            Assert.True(locker.isLocked(song));
+            Assert.True(locker.IsLocked(song));
             Assert.True(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
 
-            lockResult = await locker.lockSongAsync(song, user1);
+            lockResult = await locker.LockSongAsync(song, user1);
             Assert.True(lockResult);
-            Assert.True(locker.isLocked(song));
+            Assert.True(locker.IsLocked(song));
             Assert.True(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
         }
@@ -169,7 +173,7 @@ namespace ModelsTests.LockerTest
         public async Task TryLockSongWithWrongCredentialTest()
         {
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);
-            Assert.False(locker.isLocked(song));
+            Assert.False(locker.IsLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
 
@@ -177,8 +181,8 @@ namespace ModelsTests.LockerTest
             var SongWorkspace = workspace.GetWorkspaceForSong(song);
             transport.Setup(m => m.UploadFileAsync(SongWorkspace, ".lock", "lock")).Throws(new Exception());
 
-            await Assert.ThrowsAnyAsync<Exception>(async () => await locker.lockSongAsync(song, user1));
-            Assert.False(locker.isLocked(song));
+            await Assert.ThrowsAnyAsync<Exception>(async () => await locker.LockSongAsync(song, user1));
+            Assert.False(locker.IsLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
             
@@ -188,22 +192,22 @@ namespace ModelsTests.LockerTest
         public async Task TryUnLockSongWithWrongCredentialTest()
         {
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);
-            Assert.False(locker.isLocked(song));
+            Assert.False(locker.IsLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
 
-            bool lockResult = await locker.lockSongAsync(song, user1);
+            bool lockResult = await locker.LockSongAsync(song, user1);
 
             Assert.True(lockResult);
-            Assert.True(locker.isLocked(song));
+            Assert.True(locker.IsLocked(song));
             Assert.True(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
 
             user1.BandPassword = "WrongPassword";
             transport.Setup(m => m.UploadFileAsync(workspace.GetWorkspaceForSong(song), ".lock", "unlock")).Throws(new Exception());
 
-            await Assert.ThrowsAnyAsync<Exception>(async () => await locker.unlockSongAsync(song, user1));
-            Assert.False(locker.isLocked(song));
+            await Assert.ThrowsAnyAsync<Exception>(async () => await locker.UnlockSongAsync(song, user1));
+            Assert.False(locker.IsLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
             
@@ -213,11 +217,11 @@ namespace ModelsTests.LockerTest
         public void nobodyLockTheSongTest()
         {
             Assert.Equal(SongStatus.State.upToDate, song.Status.state);
-            Assert.False(locker.isLocked(song));
+            Assert.False(locker.IsLocked(song));
             Assert.False(locker.isLockedByUser(song, user1));
             Assert.False(locker.isLockedByUser(song, user2));
 
-            string whoLocked = locker.whoLocked(song);
+            string whoLocked = locker.WhoLocked(song);
             Assert.Equal(string.Empty,whoLocked);
         }
     }

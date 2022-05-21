@@ -4,24 +4,24 @@ namespace App1.Models
 {
     public class Locker
     {
-        public Locker(ISaver Saver, IFileManager FileManager, Versioning version)
+        public Locker(IFileManager fileManager, Versioning version)
         {
-            this.version = version;
-            this.FileManager = FileManager;
+            _version = version;
+            _fileManager = fileManager;
         }
 
-        public async Task<bool> lockSongAsync(Song song, User user)
+        public async Task<bool> LockSongAsync(Song song, User user)
         {
             if(isLockedByUser(song,user))
             {
                 return true;
             }
-            else if (!lockFileExist(song))
+            else if (!LockFileExist(song))
             {
-                createLockFile(song, user);
+                CreateLockFile(song, user);
                 try
                 {
-                    await version.uploadFileForSongAsync(song, @".lock", "lock");
+                    await _version.UploadFileForSongAsync(song, @".lock", "lock");
                 }
                 catch
                 {
@@ -33,14 +33,14 @@ namespace App1.Models
             return false;
         }
 
-        public async Task<bool> unlockSongAsync(Song song, User user)
+        public async Task<bool> UnlockSongAsync(Song song, User user)
         {
-            if (lockFileExist(song))
+            if (LockFileExist(song))
             {
                 if (isLockedByUser(song, user))
                 {
                     deleteLockFile(song);
-                    await version.uploadFileForSongAsync(song, @".lock", "unlock");
+                    await _version.UploadFileForSongAsync(song, @".lock", "unlock");
                     return true;
                 }
                 return false;
@@ -51,9 +51,9 @@ namespace App1.Models
             }
         }
 
-        public bool isLocked(Song song)
+        public bool IsLocked(Song song)
         {
-            if (lockFileExist(song))
+            if (LockFileExist(song))
             {
                 return true;
             }
@@ -62,49 +62,49 @@ namespace App1.Models
 
         public bool isLockedByUser(Song song, User user)
         {
-            if (lockFileExist(song) && songLockedByUser(song, user))
+            if (LockFileExist(song) && songLockedByUser(song, user))
             {
                 return true;
             }
             return false;
         }
 
-        public string whoLocked(Song song)
+        public string WhoLocked(Song song)
         {
-            if (lockFileExist(song))
+            if (LockFileExist(song))
             {
-                return FileManager.ReadFile(@".lock", song.LocalPath);
+                return _fileManager.ReadFile(@".lock", song.LocalPath);
             }
             return String.Empty;
         }
 
         private bool songLockedByUser(Song song, User user)
         {
-            if (whoLocked(song) == user.Username)
+            if (WhoLocked(song) == user.Username)
             {
                 return true;
             }
             return false;
         }
 
-        private void createLockFile(Song song, User user)
+        private void CreateLockFile(Song song, User user)
         {
             string fileName = @".lock";
-            FileManager.CreateFile(fileName, song.LocalPath);
-            FileManager.WriteFile(user.Username, fileName, song.LocalPath);
+            _fileManager.CreateFile(fileName, song.LocalPath);
+            _fileManager.WriteFile(user.Username, fileName, song.LocalPath);
         }
 
         private void deleteLockFile(Song song)
         {
-            FileManager.DeleteFile(".lock", song.LocalPath);
+            _fileManager.DeleteFile(".lock", song.LocalPath);
         }
 
-        private bool lockFileExist(Song song)
+        private bool LockFileExist(Song song)
         {
-            return FileManager.FileExists(@".lock",song.LocalPath);
+            return _fileManager.FileExists(@".lock",song.LocalPath);
         }
 
-        private readonly IFileManager FileManager;
-        private readonly Versioning version;
+        private readonly IFileManager _fileManager;
+        private readonly Versioning _version;
     }
 }

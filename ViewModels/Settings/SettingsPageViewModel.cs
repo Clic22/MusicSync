@@ -10,7 +10,7 @@ namespace App1.ViewModels
         {
             this.saver = saver;
             this.fileManager = fileManager;
-            User = new UserViewModel(saver.savedUser());
+            User = new UserViewModel(saver.SavedUser());
             musicSyncFolder_ = saver.savedMusicSyncFolder();
         }
 

@@ -22,7 +22,7 @@ namespace WinUIApp
             saveMusicSyncFolder(musicSyncFolder);
         }
 
-        public User savedUser()
+        public User SavedUser()
         {
             User user = new User();
             string? BandName = UserContainer.Values["BandName"] as string;
@@ -64,7 +64,7 @@ namespace WinUIApp
             return user;
         }
 
-        public void saveSong(Song song)
+        public void SaveSong(Song song)
         {
             Windows.Storage.ApplicationDataCompositeValue composite = new Windows.Storage.ApplicationDataCompositeValue();
             composite["title"] = song.Title;

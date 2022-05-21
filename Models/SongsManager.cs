@@ -5,81 +5,80 @@ namespace App1.Models
 {
     public class SongsManager : ISongsManager
     {
-        public SongsManager(ITransport NewTransport, ISaver NewSaver, IFileManager NewFileManager)
+        public SongsManager(ITransport transport, ISaver saver, IFileManager fileManager)
         {
-            Saver = NewSaver;
-            FileManager = NewFileManager;
-            Workspace = new MusicSyncWorkspace(NewSaver, NewFileManager);
-            VersionTool = new Versioning(Saver, FileManager, NewTransport);
-            SongList = new SongsStorage(Saver);
-            Locker = new Locker(Saver, FileManager, VersionTool);
+            _saver = saver;
+            SongList = new SongsStorage(_saver);
+            _fileManager = fileManager;
+            _versionTool = new Versioning(_saver, _fileManager, transport);
+            _locker = new Locker(_fileManager, _versionTool);
         }
 
-        public async Task updateSongAsync(Song song)
+        public async Task UpdateSongAsync(Song song)
         {
-            if (await VersionTool.updatesAvailableForSongAsync(song))
+            if (await _versionTool.UpdatesAvailableForSongAsync(song))
             {
-                await VersionTool.updateSongAsync(song);
+                await _versionTool.UpdateSongAsync(song);
             }
-            await refreshSongStatusAsync(song);
+            await RefreshSongStatusAsync(song);
         }
 
-        public async Task uploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
+        public async Task UploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering)
         {
-            if (await Locker.unlockSongAsync(song, Saver.savedUser()))
+            if (await _locker.UnlockSongAsync(song, _saver.SavedUser()))
             {
-                string versionNumber = await VersionTool.newVersionNumberAsync(song, compo, mix, mastering);
-                await VersionTool.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+                string versionNumber = await _versionTool.NewVersionNumberAsync(song, compo, mix, mastering);
+                await _versionTool.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
             }
         }
 
-        public async Task addLocalSongAsync(string songTitle, string songFile, string songLocalPath)
+        public async Task AddLocalSongAsync(string songTitle, string songFile, string songLocalPath)
         {
             string songGuid = Guid.NewGuid().ToString();
-            Song song = addSong(songTitle, songFile, songLocalPath, songGuid);
-            await VersionTool.uploadSongAsync(song, "First Upload", String.Empty, "1.0.0");
+            Song song = AddSong(songTitle, songFile, songLocalPath, songGuid);
+            await _versionTool.UploadSongAsync(song, "First Upload", String.Empty, "1.0.0");
         }
 
-        public async Task addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
+        public async Task AddSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath)
         {
-            string songPath = FileManager.FormatPath(downloadLocalPath + songTitle);
-            await VersionTool.downloadSharedSongAsync(sharedLink, songPath);
-            string songGuid = VersionTool.GuidFromSharedLink(sharedLink);
-            string? songFile = await FileManager.findFileNameBasedOnExtensionAsync(songPath, ".song");
+            string songPath = _fileManager.FormatPath(downloadLocalPath + songTitle);
+            await _versionTool.DownloadSharedSongAsync(sharedLink, songPath);
+            string songGuid = _versionTool.GuidFromSharedLink(sharedLink);
+            string? songFile = await _fileManager.FindFileNameBasedOnExtensionAsync(songPath, ".song");
             if (songFile != null)
             {
-                addSong(songTitle, songFile, songPath, songGuid);
+                AddSong(songTitle, songFile, songPath, songGuid);
             }
         }
 
-        public void renameSong(Song song, string newSongTitle)
+        public void RenameSong(Song song, string newSongTitle)
         {
                 string formerLocalPath = song.LocalPath;
-                string newLocalPath = FileManager.FormatPath(formerLocalPath.Replace(song.Title + '\\', "") + newSongTitle);
-                FileManager.RenameFolder(formerLocalPath, newLocalPath);
+                string newLocalPath = _fileManager.FormatPath(formerLocalPath.Replace(song.Title + '\\', "") + newSongTitle);
+                _fileManager.RenameFolder(formerLocalPath, newLocalPath);
                 song.LocalPath = newLocalPath;
                 song.Title = newSongTitle;
                 string formerFile = song.File;
                 string newFile = newSongTitle + ".song";
-                FileManager.RenameFile(formerFile, newFile, song.LocalPath);
+                _fileManager.RenameFile(formerFile, newFile, song.LocalPath);
                 song.File = newSongTitle + ".song";
-                Saver.saveSong(song);  
+                _saver.SaveSong(song);  
         }
 
-        public async Task deleteSongAsync(Song song)
+        public async Task DeleteSongAsync(Song song)
         {
-            await Locker.unlockSongAsync(song, Saver.savedUser());
-            SongList.deleteSong(song);
+            await _locker.UnlockSongAsync(song, _saver.SavedUser());
+            SongList.DeleteSong(song);
         }
 
-        public async Task openSongAsync(Song song)
+        public async Task OpenSongAsync(Song song)
         {
-            await updateSongAsync(song);
+            await UpdateSongAsync(song);
 
-            bool lockedByUser = await Locker.lockSongAsync(song, Saver.savedUser());
+            bool lockedByUser = await _locker.LockSongAsync(song, _saver.SavedUser());
             if (lockedByUser)
             {
-                openSongWithDAW(song);
+                OpenSongWithDAW(song);
             }
             else
             {
@@ -87,15 +86,15 @@ namespace App1.Models
             }
         }
 
-        public async Task revertSongAsync(Song song)
+        public async Task RevertSongAsync(Song song)
         {
-            if (await Locker.unlockSongAsync(song, Saver.savedUser()))
+            if (await _locker.UnlockSongAsync(song, _saver.SavedUser()))
             {
-                await VersionTool.revertSongAsync(song);
+                await _versionTool.RevertSongAsync(song);
             }
         }
 
-        public Song findSong(string songTitle)
+        public Song FindSong(string songTitle)
         {
             Song? song = SongList.Find(song => song.Title == songTitle);
             if (song != null)
@@ -108,36 +107,36 @@ namespace App1.Models
             }
         }
 
-        public async Task<SongVersion> currentVersionAsync(Song song)
+        public async Task<SongVersion> CurrentVersionAsync(Song song)
         {
-            return await VersionTool.currentVersionAsync(song);
+            return await _versionTool.CurrentVersionAsync(song);
         }
 
-        public async Task<List<SongVersion>> versionsAsync(Song song)
+        public async Task<List<SongVersion>> VersionsAsync(Song song)
         {
-            return await VersionTool.versionsAsync(song);
+            return await _versionTool.VersionsAsync(song);
         }
 
-        public async Task<List<SongVersion>> upcomingVersionsAsync(Song song)
+        public async Task<List<SongVersion>> UpcomingVersionsAsync(Song song)
         {
-            return await VersionTool.upcomingVersionsAsync(song);
+            return await _versionTool.UpcomingVersionsAsync(song);
         }
 
-        public string shareSong(Song song)
+        public string ShareSong(Song song)
         {
-            return VersionTool.shareSong(song);
+            return _versionTool.ShareSong(song);
         }
 
-        public async Task refreshSongStatusAsync(Song song)
+        public async Task RefreshSongStatusAsync(Song song)
         {
-            if (await VersionTool.updatesAvailableForSongAsync(song))
+            if (await _versionTool.UpdatesAvailableForSongAsync(song))
             {
                 song.Status.state = SongStatus.State.updatesAvailable;
             }
-            else if (Locker.isLocked(song))
+            else if (_locker.IsLocked(song))
             {
                 song.Status.state = SongStatus.State.locked;
-                song.Status.whoLocked = Locker.whoLocked(song);
+                song.Status.whoLocked = _locker.WhoLocked(song);
             }
             else
             {
@@ -145,14 +144,14 @@ namespace App1.Models
             }
         }
 
-        private Song addSong(string songTitle, string songFile, string songLocalPath, string songGuid)
+        private Song AddSong(string songTitle, string songFile, string songLocalPath, string songGuid)
         {
             Song song = new Song(songTitle, songFile, songLocalPath, songGuid);
-            SongList.addNewSong(song);
+            SongList.AddNewSong(song);
             return song;
         }
 
-        private static void openSongWithDAW(Song song)
+        private static void OpenSongWithDAW(Song song)
         {
             var p = new Process();
             p.StartInfo = new ProcessStartInfo(song.LocalPath + @"\" + song.File)
@@ -163,10 +162,9 @@ namespace App1.Models
         }
 
         public SongsStorage SongList { get; private set; }
-        private readonly Versioning VersionTool;
-        private readonly Locker Locker;
-        private readonly MusicSyncWorkspace Workspace;
-        private readonly ISaver Saver;
-        private readonly IFileManager FileManager;
+        private readonly Versioning _versionTool;
+        private readonly Locker _locker;
+        private readonly ISaver _saver;
+        private readonly IFileManager _fileManager;
     }
 }
