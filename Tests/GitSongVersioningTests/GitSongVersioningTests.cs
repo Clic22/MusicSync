@@ -29,7 +29,8 @@ namespace GitSongVersioningTests
             SaverMock = new Mock<ISaver>();
             SaverMock.Setup(m => m.savedUser()).Returns(user);
             SaverMock.Setup(m => m.savedMusicSyncFolder()).Returns(testDirectory);
-            ITransport gitTransport = new GitTransport(SaverMock.Object, FileManager);
+            string gitServerUrl = "https://gitlab.com";
+            ITransport gitTransport = new GitTransport(gitServerUrl, SaverMock.Object, FileManager);
             GitVersioning = new Versioning(SaverMock.Object, FileManager, gitTransport);
             FileManager.CreateDirectory(ref songLocalPath);
             FileManager.CreateFile(songFile, songLocalPath);

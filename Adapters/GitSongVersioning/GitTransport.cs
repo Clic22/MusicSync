@@ -5,9 +5,9 @@ namespace GitVersionTool
 {
     public class GitTransport : ITransport
     {
-        public GitTransport(ISaver Saver, IFileManager FileManager) 
+        public GitTransport(string GitServerUrl, ISaver Saver, IFileManager FileManager) 
         {
-            gitServerUrl = "https://gitlab.com";
+            gitServerUrl = GitServerUrl;
             saver = Saver;
             git = new Git(Saver, FileManager);
         }

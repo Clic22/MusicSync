@@ -25,8 +25,8 @@ namespace App1
             this.InitializeComponent();
             FileManager = new FileManager();
             Saver = new LocalSettingsSaver();
-            
-            Transport = new GitTransport(Saver, FileManager);
+            string gitServerUrl = "https://gitlab.com";
+            Transport = new GitTransport(gitServerUrl, Saver, FileManager);
             SongsManager = new SongsManager(Transport, Saver, FileManager);
             SongsViewModel = new SongsPageViewModel(SongsManager);
         }
