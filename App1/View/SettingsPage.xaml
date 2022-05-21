@@ -12,31 +12,31 @@
     <StackPanel Orientation="Vertical" Margin="12">
         <CommandBar Background="Transparent" IsOpen="False" DefaultLabelPosition="Right">
             <AppBarSeparator></AppBarSeparator>
-            <AppBarButton Icon="Save" Label="Save" Click="saveSettingsClick"/>
+            <AppBarButton Icon="Save" Label="Save" Click="SaveSettings_Click"/>
         </CommandBar>
         <TextBlock Text="Band Settings" FontWeight="Bold" Margin="12"/>
         <TextBlock Text="Band Name" Margin="12"/>
-            <TextBox x:Name="BandName" Text="{x:Bind viewModel.User.BandName}" x:DefaultBindMode="OneWay" HorizontalAlignment="Left" Width="200" Margin="12"/>
+            <TextBox x:Name="BandName" Text="{x:Bind SettingsViewModel.User.BandName}" x:DefaultBindMode="OneWay" HorizontalAlignment="Left" Width="200" Margin="12"/>
         <TextBlock Text="Band Password" Margin="12"/>
         <StackPanel Orientation="Horizontal">
-                <PasswordBox  Width="200" x:Name="BandPassword" Password="{x:Bind viewModel.User.BandPassword}" x:DefaultBindMode="OneWay" Margin="12" PasswordRevealMode="Hidden"/>
-            <CheckBox x:Name="revealModeCheckBox" Content="Show password" IsChecked="False"
+                <PasswordBox  Width="200" x:Name="BandPassword" Password="{x:Bind SettingsViewModel.User.BandPassword}" x:DefaultBindMode="OneWay" Margin="12" PasswordRevealMode="Hidden"/>
+            <CheckBox x:Name="RevealModeCheckBox" Content="Show Password" IsChecked="False"
             Checked="RevealModeCheckbox_Changed" Unchecked="RevealModeCheckbox_Changed" Margin="12"/>
         </StackPanel>
         <TextBlock Text="Band Email" Margin="12"/>
-            <TextBox  x:Name="BandEmail" Text="{x:Bind viewModel.User.BandEmail}" HorizontalAlignment="Left" Width="200" Margin="12"/>
+            <TextBox  x:Name="BandEmail" Text="{x:Bind SettingsViewModel.User.BandEmail}" HorizontalAlignment="Left" Width="200" Margin="12"/>
         <TextBlock  Margin="12"/>
         <TextBlock Text="User Settings" FontWeight="Bold" Margin="12"/>
         <TextBlock Text="Username" Margin="12"/>
-            <TextBox  x:Name="Username" Text="{x:Bind viewModel.User.Username}" HorizontalAlignment="Left" Width="200" Margin="12"/>
+            <TextBox  x:Name="Username" Text="{x:Bind SettingsViewModel.User.Username}" HorizontalAlignment="Left" Width="200" Margin="12"/>
             <TextBlock Text="MusicSync Folder" Margin="12"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="400" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="MusicSyncFolder" Text="{x:Bind viewModel.MusicSyncFolder}" x:DefaultBindMode="OneWay" HorizontalAlignment="Left" Width="200" Grid.Column="0" Margin="12" />
-                <AppBarButton Icon="Library" Label="Browse" Click="folder_Click" HorizontalAlignment="Right" Grid.Column="1"/>
+                <TextBox x:Name="MusicSyncFolder" Text="{x:Bind SettingsViewModel.MusicSyncFolder}" x:DefaultBindMode="OneWay" HorizontalAlignment="Left" Width="200" Grid.Column="0" Margin="12" />
+                <AppBarButton Icon="Library" Label="Browse" Click="Folder_Click" HorizontalAlignment="Right" Grid.Column="1"/>
             </Grid>
         </StackPanel>
     </ScrollViewer>
