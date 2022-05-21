@@ -2,18 +2,19 @@
 {
     public interface ITransport
     {
-        void init(string songMusicSyncPath, string name);
-        Task initAsync(string songMusicSyncPath, string sharedLink);
-        Task uploadAllFilesAsync(string songMusicSyncPath, string title, string description);
-        Task uploadFileAsync(string songMusicSyncPath, string file, string title);
-        void tag(string songMusicSyncPath, string versionNumber);
-        Task<bool> updatesAvailbleAsync(string songMusicSyncPath);
-        Task downloadLastUpdateAsync(string songMusicSyncPath);
-        Task revertToLastLocalVersionAsync(string songMusicSyncPath);
-        Task<SongVersion>? lastLocalVersionAsync(string songMusicSyncPath);
-        bool initiated(string songMusicSyncPath);
-        Task<List<SongVersion>>? localVersionsAsync(string songMusicSyncPath);
-        Task<List<SongVersion>>? upcomingVersionsAsync(string songMusicSyncPath);
-        string shareLink(string songMusicSyncPath);
+        void Init(string songMusicSyncPath, string name);
+        Task InitAsync(string songMusicSyncPath, string sharedLink);
+        Task UploadAllFilesAsync(string songMusicSyncPath, string title, string description);
+        Task UploadFileAsync(string songMusicSyncPath, string file, string title);
+        void Tag(string songMusicSyncPath, string versionNumber);
+        Task<bool> UpdatesAvailbleAsync(string songMusicSyncPath);
+        Task DownloadLastUpdateAsync(string songMusicSyncPath);
+        Task RevertToLastLocalVersionAsync(string songMusicSyncPath);
+        Task<SongVersion>? LastLocalVersionAsync(string songMusicSyncPath);
+        bool Initiated(string songMusicSyncPath);
+        Task<List<SongVersion>>? LocalVersionsAsync(string songMusicSyncPath);
+        Task<List<SongVersion>>? UpcomingVersionsAsync(string songMusicSyncPath);
+        string ShareLink(string songMusicSyncPath);
+        string GuidFromSharedLink(string sharedLink);
     }
 }

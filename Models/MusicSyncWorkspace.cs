@@ -15,28 +15,18 @@ namespace App1.Models
             this.fileManager = fileManager; 
         }
 
-        public string workspaceForSong(Song song)
+        public string GetWorkspaceForSong(Song song)
         {
             string workspaceForSong = fileManager.FormatPath(musicSyncFolder + song.Guid);
             fileManager.CreateDirectory(ref workspaceForSong);
             return workspaceForSong;
         }
 
-        public string musicSyncPathFromSharedLink(string sharedLink)
+        public string GetWorkspace(string workspaceName)
         {
-            string guid = guidFromSharedLink(sharedLink);
-            return fileManager.FormatPath(musicSyncFolder + guid);
-        }
-
-        public string guidFromSharedLink(string sharedLink)
-        {
-            User user = saver.savedUser();
-            string UrlStart = "https://gitlab.com/" + user.BandName.Replace(" ", "-") + "/";
-            string UrlEnd = ".git";
-            int startPos = sharedLink.LastIndexOf(UrlStart) + UrlStart.Length;
-            int length = sharedLink.IndexOf(UrlEnd) - startPos;
-            string guid = sharedLink.Substring(startPos, length);
-            return guid;
+            string workspace = fileManager.FormatPath(musicSyncFolder + workspaceName);
+            fileManager.CreateDirectory(ref workspace);
+            return workspace;
         }
 
         public string musicSyncFolder

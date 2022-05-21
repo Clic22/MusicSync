@@ -44,7 +44,7 @@ namespace App1.Models
         {
             string songPath = FileManager.FormatPath(downloadLocalPath + songTitle);
             await VersionTool.downloadSharedSongAsync(sharedLink, songPath);
-            string songGuid = Workspace.guidFromSharedLink(sharedLink);
+            string songGuid = VersionTool.GuidFromSharedLink(sharedLink);
             string? songFile = await FileManager.findFileNameBasedOnExtensionAsync(songPath, ".song");
             if (songFile != null)
             {

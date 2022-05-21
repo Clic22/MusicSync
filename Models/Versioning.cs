@@ -8,45 +8,45 @@ namespace App1.Models
         {
             fileManager = FileManager;
             transport = Transport;
-            workspace = new MusicSyncWorkspace(Saver, FileManager);
+            musicSyncWorkspace = new MusicSyncWorkspace(Saver, FileManager);
         }
 
         public async Task uploadSongAsync(Song song, string title, string description, string versionNumber)
         {
-            string songWorkspace = workspace.workspaceForSong(song);
-            if (!transport.initiated(songWorkspace))
+            string songWorkspace = musicSyncWorkspace.GetWorkspaceForSong(song);
+            if (!transport.Initiated(songWorkspace))
             {
-                transport.init(songWorkspace, song.Guid.ToString());
+                transport.Init(songWorkspace, song.Guid.ToString());
             } 
             await compressSongAsync(song);
-            await transport.uploadAllFilesAsync(songWorkspace, title, description);
-            transport.tag(songWorkspace, versionNumber);
+            await transport.UploadAllFilesAsync(songWorkspace, title, description);
+            transport.Tag(songWorkspace, versionNumber);
         }
 
         public async Task uploadFileForSongAsync(Song song, string file, string title)
         {
-            string songWorkspace = workspace.workspaceForSong(song);
+            string songWorkspace = musicSyncWorkspace.GetWorkspaceForSong(song);
             fileManager.SyncFile(song.LocalPath, songWorkspace, file);
-            await transport.uploadFileAsync(songWorkspace, file, title);
+            await transport.UploadFileAsync(songWorkspace, file, title);
         }
 
         public async Task updateSongAsync(Song song)
         {
-            string songWorkspace = workspace.workspaceForSong(song);
-            await transport.downloadLastUpdateAsync(songWorkspace);
+            string songWorkspace = musicSyncWorkspace.GetWorkspaceForSong(song);
+            await transport.DownloadLastUpdateAsync(songWorkspace);
             await uncompressSongAsync(song);
         }
 
         public async Task<bool> updatesAvailableForSongAsync(Song song)
         {
-            string songWorkspace = workspace.workspaceForSong(song);
-            return await transport.updatesAvailbleAsync(songWorkspace);
+            string songWorkspace = musicSyncWorkspace.GetWorkspaceForSong(song);
+            return await transport.UpdatesAvailbleAsync(songWorkspace);
         }
 
         public async Task revertSongAsync(Song song)
         {
-            string songWorkspace = workspace.workspaceForSong(song);
-            await transport.revertToLastLocalVersionAsync(songWorkspace);
+            string songWorkspace = musicSyncWorkspace.GetWorkspaceForSong(song);
+            await transport.RevertToLastLocalVersionAsync(songWorkspace);
             await uncompressSongAsync(song);
         }
 
@@ -54,8 +54,8 @@ namespace App1.Models
         {
             return await Task.Run(() =>
             {
-                string songWorkspace = workspace.workspaceForSong(song);
-                return transport.lastLocalVersionAsync(songWorkspace);
+                string songWorkspace = musicSyncWorkspace.GetWorkspaceForSong(song);
+                return transport.LastLocalVersionAsync(songWorkspace);
             });       
         }
 
@@ -63,8 +63,8 @@ namespace App1.Models
         {
             return await Task.Run(() =>
             {
-                string songWorkspace = workspace.workspaceForSong(song);
-                return transport.localVersionsAsync(songWorkspace);
+                string songWorkspace = musicSyncWorkspace.GetWorkspaceForSong(song);
+                return transport.LocalVersionsAsync(songWorkspace);
             });
         }
 
@@ -72,23 +72,28 @@ namespace App1.Models
         {
             return await Task.Run(() =>
             {
-                string songWorkspace = workspace.workspaceForSong(song);
-                return transport.upcomingVersionsAsync(songWorkspace);
+                string songWorkspace = musicSyncWorkspace.GetWorkspaceForSong(song);
+                return transport.UpcomingVersionsAsync(songWorkspace);
             });
         }
 
         public async Task downloadSharedSongAsync(string sharedLink, string songPath)
         {
-            string songWorkspace = workspace.musicSyncPathFromSharedLink(sharedLink);
-            await transport.initAsync(songWorkspace, sharedLink);
-            songPath = fileManager.FormatPath(songPath);
+            var songGuid = transport.GuidFromSharedLink(sharedLink);
+            string songWorkspace = musicSyncWorkspace.GetWorkspace(songGuid);
+            await transport.InitAsync(songWorkspace, sharedLink);
             await uncompressSongAsync(songWorkspace, songPath);
+        }
+
+        public string GuidFromSharedLink(string sharedLink)
+        {
+            return transport.GuidFromSharedLink(sharedLink);
         }
 
         public string shareSong(Song song)
         {
-            string songWorkspace = workspace.workspaceForSong(song);
-            return transport.shareLink(songWorkspace);
+            string songWorkspace = musicSyncWorkspace.GetWorkspaceForSong(song);
+            return transport.ShareLink(songWorkspace);
         }
 
         public async Task<string> newVersionNumberAsync(Song song, bool compo, bool mix, bool mastering)
@@ -120,7 +125,7 @@ namespace App1.Models
 
         private async Task compressSongAsync(Song song)
         {
-            string songWorkspace = workspace.workspaceForSong(song);
+            string songWorkspace = musicSyncWorkspace.GetWorkspaceForSong(song);
             string? songArchive = await fileManager.findFileNameBasedOnExtensionAsync(songWorkspace, ".zip");
             if (songArchive != null)
             {
@@ -133,7 +138,7 @@ namespace App1.Models
 
         private async Task<string> selectFoldersToBeCompressed(Song song)
         {
-            string tmpDirectory = workspace.musicSyncFolder + @"tmpDirectory\";
+            string tmpDirectory = musicSyncWorkspace.musicSyncFolder + @"tmpDirectory\";
             if (fileManager.DirectoryExists(tmpDirectory))
             {
                 fileManager.DeleteDirectory(tmpDirectory);
@@ -159,12 +164,13 @@ namespace App1.Models
 
         private async Task uncompressSongAsync(Song song)
         {
-            string songWorkspace = workspace.workspaceForSong(song);
+            string songWorkspace = musicSyncWorkspace.GetWorkspaceForSong(song);
             await uncompressSongAsync(songWorkspace, song.LocalPath);
         }
 
         private async Task uncompressSongAsync(string repoPath, string songPath)
         {
+            fileManager.FormatPath(songPath);
             string? zipFile = await fileManager.findFileNameBasedOnExtensionAsync(repoPath, ".zip");
             if (zipFile != null)
             {
@@ -180,6 +186,6 @@ namespace App1.Models
 
         private readonly IFileManager fileManager;
         private readonly ITransport transport;
-        private readonly MusicSyncWorkspace workspace;
+        private readonly MusicSyncWorkspace musicSyncWorkspace;
     }
 }

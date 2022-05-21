@@ -1,7 +1,5 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
-using LibGit2Sharp;
-using System.IO.Compression;
 
 namespace GitVersionTool
 {
@@ -9,28 +7,31 @@ namespace GitVersionTool
     {
         public GitTransport(ISaver Saver, IFileManager FileManager) 
         {
+            gitServerUrl = "https://gitlab.com";
+            saver = Saver;
             git = new Git(Saver, FileManager);
         }
 
-        public void init(string songMusicSyncPath, string name)
+        public void Init(string songMusicSyncPath, string name)
         {
             git.init(songMusicSyncPath, name);
         }
 
-        public async Task initAsync(string songMusicSyncPath, string sharedLink)
+        public async Task InitAsync(string songMusicSyncPath, string sharedLink)
         {
+            
             await Task.Run(() =>
             {
                 git.clone(sharedLink, songMusicSyncPath);
             });
         }
 
-        public bool initiated(string songMusicSyncPath)
+        public bool Initiated(string songMusicSyncPath)
         {
             return git.initiated(songMusicSyncPath);
         }
 
-        public async Task uploadAllFilesAsync(string songMusicSyncPath, string title, string description)
+        public async Task UploadAllFilesAsync(string songMusicSyncPath, string title, string description)
         {
             await Task.Run(() =>
             {
@@ -40,7 +41,7 @@ namespace GitVersionTool
             });
         }
 
-        public async Task uploadFileAsync(string songMusicSyncPath, string file, string title)
+        public async Task UploadFileAsync(string songMusicSyncPath, string file, string title)
         {
             await Task.Run(() =>
             {
@@ -50,12 +51,12 @@ namespace GitVersionTool
             });
         }
 
-        public void tag(string songMusicSyncPath, string versionNumber)
+        public void Tag(string songMusicSyncPath, string versionNumber)
         {
             git.tag(songMusicSyncPath, versionNumber);
         }
 
-        public async Task<bool> updatesAvailbleAsync(string songMusicSyncPath)
+        public async Task<bool> UpdatesAvailbleAsync(string songMusicSyncPath)
         {
             return await Task.Run(() =>
             {
@@ -78,7 +79,7 @@ namespace GitVersionTool
             });
         }
 
-        public async Task downloadLastUpdateAsync(string songMusicSyncPath)
+        public async Task DownloadLastUpdateAsync(string songMusicSyncPath)
         {
             await Task.Run(() =>
             {
@@ -86,7 +87,7 @@ namespace GitVersionTool
             });
         }
 
-        public async Task revertToLastLocalVersionAsync(string songMusicSyncPath)
+        public async Task RevertToLastLocalVersionAsync(string songMusicSyncPath)
         {
             await Task.Run(() =>
             {
@@ -94,55 +95,67 @@ namespace GitVersionTool
             });
         }
 
-        public async Task<SongVersion>? lastLocalVersionAsync(string songMusicSyncPath)
+        public async Task<SongVersion>? LastLocalVersionAsync(string songMusicSyncPath)
         {
             return await Task.Run(() =>
             {
                 SongVersion currentVersion = new SongVersion();
                 GitTag lastTag = git.lastLocalTag(songMusicSyncPath);
-                fillSongVersionFromTag(currentVersion, lastTag);
+                TagToSongVersion(lastTag, currentVersion);
                 return currentVersion;
             });
         }
 
-        public async Task<List<SongVersion>>? localVersionsAsync(string songMusicSyncPath)
+        public async Task<List<SongVersion>>? LocalVersionsAsync(string songMusicSyncPath)
         {
             return await Task.Run(() =>
             {
                 List<SongVersion> versions = new List<SongVersion>();
-                var Tags = git.localTags(songMusicSyncPath);
-                fillSongVersionsFromTags(versions, Tags);
+                var tags = git.localTags(songMusicSyncPath);
+                TagsToSongVersions(tags, versions);
                 return versions;
             });
         }
 
-        public async Task<List<SongVersion>>? upcomingVersionsAsync(string songMusicSyncPath)
+        public async Task<List<SongVersion>>? UpcomingVersionsAsync(string songMusicSyncPath)
         {
             return await Task.Run(() =>
             {
                 List<SongVersion> upcomingVersions = new List<SongVersion>();
-                var Tags = git.remoteTags(songMusicSyncPath);
-                fillSongVersionsFromTags(upcomingVersions, Tags);
+                var tags = git.remoteTags(songMusicSyncPath);
+                TagsToSongVersions(tags, upcomingVersions);
                 return upcomingVersions;
             });
         }
 
-        public string shareLink(string songMusicSyncPath)
+        public string ShareLink(string songMusicSyncPath)
         {
             return git.remoteUrl(songMusicSyncPath);
         }
 
-        private static void fillSongVersionsFromTags(List<SongVersion> versions, List<GitTag> Tags)
+        public string GuidFromSharedLink(string sharedLink)
+        {
+            User user = saver.savedUser();
+            string bandNameFormatedForUrl = user.BandName.Replace(" ", "-");
+            string UrlStart = $"{gitServerUrl}/{bandNameFormatedForUrl}/";
+            string UrlEnd = ".git";
+            int startPos = sharedLink.LastIndexOf(UrlStart) + UrlStart.Length;
+            int length = sharedLink.IndexOf(UrlEnd) - startPos;
+            string guid = sharedLink.Substring(startPos, length);
+            return guid;
+        }
+
+        private static void TagsToSongVersions(List<GitTag> Tags, List<SongVersion> versions)
         {
             foreach (var tag in Tags)
             {
                 SongVersion version = new SongVersion();
-                fillSongVersionFromTag(version, tag);
+                TagToSongVersion(tag, version);
                 versions.Add(version);
             }
         }
 
-        private static void fillSongVersionFromTag(SongVersion version, GitTag lastTag)
+        private static void TagToSongVersion(GitTag lastTag, SongVersion version)
         {
             version.Number = lastTag.Name;
             version.Description = lastTag.Description.Remove(lastTag.Description.Length - 1);
@@ -150,6 +163,8 @@ namespace GitVersionTool
             version.Date = lastTag.Date;
         }
 
+        public readonly string gitServerUrl;
+        private readonly ISaver saver;
         private readonly Git git;
     }
 }
