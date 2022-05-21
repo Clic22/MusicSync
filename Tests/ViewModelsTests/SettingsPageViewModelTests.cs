@@ -30,12 +30,12 @@ namespace ViewModelsTests.SettingsPageViewModelTests
             saverMock.Setup(m => m.SavedUser()).Returns(user);
 
             IFileManager fileManager = new FileManager();
-            SettingsPageViewModel viewModel = new SettingsPageViewModel(saverMock.Object, fileManager);
+            SettingsPageViewModel viewModel = new SettingsPageViewModel(saverMock.Object);
 
             saverMock.Verify(m => m.SavedMusicSyncFolder(), Times.Once());
             saverMock.Verify(m => m.SavedUser(), Times.Once());
-            Assert.Equal(expectedUserViewModel, viewModel.User);
-            Assert.Equal(expectedMusicSyncFolder, viewModel.MusicSyncFolder);
+            Assert.Equal(expectedUserViewModel, viewModel.Settings.User);
+            Assert.Equal(expectedMusicSyncFolder, viewModel.Settings.MusicSyncFolder);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace ViewModelsTests.SettingsPageViewModelTests
             saverMock.Setup(m => m.SavedMusicSyncFolder()).Returns(expectedMusicSyncFolder);
             saverMock.Setup(m => m.SavedUser()).Returns(user);
             IFileManager fileManager = new FileManager();
-            SettingsPageViewModel viewModel = new SettingsPageViewModel(saverMock.Object, fileManager);
+            SettingsPageViewModel viewModel = new SettingsPageViewModel(saverMock.Object);
 
             BandName = "BandNameChanged";
             BandPassword = "BandPasswordChanged";
@@ -62,14 +62,13 @@ namespace ViewModelsTests.SettingsPageViewModelTests
             expectedMusicSyncFolder = @"./SongsManagerTest/End of the Road/Changed";
             user = new User(BandName, BandPassword, Username, BandEmail);
 
-            viewModel.MusicSyncFolder = expectedMusicSyncFolder;
-            viewModel.User = new UserViewModel(user);
+            viewModel.Settings.MusicSyncFolder = expectedMusicSyncFolder;
+            viewModel.Settings.User = new UserViewModel(user);
 
             viewModel.SaveSettings();
 
             saverMock.Verify(m => m.SaveUser(user), Times.Once());
-            saverMock.Verify(m => m.SaveMusicSyncFolder(expectedMusicSyncFolder + '\\'), Times.Once());
-
+            saverMock.Verify(m => m.SaveMusicSyncFolder(expectedMusicSyncFolder), Times.Once());
         }
     }
 }

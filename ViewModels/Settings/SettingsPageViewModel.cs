@@ -7,38 +7,23 @@ namespace App1.ViewModels
 {
     public class SettingsPageViewModel : Bindable
     {
-        public SettingsPageViewModel(ISaver saver, IFileManager fileManager)
+        public SettingsPageViewModel(ISaver saver)
         {
             this._saver = saver;
-            this._fileManager = fileManager;
-
-            User = new UserViewModel(saver.SavedUser());
-            _musicSyncFolder = saver.SavedMusicSyncFolder();
+            var User = new UserViewModel(saver.SavedUser());
+            var musicSyncFolder = saver.SavedMusicSyncFolder();
+            Settings = new SettingsViewModel(User, musicSyncFolder);
         }
 
         public void SaveSettings()
         {
-            var user = new User(User.BandName, User.BandPassword, User.Username, User.BandEmail);
+            var user = new User(Settings.User.BandName, Settings.User.BandPassword, Settings.User.Username, Settings.User.BandEmail);
             _saver.SaveUser(user);
-            _saver.SaveMusicSyncFolder(MusicSyncFolder);
+            _saver.SaveMusicSyncFolder(Settings.MusicSyncFolder);
         }
 
-        public UserViewModel User { get; set; }
-        private string _musicSyncFolder;
-        public string MusicSyncFolder
-        {
-            get
-            {
-                return _musicSyncFolder;
-            }
-            set
-            {
-                value = _fileManager.FormatPath(value);
-                SetProperty(ref _musicSyncFolder, value);
-            }
-        }
+        public SettingsViewModel Settings { get; set; }
 
         private readonly ISaver _saver;
-        private readonly IFileManager _fileManager;
     }
 }
