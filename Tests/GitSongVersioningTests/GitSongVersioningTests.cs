@@ -19,7 +19,7 @@ namespace GitSongVersioningTests
         {
             testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
             songTitle = "End of the Road";
-            songLocalPath = testDirectory + songTitle + '\\';
+            songLocalPath = Path.Combine(testDirectory, songTitle) + Path.DirectorySeparatorChar;
             songFile = "file.song";           
 
             FileManager = new FileManager();

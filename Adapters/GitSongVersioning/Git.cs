@@ -14,16 +14,16 @@ namespace GitVersionTool
 
         public void init(string repoPath, string repoName)
         {
-
             User user = saver.savedUser();
             Repository.Init(repoPath);
             var repo = new Repository(repoPath);
-            string url = "https://gitlab.com/" + user.BandName.Replace(" ", "-") + "/" + repoName.ToLower().Replace(" ", "-").Replace("(", null).Replace(")", null) + ".git";
+            var bandNameFormatedForUrl = user.BandName.Replace(" ", "-");
+            var repoNameFormatedForUrl = repoName.ToLower().Replace(" ", "-").Replace("(", null).Replace(")", null);
+            string url = $"https://gitlab.com/{ bandNameFormatedForUrl }/{ repoNameFormatedForUrl }.git";
             Remote remote = repo.Network.Remotes.Add("origin", url);
             repo.Branches.Update(repo.Head,
                 b => b.Remote = remote.Name,
                 b => b.UpstreamBranch = repo.Head.CanonicalName);
-
         }
 
         public bool initiated(string repoPath)

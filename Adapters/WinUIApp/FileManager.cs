@@ -118,9 +118,9 @@ namespace WinUIApp
 
         public string FormatPath(string path)
         {
-            if (path.Last() != '\\')
+            if (!Path.EndsInDirectorySeparator(path))
             {
-                path = path + '\\';
+                path += Path.DirectorySeparatorChar;
             }
             return path;
         }

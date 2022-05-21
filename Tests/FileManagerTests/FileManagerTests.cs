@@ -302,7 +302,7 @@ namespace WinUIAppTests.FileManagerTests
             var savedPath = path;
             FileManager fileManager = new FileManager();
             string newPath = fileManager.FormatPath(path);
-            Assert.Equal(savedPath + '\\', newPath);
+            Assert.Equal(savedPath + Path.DirectorySeparatorChar, newPath);
 
         }
 
