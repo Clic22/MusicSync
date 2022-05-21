@@ -58,27 +58,21 @@ namespace WinUIAppTests.LocalSettingsSaverTest
     public class LocalSettingsSaverTest : TestsBase
     {
         [TestMethod]
-        public void SaveSetting1Test()
+        public void SaveUserTest()
         {
-            string expectedMusicSyncFolder = "TestFolder";
-
-            saver.SaveSettings(user1, expectedMusicSyncFolder);
+            saver.SaveUser(user1);
 
             User userSaved = saver.SavedUser();
             Assert.AreEqual(user1, userSaved);
-            string musicSyncFolderSaved = saver.SavedMusicSyncFolder();
-            Assert.AreEqual(expectedMusicSyncFolder, musicSyncFolderSaved);
         }
 
         [TestMethod]
-        public void SaveSetting2Test()
+        public void SaveMusicSyncFolderTest()
         {
             string expectedMusicSyncFolder = "TestFolder";
 
-            saver.SaveSettings(user2, expectedMusicSyncFolder);
+            saver.SaveMusicSyncFolder(expectedMusicSyncFolder);
 
-            User userSaved = saver.SavedUser();
-            Assert.AreEqual(user2, userSaved);
             string musicSyncFolderSaved = saver.SavedMusicSyncFolder();
             Assert.AreEqual(expectedMusicSyncFolder, musicSyncFolderSaved);
         }

@@ -63,9 +63,13 @@ namespace ViewModelsTests.SettingsPageViewModelTests
             user = new User(BandName, BandPassword, Username, BandEmail);
 
             viewModel.MusicSyncFolder = expectedMusicSyncFolder;
-            viewModel.saveSettings(BandName, BandPassword, Username, BandEmail);
+            viewModel.User = new UserViewModel(user);
 
-            saverMock.Verify(m => m.SaveSettings(user, expectedMusicSyncFolder + '\\'), Times.Once());
+            viewModel.SaveSettings();
+
+            saverMock.Verify(m => m.SaveUser(user), Times.Once());
+            saverMock.Verify(m => m.SaveMusicSyncFolder(expectedMusicSyncFolder + '\\'), Times.Once());
+
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using App1.Models;
 using App1.Models.Ports;
+using App1.ViewModels.Settings.Entities;
 using WinUIApp;
 
 namespace App1.ViewModels
@@ -10,14 +11,16 @@ namespace App1.ViewModels
         {
             this._saver = saver;
             this._fileManager = fileManager;
+
             User = new UserViewModel(saver.SavedUser());
             _musicSyncFolder = saver.SavedMusicSyncFolder();
         }
 
-        public void saveSettings(string BandName, string BandPassword, string Username, string BandEmail)
+        public void SaveSettings()
         {
-            User userModel = new User(BandName,BandPassword,Username,BandEmail);
-            _saver.SaveSettings(userModel, MusicSyncFolder);
+            var user = new User(User.BandName, User.BandPassword, User.Username, User.BandEmail);
+            _saver.SaveUser(user);
+            _saver.SaveMusicSyncFolder(MusicSyncFolder);
         }
 
         public UserViewModel User { get; set; }
@@ -34,6 +37,7 @@ namespace App1.ViewModels
                 SetProperty(ref _musicSyncFolder, value);
             }
         }
+
         private readonly ISaver _saver;
         private readonly IFileManager _fileManager;
     }

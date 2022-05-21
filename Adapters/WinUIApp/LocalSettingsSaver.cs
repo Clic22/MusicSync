@@ -12,13 +12,16 @@ namespace WinUIApp
             UserContainer = LocalSettings.CreateContainer("user", Windows.Storage.ApplicationDataCreateDisposition.Always);
         }
 
-        public void SaveSettings(User user, string musicSyncFolder)
+        public void SaveUser(User user)
         {
             saveUserValue("BandName", user.BandName);
             saveUserValue("BandPassword", user.BandPassword);
             saveUserValue("Username", user.Username);
             saveUserValue("BandEmail", user.BandEmail);
+        }
 
+        public void SaveMusicSyncFolder(string musicSyncFolder)
+        {
             saveMusicSyncFolder(musicSyncFolder);
         }
 

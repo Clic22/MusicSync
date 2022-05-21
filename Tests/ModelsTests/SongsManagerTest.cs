@@ -34,7 +34,8 @@ namespace ModelsTests.SongsManagerTest
             fileManagerMock = new Mock<IFileManager>();
             IFileManager fileManager = fileManagerMock.Object;
             saver = new SaverMock();
-            saver.SaveSettings(user, testDirectory);
+            saver.SaveUser(user);
+            saver.SaveMusicSyncFolder(testDirectory);
             songsManager = new SongsManager(transport.Object, saver, fileManager);
             versioning = new Versioning(saver, fileManager, transport.Object);
             locker = new Locker(fileManager, versioning);

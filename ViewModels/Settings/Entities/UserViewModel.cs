@@ -32,36 +32,52 @@ namespace App1.ViewModels
             return HashCode.Combine(this.BandName, this.BandPassword, this.Username, this.BandEmail);
         }
 
-        private readonly string _bandName;
+        private string _bandName;
         public string BandName
         {
             get
             {
                 return _bandName;
             }
+            set
+            {
+                SetProperty(ref _bandName, value);
+            }
         }
-        private readonly string _bandEmail;
+        private string _bandEmail;
         public string BandEmail
         {
             get
             {
                 return _bandEmail;
             }
+            set
+            {
+                SetProperty(ref _bandEmail, value);
+            }
         }
-        private readonly string _bandPassword;
+        private string _bandPassword;
         public string BandPassword
         {
             get
             {
                 return _bandPassword;
             }
+            set
+            {
+                SetProperty(ref _bandPassword, value);
+            }
         }
-        private readonly string _username;
+        private string _username;
         public string Username
         {
             get
             {
                 return _username;
+            }
+            set
+            {
+                SetProperty(ref _username, value);
             }
         }
     }

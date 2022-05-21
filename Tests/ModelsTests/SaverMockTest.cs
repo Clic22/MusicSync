@@ -19,7 +19,8 @@ namespace ModelsTests.SaverMockTest
             string expectedMusicSyncFolder = "TestFolder";
 
             ISaver saver = new SaverMock();
-            saver.SaveSettings(expectedUser, expectedMusicSyncFolder);
+            saver.SaveUser(expectedUser);
+            saver.SaveMusicSyncFolder(expectedMusicSyncFolder);
             User userSaved = saver.SavedUser();
 
             Assert.Equal(expectedUser, userSaved);

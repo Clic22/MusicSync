@@ -33,8 +33,9 @@ namespace ModelsTests.LockerTest
 
             transport = new Mock<ITransport>();
             saver = new SaverMock();
+            saver.SaveUser(user1);
             string testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\LockerTest\";
-            saver.SaveSettings(user1, testDirectory);
+            saver.SaveMusicSyncFolder(testDirectory);
             fileManager = new FileManager();
             workspace = new MusicSyncWorkspace(saver, fileManager);
             version = new Versioning(saver, fileManager, transport.Object);

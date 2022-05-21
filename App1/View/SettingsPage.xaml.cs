@@ -26,7 +26,7 @@ namespace App1.View
 
         public async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
-            SettingsViewModel.saveSettings(BandName.Text, BandPassword.Password, Username.Text, BandEmail.Text);
+            SettingsViewModel.SaveSettings();
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = this.XamlRoot;
             dialog.Title = "Settings Saved";
