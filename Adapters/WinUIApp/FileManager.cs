@@ -5,7 +5,7 @@ namespace WinUIApp
 {
     public class FileManager : IFileManager
     {
-        public async Task<string?> findFileNameBasedOnExtensionAsync(string directoryPath, string extension)
+        public async Task<string?> FindFileNameBasedOnExtensionAsync(string directoryPath, string extension)
         {
             string? fileName = string.Empty;
             try
@@ -118,9 +118,9 @@ namespace WinUIApp
 
         public string FormatPath(string path)
         {
-            if (path.Last() != '\\')
+            if (!Path.EndsInDirectorySeparator(path))
             {
-                path = path + '\\';
+                path += Path.DirectorySeparatorChar;
             }
             return path;
         }

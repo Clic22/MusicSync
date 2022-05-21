@@ -7,50 +7,50 @@ namespace App1Tests.Mock
     {
         public SaverMock()
         {
-            Songs = new List<Song>();
-            User = new User();
-            MusicSyncFolder = string.Empty;
+            _songs = new List<Song>();
+            _user = new User();
+            _musicSyncFolder = string.Empty;
         }
 
-        public User savedUser()
+        public User SavedUser()
         {
-            return User;
+            return _user;
         }
 
-        public void saveSong(Song song)
+        public void SaveSong(Song song)
         {
-            Songs.Add(song);
+            _songs.Add(song);
         }
 
-        public void unsaveSong(Song song)
+        public void UnsaveSong(Song song)
         {
-            Songs.Remove(song);
+            _songs.Remove(song);
         }
 
-        public List<Song> savedSongs()
+        public List<Song> SavedSongs()
         {
-            return Songs;
+            return _songs;
         }
 
-        public void saveSettings(User user, string musicSyncFolder)
+        public void SaveSettings(User user, string musicSyncFolder)
         {
-            saveUser(user);
-            MusicSyncFolder = musicSyncFolder;
+            SaveUser(user);
+            _musicSyncFolder = musicSyncFolder;
         }
 
-        public string savedMusicSyncFolder()
+        public string SavedMusicSyncFolder()
         {
-            return MusicSyncFolder;
+            return _musicSyncFolder;
         }
 
-        private void saveUser(User user)
+        private void SaveUser(User user)
         {
-            User = user;
+            _user = user;
         }
 
-        private readonly List<Song> Songs;
-        private User User;
-        private string MusicSyncFolder;
+        private readonly List<Song> _songs;
+        private User _user;
+        private string _musicSyncFolder;
 
     }
 }

@@ -6,10 +6,10 @@ namespace App1.ViewModels
     {
         public UserViewModel(User user)
         {
-            this.bandName_ = user.BandName;
-            this.bandPassword_ = user.BandPassword;
-            this.username_ = user.Username;
-            this.bandEmail_ = user.BandEmail;
+            this._bandName = user.BandName;
+            this._bandPassword = user.BandPassword;
+            this._username = user.Username;
+            this._bandEmail = user.BandEmail;
         }
 
         public override bool Equals(object? obj)
@@ -32,36 +32,36 @@ namespace App1.ViewModels
             return HashCode.Combine(this.BandName, this.BandPassword, this.Username, this.BandEmail);
         }
 
-        private readonly string bandName_;
+        private readonly string _bandName;
         public string BandName
         {
             get
             {
-                return bandName_;
+                return _bandName;
             }
         }
-        private readonly string bandEmail_;
+        private readonly string _bandEmail;
         public string BandEmail
         {
             get
             {
-                return bandEmail_;
+                return _bandEmail;
             }
         }
-        private readonly string bandPassword_;
+        private readonly string _bandPassword;
         public string BandPassword
         {
             get
             {
-                return bandPassword_;
+                return _bandPassword;
             }
         }
-        private readonly string username_;
+        private readonly string _username;
         public string Username
         {
             get
             {
-                return username_;
+                return _username;
             }
         }
     }

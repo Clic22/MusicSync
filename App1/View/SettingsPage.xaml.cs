@@ -21,12 +21,12 @@ namespace App1.View
             this.InitializeComponent();
             ISaver saver = new LocalSettingsSaver();
             IFileManager fileManager = new FileManager();
-            viewModel = new SettingsPageViewModel(saver, fileManager);
+            SettingsViewModel = new SettingsPageViewModel(saver, fileManager);
         }
 
-        public async void saveSettingsClick(object sender, RoutedEventArgs e)
+        public async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
-            viewModel.saveSettings(BandName.Text, BandPassword.Password, Username.Text, BandEmail.Text);
+            SettingsViewModel.saveSettings(BandName.Text, BandPassword.Password, Username.Text, BandEmail.Text);
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = this.XamlRoot;
             dialog.Title = "Settings Saved";
@@ -35,9 +35,9 @@ namespace App1.View
             await dialog.ShowAsync();
         }
 
-        private void RevealModeCheckbox_Changed(object sender, RoutedEventArgs e)
+        public void RevealModeCheckbox_Changed(object sender, RoutedEventArgs e)
         {
-            if (revealModeCheckBox.IsChecked == true)
+            if (RevealModeCheckBox.IsChecked == true)
             {
                 BandPassword.PasswordRevealMode = PasswordRevealMode.Visible;
             }
@@ -47,17 +47,17 @@ namespace App1.View
             }
         }
 
-        private async void folder_Click(object sender, RoutedEventArgs e)
+        public async void Folder_Click(object sender, RoutedEventArgs e)
         {
             var folderPicker = new FolderPicker();
             WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, App.WindowHandle);
             var folderPicked = await folderPicker.PickSingleFolderAsync();
             if (folderPicked != null)
             {
-                viewModel.MusicSyncFolder = folderPicked.Path;
+                SettingsViewModel.MusicSyncFolder = folderPicked.Path;
             }
         }
 
-        private SettingsPageViewModel viewModel;
+        public SettingsPageViewModel SettingsViewModel;
     }
 }

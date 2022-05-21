@@ -19,7 +19,7 @@ namespace GitSongVersioningTests
         {
             testDirectory = @"C:\Users\Aymeric Meindre\source\repos\MusicSync\Tests\testDirectory\";
             songTitle = "End of the Road";
-            songLocalPath = testDirectory + songTitle + '\\';
+            songLocalPath = Path.Combine(testDirectory, songTitle) + Path.DirectorySeparatorChar;
             songFile = "file.song";           
 
             FileManager = new FileManager();
@@ -27,9 +27,10 @@ namespace GitSongVersioningTests
             songGuid = song.Guid.ToString();
             user = new User("MusicSyncTool", "HelloWorld12", "Clic", "musicsynctool@gmail.com");
             SaverMock = new Mock<ISaver>();
-            SaverMock.Setup(m => m.savedUser()).Returns(user);
-            SaverMock.Setup(m => m.savedMusicSyncFolder()).Returns(testDirectory);
-            ITransport gitTransport = new GitTransport(SaverMock.Object, FileManager);
+            SaverMock.Setup(m => m.SavedUser()).Returns(user);
+            SaverMock.Setup(m => m.SavedMusicSyncFolder()).Returns(testDirectory);
+            string gitServerUrl = "https://gitlab.com";
+            ITransport gitTransport = new GitTransport(gitServerUrl, SaverMock.Object, FileManager);
             GitVersioning = new Versioning(SaverMock.Object, FileManager, gitTransport);
             FileManager.CreateDirectory(ref songLocalPath);
             FileManager.CreateFile(songFile, songLocalPath);
@@ -121,9 +122,9 @@ namespace GitSongVersioningTests
             FileManager.CreateDirectory(ref MelodyneFolder);
             FileManager.CreateFile(MelodyneFile,MelodyneFolder);
 
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
-            string shareLink = GitVersioning.shareSong(song);
+            string shareLink = GitVersioning.ShareSong(song);
             string expectedShareLink = "https://gitlab.com/MusicSyncTool/" + song.Guid.ToString() + @".git";
             Assert.Equal(expectedShareLink,shareLink);
 
@@ -132,7 +133,7 @@ namespace GitSongVersioningTests
             FileManager.DeleteDirectory(musicSyncSongFolder);
 
             string songPath = FileManager.FormatPath(testDirectory + song.Title);
-            await GitVersioning.downloadSharedSongAsync(shareLink, songPath);
+            await GitVersioning.DownloadSharedSongAsync(shareLink, songPath);
 
             string expectedRepoPath = testDirectory + @".musicsync\" + song.Guid + @"\";
             Assert.True(Directory.Exists(expectedRepoPath));
@@ -151,19 +152,19 @@ namespace GitSongVersioningTests
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
             changeTitle = "Lock";
             string lockFile = ".lock";
             FileManager.CreateFile(lockFile,songLocalPath);
 
-            await GitVersioning.uploadFileForSongAsync(song, lockFile, changeTitle);
-            string shareLink = GitVersioning.shareSong(song);
+            await GitVersioning.UploadFileForSongAsync(song, lockFile, changeTitle);
+            string shareLink = GitVersioning.ShareSong(song);
 
             string musicSyncFolder = testDirectory + ".musicsync/" + song.Guid.ToString();
             FileManager.DeleteDirectory(musicSyncFolder);
             string songPath = testDirectory + @"SongDownloaded\";
-            await GitVersioning.downloadSharedSongAsync(shareLink, songPath);
+            await GitVersioning.DownloadSharedSongAsync(shareLink, songPath);
 
             string expectedLockFile = songPath +  lockFile;
             Assert.True(File.Exists(expectedLockFile));
@@ -175,19 +176,19 @@ namespace GitSongVersioningTests
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
             changeTitle = "Lock";
             string lockFile = ".lock";
             FileManager.CreateFile(lockFile, songLocalPath);
 
-            await GitVersioning.uploadFileForSongAsync(song, lockFile, changeTitle);
+            await GitVersioning.UploadFileForSongAsync(song, lockFile, changeTitle);
 
             File.Delete(song.LocalPath + lockFile);
             File.Delete(song.LocalPath +  song.File);
             Assert.False(File.Exists(song.LocalPath + song.File));
 
-            await GitVersioning.revertSongAsync(song);
+            await GitVersioning.RevertSongAsync(song);
 
             Assert.True(File.Exists(song.LocalPath + song.File));
         }
@@ -198,13 +199,13 @@ namespace GitSongVersioningTests
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
             changeTitle = "Lock";
             string lockFile = ".lock";
             FileManager.CreateFile(lockFile,songLocalPath);
 
-            await GitVersioning.uploadFileForSongAsync(song, lockFile, changeTitle);
+            await GitVersioning.UploadFileForSongAsync(song, lockFile, changeTitle);
 
             using (var httpClient = new HttpClient())
             {
@@ -222,7 +223,7 @@ namespace GitSongVersioningTests
 
             Assert.True(File.Exists(songLocalPath +  lockFile));
 
-            await GitVersioning.updateSongAsync(song);
+            await GitVersioning.UpdateSongAsync(song);
 
             Assert.False(File.Exists(songLocalPath +  lockFile));
         }
@@ -233,13 +234,13 @@ namespace GitSongVersioningTests
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
             changeTitle = "Lock";
             string lockFile = ".lock";
             FileManager.CreateFile(lockFile, songLocalPath);
 
-            await GitVersioning.uploadFileForSongAsync(song, lockFile, changeTitle);
+            await GitVersioning.UploadFileForSongAsync(song, lockFile, changeTitle);
 
             using (var httpClient = new HttpClient())
             {
@@ -255,7 +256,7 @@ namespace GitSongVersioningTests
 
             System.Threading.Thread.Sleep(1500);
 
-            bool updatesAvailable = await GitVersioning.updatesAvailableForSongAsync(song);
+            bool updatesAvailable = await GitVersioning.UpdatesAvailableForSongAsync(song);
 
             Assert.True(updatesAvailable);
         }
@@ -266,9 +267,9 @@ namespace GitSongVersioningTests
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
-            bool updatesAvailable = await GitVersioning.updatesAvailableForSongAsync(song);
+            bool updatesAvailable = await GitVersioning.UpdatesAvailableForSongAsync(song);
 
             Assert.False(updatesAvailable);
         }
@@ -279,13 +280,13 @@ namespace GitSongVersioningTests
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
             changeTitle = "Lock";
             string lockFile = ".lock";
             FileManager.CreateFile(lockFile, songLocalPath);
 
-            await GitVersioning.uploadFileForSongAsync(song, lockFile, changeTitle);
+            await GitVersioning.UploadFileForSongAsync(song, lockFile, changeTitle);
 
             using (var httpClient = new HttpClient())
             {
@@ -312,7 +313,7 @@ namespace GitSongVersioningTests
             Assert.True(File.Exists(songLocalPath +  randomFile));
             Assert.True(Directory.Exists(songLocalPath +  CacheFolder));
 
-            await GitVersioning.updateSongAsync(song);
+            await GitVersioning.UpdateSongAsync(song);
 
             Assert.False(File.Exists(songLocalPath +  lockFile));
             Assert.True(File.Exists(songLocalPath +  randomFile));
@@ -325,9 +326,9 @@ namespace GitSongVersioningTests
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
-            SongVersion currentVersion = await GitVersioning.currentVersionAsync(song);
+            SongVersion currentVersion = await GitVersioning.CurrentVersionAsync(song);
 
             Assert.Equal(versionNumber, currentVersion.Number);
             string expectedDescription = "Test\n\nNo Description";
@@ -343,12 +344,12 @@ namespace GitSongVersioningTests
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
             await SimulateRemoteChangesAsync();
-            bool updatesAvailable = await GitVersioning.updatesAvailableForSongAsync(song);
+            bool updatesAvailable = await GitVersioning.UpdatesAvailableForSongAsync(song);
             Assert.True(updatesAvailable);
 
-            SongVersion currentVersion = await GitVersioning.currentVersionAsync(song);
+            SongVersion currentVersion = await GitVersioning.CurrentVersionAsync(song);
 
             Assert.Equal(versionNumber, currentVersion.Number);
             string expectedDescription = "Test\n\nNo Description";
@@ -364,7 +365,7 @@ namespace GitSongVersioningTests
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
             List<(bool compo, bool mix, bool mastering, string expectedVersionNumber)> dataToBeTested = new List<(bool, bool, bool, string )>();
             dataToBeTested.Add((true, false, false, "2.0.0"));
@@ -378,7 +379,7 @@ namespace GitSongVersioningTests
 
             foreach(var data in dataToBeTested)
             {
-                versionNumber = await GitVersioning.newVersionNumberAsync(song, data.compo, data.mix, data.mastering);
+                versionNumber = await GitVersioning.NewVersionNumberAsync(song, data.compo, data.mix, data.mastering);
                 Assert.Equal(data.expectedVersionNumber, versionNumber);
             }
         }
@@ -389,7 +390,7 @@ namespace GitSongVersioningTests
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
             string changeTitle2 = "Test2";
             string changeDescription2 = "No Description2";
@@ -398,9 +399,9 @@ namespace GitSongVersioningTests
             string mediaFile = "guitar.wav";
             FileManager.CreateDirectory(ref mediaFolder);
             FileManager.CreateFile(mediaFile, mediaFolder);
-            await GitVersioning.uploadSongAsync(song, changeTitle2, changeDescription2, versionNumber2);
+            await GitVersioning.UploadSongAsync(song, changeTitle2, changeDescription2, versionNumber2);
 
-            List<SongVersion> versions = await GitVersioning.versionsAsync(song);
+            List<SongVersion> versions = await GitVersioning.VersionsAsync(song);
             
             List<SongVersion> expectedVersions = new List<SongVersion>();
 
@@ -419,12 +420,12 @@ namespace GitSongVersioningTests
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
             await SimulateRemoteChangesAsync();
-            bool updatesAvailable = await GitVersioning.updatesAvailableForSongAsync(song);
+            bool updatesAvailable = await GitVersioning.UpdatesAvailableForSongAsync(song);
             Assert.True(updatesAvailable);
 
-            List<SongVersion> upcomingVersions = await GitVersioning.upcomingVersionsAsync(song);
+            List<SongVersion> upcomingVersions = await GitVersioning.UpcomingVersionsAsync(song);
 
             SongVersion expectedUpcomingVersion = new SongVersion();
             expectedUpcomingVersion.Number = "2.0.0";
@@ -442,12 +443,12 @@ namespace GitSongVersioningTests
             string changeTitle = "Test";
             string changeDescription = "No Description";
             string versionNumber = "1.1.1";
-            await GitVersioning.uploadSongAsync(song, changeTitle, changeDescription, versionNumber);
+            await GitVersioning.UploadSongAsync(song, changeTitle, changeDescription, versionNumber);
 
-            bool updatesAvailable = await GitVersioning.updatesAvailableForSongAsync(song);
+            bool updatesAvailable = await GitVersioning.UpdatesAvailableForSongAsync(song);
             Assert.False(updatesAvailable);
 
-            List<SongVersion> upcomingVersions = await GitVersioning.upcomingVersionsAsync(song);
+            List<SongVersion> upcomingVersions = await GitVersioning.UpcomingVersionsAsync(song);
 
             Assert.Empty(upcomingVersions);
         }

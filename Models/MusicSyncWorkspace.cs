@@ -11,46 +11,36 @@ namespace App1.Models
     {
         public MusicSyncWorkspace(ISaver saver, IFileManager fileManager)
         {
-            this.saver = saver;
-            this.fileManager = fileManager; 
+            this._saver = saver;
+            this._fileManager = fileManager; 
         }
 
-        public string workspaceForSong(Song song)
+        public string GetWorkspaceForSong(Song song)
         {
-            string workspaceForSong = fileManager.FormatPath(musicSyncFolder + song.Guid);
-            fileManager.CreateDirectory(ref workspaceForSong);
+            string workspaceForSong = _fileManager.FormatPath(MusicSyncFolder + song.Guid);
+            _fileManager.CreateDirectory(ref workspaceForSong);
             return workspaceForSong;
         }
 
-        public string musicSyncPathFromSharedLink(string sharedLink)
+        public string GetWorkspace(string workspaceName)
         {
-            string guid = guidFromSharedLink(sharedLink);
-            return fileManager.FormatPath(musicSyncFolder + guid);
+            string workspace = _fileManager.FormatPath(MusicSyncFolder + workspaceName);
+            _fileManager.CreateDirectory(ref workspace);
+            return workspace;
         }
 
-        public string guidFromSharedLink(string sharedLink)
-        {
-            User user = saver.savedUser();
-            string UrlStart = "https://gitlab.com/" + user.BandName.Replace(" ", "-") + "/";
-            string UrlEnd = ".git";
-            int startPos = sharedLink.LastIndexOf(UrlStart) + UrlStart.Length;
-            int length = sharedLink.IndexOf(UrlEnd) - startPos;
-            string guid = sharedLink.Substring(startPos, length);
-            return guid;
-        }
-
-        public string musicSyncFolder
+        public string MusicSyncFolder
         {
             get
             {
-                return saver.savedMusicSyncFolder() + @".musicsync\";
+                return _saver.SavedMusicSyncFolder() + @".musicsync" + Path.DirectorySeparatorChar;
             }
             private set
             {
                 throw new InvalidOperationException();
             }
         }
-        private readonly IFileManager fileManager;
-        private readonly ISaver saver;
+        private readonly IFileManager _fileManager;
+        private readonly ISaver _saver;
     }
 }

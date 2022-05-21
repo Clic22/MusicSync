@@ -4,19 +4,19 @@
     {
         SongsStorage SongList { get; }
 
-        public Task updateSongAsync(Song song);
-        public Task uploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering);
-        public Task addSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath);
-        public Task addLocalSongAsync(string songTitle, string songFile, string songLocalPath);
-        public Task deleteSongAsync(Song song);
-        public string shareSong(Song song);
-        public Task openSongAsync(Song song);
-        public Task revertSongAsync(Song song);
-        public Task refreshSongStatusAsync(Song song);
-        public Song findSong(string songTitle);
-        public void renameSong(Song song, string newSongTitle);
-        public Task<SongVersion> currentVersionAsync(Song song);
-        public Task<List<SongVersion>> versionsAsync(Song song);
-        public Task<List<SongVersion>> upcomingVersionsAsync(Song song);
+        public Task UpdateSongAsync(Song song);
+        public Task UploadNewSongVersionAsync(Song song, string changeTitle, string changeDescription, bool compo, bool mix, bool mastering);
+        public Task AddSharedSongAsync(string songTitle, string sharedLink, string downloadLocalPath);
+        public Task AddLocalSongAsync(string songTitle, string songFile, string songLocalPath);
+        public Task DeleteSongAsync(Song song);
+        public string ShareSong(Song song);
+        public Task OpenSongAsync(Song song);
+        public Task RevertSongAsync(Song song);
+        public Task RefreshSongStatusAsync(Song song);
+        public Song FindSong(string songTitle);
+        public void RenameSong(Song song, string newSongTitle);
+        public Task<SongVersion> CurrentVersionAsync(Song song);
+        public Task<List<SongVersion>> VersionsAsync(Song song);
+        public Task<List<SongVersion>> UpcomingVersionsAsync(Song song);
     }
 }

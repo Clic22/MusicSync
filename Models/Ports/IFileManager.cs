@@ -15,7 +15,7 @@
         public void DeleteDirectory(string directoryPath);
         public void CopyDirectory(string sourceDir, string destinationDir);
         public void CopyDirectories(List<string> directoriesToCopied, string directorySrc, string directoryDst);
-        public Task<string?> findFileNameBasedOnExtensionAsync(string directoryPath, string extension);
+        public Task<string?> FindFileNameBasedOnExtensionAsync(string directoryPath, string extension);
         public void SyncFile(string srcPath, string dstPath, string file);
         public Task CompressDirectoryAsync(string DirectoryToBeCompressed, string ArchiveName, string ArchivePath);
         public Task UncompressArchiveAsync(string ArchiveToBeUncompressed, string destinationDir);

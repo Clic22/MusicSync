@@ -4,18 +4,18 @@
     {
         public Version()
         {
-            number_ = string.Empty;
-            description_ = string.Empty;
-            author_ = string.Empty;
-            date_ = string.Empty;
+            _number = string.Empty;
+            _description = string.Empty;
+            _author = string.Empty;
+            _date = string.Empty;
         }
 
-        private string number_;
+        private string _number;
         public string Number
         {
             get
             {
-                return number_;
+                return _number;
             }
             set
             {
@@ -32,46 +32,46 @@
                     versionNumber = "Compo v" + compoVersion + " / Mix v" + mixVersion;
                 }
                  
-                SetProperty(ref number_, versionNumber);
+                SetProperty(ref _number, versionNumber);
             }
         }
 
-        private string description_;
+        private string _description;
         public string Description
         {
             get
             {
-                return description_;
+                return _description;
             }
             set
             {
-                SetProperty(ref description_, value);
+                SetProperty(ref _description, value);
             }
         }
 
-        private string author_;
+        private string _author;
         public string Author
         {
             get
             {
-                return author_;
+                return _author;
             }
             set
             {
-                SetProperty(ref author_, value);
+                SetProperty(ref _author, value);
             }
         }
 
-        private string date_;
+        private string _date;
         public string Date
         {
             get
             {
-                return date_;
+                return _date;
             }
             set
             {
-                SetProperty(ref date_, value);
+                SetProperty(ref _date, value);
             }
         }
 

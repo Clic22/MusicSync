@@ -27,7 +27,7 @@ namespace WinUIAppTests.FileManagerTests
             string expectedFileName = fileName + extension;
 
             IFileManager fileManager = new FileManager();
-            fileName = await fileManager.findFileNameBasedOnExtensionAsync(directoryPath, extension);
+            fileName = await fileManager.FindFileNameBasedOnExtensionAsync(directoryPath, extension);
 
             Assert.Equal(expectedFileName, fileName);
 
@@ -302,7 +302,7 @@ namespace WinUIAppTests.FileManagerTests
             var savedPath = path;
             FileManager fileManager = new FileManager();
             string newPath = fileManager.FormatPath(path);
-            Assert.Equal(savedPath + '\\', newPath);
+            Assert.Equal(savedPath + Path.DirectorySeparatorChar, newPath);
 
         }
 
