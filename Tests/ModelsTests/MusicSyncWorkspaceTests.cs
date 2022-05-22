@@ -24,7 +24,8 @@ namespace ModelsTests.MusicSyncWorkspaceTest
             transportMock = new Mock<ITransport>();
             fileManager = new FileManager();
             saver = new SaverMock();
-            saver.SaveSettings(user, musicSyncPath);
+            saver.SaveUser(user);
+            saver.SaveMusicSyncFolder(musicSyncPath);
         }
 
         public void Dispose()

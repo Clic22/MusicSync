@@ -12,6 +12,7 @@ namespace App1Tests.Mock
             _musicSyncFolder = string.Empty;
         }
 
+
         public User SavedUser()
         {
             return _user;
@@ -32,9 +33,8 @@ namespace App1Tests.Mock
             return _songs;
         }
 
-        public void SaveSettings(User user, string musicSyncFolder)
+        public void SaveMusicSyncFolder(string musicSyncFolder)
         {
-            SaveUser(user);
             _musicSyncFolder = musicSyncFolder;
         }
 
@@ -43,7 +43,7 @@ namespace App1Tests.Mock
             return _musicSyncFolder;
         }
 
-        private void SaveUser(User user)
+        public void SaveUser(User user)
         {
             _user = user;
         }

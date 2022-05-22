@@ -21,12 +21,12 @@ namespace App1.View
             this.InitializeComponent();
             ISaver saver = new LocalSettingsSaver();
             IFileManager fileManager = new FileManager();
-            SettingsViewModel = new SettingsPageViewModel(saver, fileManager);
+            SettingsViewModel = new SettingsPageViewModel(saver);
         }
 
         public async void SaveSettings_Click(object sender, RoutedEventArgs e)
         {
-            SettingsViewModel.saveSettings(BandName.Text, BandPassword.Password, Username.Text, BandEmail.Text);
+            SettingsViewModel.SaveSettings();
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = this.XamlRoot;
             dialog.Title = "Settings Saved";
@@ -54,7 +54,7 @@ namespace App1.View
             var folderPicked = await folderPicker.PickSingleFolderAsync();
             if (folderPicked != null)
             {
-                SettingsViewModel.MusicSyncFolder = folderPicked.Path;
+                SettingsViewModel.Settings.MusicSyncFolder = folderPicked.Path;
             }
         }
 
