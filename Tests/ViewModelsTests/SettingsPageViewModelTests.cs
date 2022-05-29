@@ -4,6 +4,7 @@ using App1.ViewModels;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WinUIApp;
@@ -100,7 +101,7 @@ namespace ViewModelsTests.SettingsPageViewModelTests
             viewModel.SaveSettings();
 
             saverMock.Verify(m => m.SaveUser(user), Times.Once());
-            saverMock.Verify(m => m.SaveMusicSyncFolder(expectedMusicSyncFolder), Times.Once());
+            saverMock.Verify(m => m.SaveMusicSyncFolder(expectedMusicSyncFolder + Path.DirectorySeparatorChar), Times.Once());
         }
     }
 }
