@@ -19,6 +19,8 @@ namespace App1.ViewModels
         {
             var user = new User(Settings.User.BandName, Settings.User.BandPassword, Settings.User.Username, Settings.User.BandEmail);
             _saver.SaveUser(user);
+            FileManager fileManager = new FileManager();
+            Settings.MusicSyncFolder = fileManager.FormatPath(Settings.MusicSyncFolder);
             _saver.SaveMusicSyncFolder(Settings.MusicSyncFolder);
         }
 

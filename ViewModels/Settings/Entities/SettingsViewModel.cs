@@ -28,7 +28,5 @@ namespace App1.ViewModels.Settings.Entities
                 SetProperty(ref _musicSyncFolder, value);
             }
         }
-
-
     }
 }

@@ -422,15 +422,17 @@ namespace ModelsTests.SongsManagerTest
         public void RenameSongTest()
         {
             string newTitle = "new Title";
-            string newLocalPath = expectedSong.LocalPath.Replace(expectedSong.Title + '\\', "") + newTitle;
-            string newFile = newTitle + ".song";
-            fileManagerMock.Setup(m => m.FormatPath(expectedSong.LocalPath.Replace(expectedSong.Title + '\\', "") + newTitle)).Returns(newLocalPath);
+            string expectedNewLocalPath = expectedSong.LocalPath.Replace(expectedSong.Title + '\\', "") + newTitle;
+            string expectedNewFile = newTitle + ".song";
+            fileManagerMock.Setup(m => m.FormatPath(expectedSong.LocalPath.Replace(expectedSong.Title + '\\', "") + newTitle)).Returns(expectedNewLocalPath);
+            Guid expectedGuid = expectedSong.Guid;
 
             songsManager.RenameSong(expectedSong, newTitle);
 
             Assert.Equal(expectedSong.Title, newTitle);
-            Assert.Equal(expectedSong.LocalPath, newLocalPath);
-            Assert.Equal(expectedSong.File, newFile);
+            Assert.Equal(expectedSong.LocalPath, expectedNewLocalPath);
+            Assert.Equal(expectedSong.File, expectedNewFile);
+            Assert.Equal(expectedSong.Guid, expectedGuid);
             Assert.Contains(expectedSong, saver.SavedSongs());
         }
       
